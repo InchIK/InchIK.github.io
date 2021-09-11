@@ -1,3 +1,8 @@
+@font-face {
+    font-family: japan;
+    src: url(../fonts/japan.ttf);
+}
+
 /* CSS Reset */
 * { margin: 0; padding: 0; }
 
@@ -13,23 +18,105 @@ html,body{
     height: 100%;
     background-image: url("../image/texture.png");
 }
-
 .about{
     display: flex;
 }
 .MePic{
     margin-top: 50px;
-    margin-left: 50px;
-    width:150px;
-    height:150px;
-    border: 1px #333 solid;
+    margin-left: 20px;
+    width:200px;
+    height:200px;
+    border: 2px #ddd solid;
     border-radius:50%;
     overflow:hidden;
-   
+    
    
 }
-.MePic img{
-    width:auto;
-    height:100%;
-    margin-left:-25%;
+
+.about h1{
+    font-family:japan;
+    font-size: 120px;
+    color: #333;
+    margin: auto;
+    margin-top: 30px;
+    padding: 10px;
+    writing-mode:vertical-lr;
+    -webkit-text-stroke: 0.001rem #ddd;
+}
+
+.network{
+    margin-top: 50px;
+    margin-right: 650px;
+    width: 200px;
+    height: 350px;
+    background-color: rgb(233, 210, 146);
+    border-radius: 2% ;
+    padding: 10px;
+}
+
+.networkText{
+    border: 2px #333 solid;    
+    padding: 10px;
+}
+
+.networkText h1{
+    
+    font-size: 75px;
+    color: rgb(136, 44, 44);
+    margin: auto;
+    text-align: center;
+   
+}
+
+/* 文字介紹區塊 */
+.title{
+    margin: 10px;
+    margin-top: -150px;
+    margin-left: 20px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Noto Sans TC', sans-serif;
+}
+.MeName{
+    padding-bottom: 5px;
+    font-size: 24px;
+    text-align:center;
+    color: #ddd;
+}
+.MeEmail{
+    padding-bottom: 5px;
+    font-size: 15px;
+    text-align:center;
+    color: #ddd;
+}
+
+.fas{
+    padding: 5px;
+}
+
+.MeText{
+    color: #ddd;
+    font-size: 8px;
+}
+
+
+
+/* RWD 區塊 */
+@media screen and (min-width: 768px) {
+
+    .about h1{
+        margin-left: 20px;
+    }
+}
+
+
+@media screen and (max-width: 320px) {
+    .about h1{
+        font-size: 80px;
+        margin-top:30px;
+    }
+    .wrap .title{
+        margin-top: -40px;
+    }
 }
