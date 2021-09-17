@@ -123,6 +123,7 @@ html,body{
 }
 
 .card .text h2 {
+    letter-spacing: 3px;
     width: 60%;
     margin-left: 32px;
     padding: 5px;
@@ -131,6 +132,7 @@ html,body{
 }
 
 .card .text p{
+    letter-spacing: 1px;
     padding: 5px;
     text-shadow: 0.1em 0.1em 0.2em rgb(77, 76, 76);
    
