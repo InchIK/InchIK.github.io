@@ -127,11 +127,13 @@ html,body{
     margin-left: 32px;
     padding: 5px;
     border-bottom: 1px #fff solid;
+    text-shadow: 0.1em 0.1em 0.2em rgb(77, 76, 76);
 }
 
 .card .text p{
-    
     padding: 5px;
+    text-shadow: 0.1em 0.1em 0.2em rgb(77, 76, 76);
+   
 }
 
 @media screen and (max-width: 540px){
