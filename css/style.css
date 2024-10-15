@@ -6,8 +6,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 
 /* CSS Reset */
-* { margin: 0; padding: 0; }
-html,body{
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
     font-family: 'Noto Sans TC', sans-serif;
     width: 100%;
     height: 100%;
@@ -17,44 +17,45 @@ html,body{
     background-image: linear-gradient(-20deg, #FFC408, #FFE32F);
 }
 
-.warp{  
-    background-image:url(../image/texture.png);
-    
+.warp {  
+    background-image: url(../image/texture.png);
+    padding: 20px;
 }
-.container{
+.container {
     display: flex;
     flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
 }
 
 /* 自我介紹區 */
-.about{
-    width: 150px;
+.about {
+    width: 100%;
+    max-width: 400px;
     margin-top: 20px;
-    margin-left: 20px;
     display: flex;
     flex-direction: column;
-    
+    align-items: center;
+    text-align: center;
 }
-.aboutPic{
+.aboutPic {
     width: 150px;
     height: 150px;
-    overflow:hidden;
-    border-radius:50%;
+    overflow: hidden;
+    border-radius: 50%;
     border: 2px #aaa solid;
     position: relative;
 }
 
-.aboutText{
+.aboutText {
     margin: 10px;
 }
-.aboutText .aboutName{
+.aboutText .aboutName {
     font-size: 30px;
-    text-align: center;
     color: #aaa;
-    
 }
-.aboutText .aboutEmail{
-    width:100%;
+.aboutText .aboutEmail {
+    width: 100%;
     margin-top: 5px;
     padding: 2px;
     font-size: 14px;
@@ -62,41 +63,36 @@ html,body{
     background-color: rgb(177, 47, 47);
     border: 1px #444 solid;
 }
-.aboutText p{ 
+.aboutText p { 
     width: 100%;
     padding-top: 5px;
-    
-}
-.aboutText p{
     font-size: 12px;
+    color: #444;
     text-align: justify; 
     font-family: 'Noto Sans TC', sans-serif;
-    color: #444;
-
 }
 
 /* 作品集標題 */
-.work{
+.work {
+    width: 100%;
     margin-top: 50px;
-    margin-left: 30px;
-    margin-right: 30px;
+    text-align: center;
 }
-.work h1{
-    font-size: 110px;
+.work h1 {
+    font-size: 60px;
     font-family: chao;
     color: rgb(177, 47, 47);
-    /* text-shadow: -1px 0 #000, 0 1px #000,1px 0 #000, 0 -1px #000; */
     writing-mode: vertical-lr; 
-  
 }
 
 /* 作品介紹區 */
-.card{
-    width: 200px;
-    height: 400px;
+.card {
+    width: calc(100% / 2 - 20px);
+    max-width: 300px;
+    height: auto;
     margin: 30px 10px;
     position: relative;
-    overflow:hidden;
+    overflow: hidden;
     border: 2px #aaa solid;
     border-radius: 10px;
     box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);  
@@ -104,56 +100,56 @@ html,body{
     box-sizing: border-box;
 }
 
-.card{
-    color: #fff;
-}
-.card img{
+.card img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
-    
 }
 
-.card .text{
-    padding: 5px;
-    top: 0px;
-    left: 0px;
-    position: absolute;
+.card .text {
+    padding: 15px;
     text-align: center;
 }
 
 .card .text h2 {
     letter-spacing: 3px;
-    width: 60%;
-    margin-left: 32px;
-    padding: 5px;
-    border-bottom: 1px #fff solid;
-    text-shadow: 0.1em 0.1em 0.2em rgb(77, 76, 76);
+    margin-bottom: 10px;
+    font-size: 20px;
+    border-bottom: 1px #aaa solid;
+    color: #333;
 }
 
-.card .text p{
+.card .text p {
     letter-spacing: 1px;
-    padding: 5px;
-    text-shadow: 0.1em 0.1em 0.2em rgb(77, 76, 76);
-   
+    font-size: 14px;
+    color: #555;
 }
 
-@media screen and (max-width: 540px){
-    html,body{
-        min-height: 100%;
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
     }
-    .warp{
-        min-height: 100%;
+    .card {
+        width: 90%;
     }
-    .about{
-        margin-left: 40px;
+    .work h1 {
+        font-size: 50px;
     }
 }
 
-@media screen and (min-width: 540px){
-    .warp{
-        width: 100%;
-        height: 100%;
+@media screen and (max-width: 480px) {
+    .aboutPic {
+        width: 120px;
+        height: 120px;
     }
-    
+    .aboutText .aboutName {
+        font-size: 20px;
+    }
+    .card .text h2 {
+        font-size: 18px;
+    }
+    .card .text p {
+        font-size: 14px;
+    }
 }
