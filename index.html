@@ -1,134 +1,170 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>個人履歷｜技術領域專長</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" />
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyAe56g4eszcdqKtmo_Q439Mrvtp9_oP9Sk",
-            authDomain: "inchijob-b49e8.firebaseapp.com",
-            projectId: "inchijob-b49e8",
-            storageBucket: "inchijob-b49e8.firebasestorage.app",
-            messagingSenderId: "889448714693",
-            appId: "1:889448714693:web:d1c90f383424edcd317bac",
-            measurementId: "G-97HM4SPF84"
-        };
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyAe56g4eszcdqKtmo_Q439Mrvtp9_oP9Sk",
+        authDomain: "inchijob-b49e8.firebaseapp.com",
+        projectId: "inchijob-b49e8",
+        storageBucket: "inchijob-b49e8.firebasestorage.app",
+        messagingSenderId: "889448714693",
+        appId: "1:889448714693:web:d1c90f383424edcd317bac",
+        measurementId: "G-97HM4SPF84",
+      };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
 
-        window.firebaseTools = {
-            auth,
-            provider,
-            signInWithPopup,
-            onAuthStateChanged,
-            signOut
-        };
+      window.firebaseTools = {
+        auth,
+        provider,
+        signInWithPopup,
+        onAuthStateChanged,
+        signOut,
+      };
     </script>
     <script defer src="js/main.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <header class="hero">
-        <div class="hero__content">
-            <button class="hero__login-btn" id="openLogin" type="button">管理登入</button>
-            <div class="hero__layout">
-                <div class="profile">
-                    <div class="profile__avatar-wrap">
-                        <img class="profile__avatar" id="profileAvatar" src="assets/photos/profile.jpg" alt="個人頭像">
-                    </div>
-                    <h1 class="profile__name" id="profileName">[ InchI ]</h1>
-                    <div class="profile__contact" id="profileEmail">kungyc@gmail.com</div>
-                </div>
-                <div class="hero__bio">
-                    <p class="profile__summary" id="profileSummary">
-                        和我那時財和我那時財，經培養點這裡進一步，笑著近年來裝備，臉上下一頁，最後可能生存臉色引起兄弟年輕人減肥女友在。
-                    </p>
-                </div>
+      <div class="hero__content">
+        <button class="hero__login-btn" id="openLogin" type="button">
+          管理登入
+        </button>
+        <div class="hero__layout">
+          <div class="profile">
+            <div class="profile__avatar-wrap">
+              <img
+                class="profile__avatar"
+                id="profileAvatar"
+                src="assets/photos/profile.jpg"
+                alt="個人頭像"
+              />
             </div>
+            <h1 class="profile__name" id="profileName">[ InchI ]</h1>
+            <div class="profile__contact" id="profileEmail">
+              kungyc@gmail.com
+            </div>
+          </div>
+          <div class="hero__bio">
+            <p class="profile__summary" id="profileSummary">
+              和我那時財和我那時財，經培養點這裡進一步，笑著近年來裝備，臉上下一頁，最後可能生存臉色引起兄弟年輕人減肥女友在。
+            </p>
+          </div>
         </div>
+      </div>
     </header>
 
     <div class="admin-bar" id="adminBar" hidden data-state="off">
-        <span id="modeStatus">觀禮模式</span>
-        <div class="admin-bar__actions">
-            <button type="button" id="editProfile" class="admin-btn">編輯自我介紹</button>
-            <button type="button" id="openPanel" class="admin-btn">新增區塊</button>
-            <button type="button" id="logout" class="admin-btn admin-btn--quiet">登出</button>
-        </div>
+      <span id="modeStatus">觀禮模式</span>
+      <div class="admin-bar__actions">
+        <button type="button" id="editProfile" class="admin-btn">
+          編輯自我介紹
+        </button>
+        <button type="button" id="openPanel" class="admin-btn">新增區塊</button>
+        <button type="button" id="logout" class="admin-btn admin-btn--quiet">
+          登出
+        </button>
+      </div>
     </div>
 
     <main class="content">
-        <section class="section">
-            <h2 class="section__title">技術領域專長</h2>
-            <div class="skill-grid" id="skillGrid"></div>
-        </section>
+      <section class="section">
+        <h2 class="section__title">專業領域項目</h2>
+        <div class="skill-grid" id="skillGrid"></div>
+      </section>
     </main>
 
     <footer class="footer"></footer>
 
-
-
     <dialog class="modal" id="profileModal">
-        <form method="dialog" class="modal__content" id="profileForm">
-            <h2>編輯自我介紹</h2>
-            <label class="field">
-                <span>顯示名稱（含括號）</span>
-                <input type="text" id="profileNameInput" required>
-            </label>
-            <label class="field">
-                <span>Email</span>
-                <input type="email" id="profileEmailInput" required>
-            </label>
-            <label class="field">
-                <span>簡介</span>
-                <textarea id="profileSummaryInput" rows="4" required></textarea>
-            </label>
-            <label class="field">
-                <span>頭像圖片來源（可填網址或本地路徑）</span>
-                <input type="text" id="profileAvatarInput" placeholder="assets/photos/profile.jpg">
-            </label>
-            <p class="modal__hint">※ 若留空則使用預設頭像。</p>
-            <div class="modal__actions">
-                <button type="button" id="cancelProfile">取消</button>
-                <button type="submit" class="primary">儲存</button>
-            </div>
-        </form>
+      <form method="dialog" class="modal__content" id="profileForm">
+        <h2>編輯自我介紹</h2>
+        <label class="field">
+          <span>顯示名稱（含括號）</span>
+          <input type="text" id="profileNameInput" required />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="profileEmailInput" required />
+        </label>
+        <label class="field">
+          <span>簡介</span>
+          <textarea id="profileSummaryInput" rows="4" required></textarea>
+        </label>
+        <label class="field">
+          <span>頭像圖片來源（可填網址或本地路徑）</span>
+          <input
+            type="text"
+            id="profileAvatarInput"
+            placeholder="assets/photos/profile.jpg"
+          />
+        </label>
+        <p class="modal__hint">※ 若留空則使用預設頭像。</p>
+        <div class="modal__actions">
+          <button type="button" id="cancelProfile">取消</button>
+          <button type="submit" class="primary">儲存</button>
+        </div>
+      </form>
     </dialog>
 
     <dialog class="modal" id="panelModal">
-        <form method="dialog" class="modal__content modal__content--wide" id="panelForm">
-            <div class="modal__header">
-                <h2>新增技術區塊</h2>
-                <button type="button" class="modal__close" id="closePanel" aria-label="關閉">×</button>
-            </div>
-            <label class="field">
-                <span>標題</span>
-                <input type="text" id="fieldTitle" required>
-            </label>
-            <label class="field">
-                <span>技術介紹</span>
-                <textarea id="fieldDescription" rows="4" required></textarea>
-            </label>
-            <label class="field">
-                <span>圖片網址 (可留空)</span>
-                <input type="text" id="fieldImageUrl" placeholder="https://example.com/image.jpg">
-            </label>
-            <div class="modal__actions">
-                <button type="submit" class="primary">新增</button>
-            </div>
-        </form>
+      <form
+        method="dialog"
+        class="modal__content modal__content--wide"
+        id="panelForm"
+      >
+        <div class="modal__header">
+          <h2>新增技術區塊</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closePanel"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <label class="field">
+          <span>標題</span>
+          <input type="text" id="fieldTitle" required />
+        </label>
+        <label class="field">
+          <span>技術介紹</span>
+          <textarea id="fieldDescription" rows="4" required></textarea>
+        </label>
+        <label class="field">
+          <span>圖片網址 (可留空)</span>
+          <input
+            type="text"
+            id="fieldImageUrl"
+            placeholder="https://example.com/image.jpg"
+          />
+        </label>
+        <div class="modal__actions">
+          <button type="submit" class="primary">新增</button>
+        </div>
+      </form>
     </dialog>
-</body>
+  </body>
 </html>

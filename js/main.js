@@ -249,6 +249,7 @@
     function renderCardActions(id) {
         return `
             <div class="card-actions">
+                <button type="button" data-action="edit" data-id="${id}">編輯</button>
                 <button type="button" data-action="delete" data-id="${id}">刪除此區塊</button>
             </div>
         `;
@@ -317,6 +318,12 @@
     openPanelBtn?.addEventListener("click", () => {
         if (!isAdmin) return;
         panelForm?.reset();
+        delete panelForm.dataset.editingId; // Clear editing state
+
+        // Update modal UI for adding
+        panelModal.querySelector("h2").textContent = "新增技術區塊";
+        panelModal.querySelector("button[type='submit']").textContent = "新增";
+
         openDialog(panelModal);
         fieldTitle?.focus();
     });
@@ -325,12 +332,26 @@
 
     panelForm?.addEventListener("submit", (event) => {
         event.preventDefault();
+        const editingId = panelForm.dataset.editingId;
+
         const title = fieldTitle.value.trim();
         const description = fieldDescription.value.trim();
-        const imageUrl = fieldImageUrl.value.trim(); // Get the URL
-        if (!title || !description) return; // visual/imageUrl is now optional
-        const newSkill = { id: `skill-${Date.now()}`, title, description, imageUrl }; // Use imageUrl
-        skills = [newSkill, ...skills];
+        const imageUrl = fieldImageUrl.value.trim();
+
+        if (!title || !description) return;
+
+        if (editingId) {
+            // Edit existing skill
+            const skillIndex = skills.findIndex(skill => skill.id === editingId);
+            if (skillIndex > -1) {
+                skills[skillIndex] = { ...skills[skillIndex], title, description, imageUrl };
+            }
+        } else {
+            // Add new skill
+            const newSkill = { id: `skill-${Date.now()}`, title, description, imageUrl };
+            skills = [newSkill, ...skills];
+        }
+
         persistSkills();
         renderSkills();
         closeDialog(panelModal);
@@ -364,11 +385,30 @@
     skillGrid?.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement) || !isAdmin) return;
-        if (target.dataset.action === "delete" && target.dataset.id) {
-            if (!window.confirm("Delete this skill card?")) return;
-            skills = skills.filter((skill) => skill.id !== target.dataset.id);
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+
+        if (action === "delete" && id) {
+            if (!window.confirm("您確定要刪除此區塊嗎？")) return;
+            skills = skills.filter((skill) => skill.id !== id);
             persistSkills();
             renderSkills();
+        }
+
+        if (action === "edit" && id) {
+            const skillToEdit = skills.find((skill) => skill.id === id);
+            if (!skillToEdit) return;
+
+            // Populate the modal for editing
+            fieldTitle.value = skillToEdit.title;
+            fieldDescription.value = skillToEdit.description;
+            fieldImageUrl.value = skillToEdit.imageUrl || "";
+
+            // Set identifier for edit mode
+            panelForm.dataset.editingId = id;
+
+            openDialog(panelModal);
         }
     });
 
