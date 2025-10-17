@@ -10,77 +10,77 @@
             title: "DevOps Automation",
             description:
                 "Experience with Docker, Kubernetes and GitLab CI/CD. Skilled at wiring Jenkins, Ansible and ArgoCD to build automated pipelines from commit to production deployment.",
-            visual: "devops"
+            imageUrl: "assets/photos/devops.jpg"
         },
         {
             id: "skill-network",
             title: "Enterprise Networking",
             description:
                 "Plan and maintain WAF, firewalls, switches, Wi-Fi, web servers and VPN. Implement load balancing, HA and rsync replication to keep services consistent across sites.",
-            visual: "network"
+            imageUrl: "assets/photos/network.jpg"
         },
         {
             id: "skill-firewall",
             title: "Security & Firewalls",
             description:
                 "Hands-on with Palo Alto, SonicWALL and Fortigate platforms. Build layered protection, policy governance and incident monitoring to reduce risk.",
-            visual: "firewall"
+            imageUrl: "assets/photos/firewall.jpg"
         },
         {
             id: "skill-switch",
             title: "Switching Infrastructure",
             description:
                 "Deploy and manage Cisco and HPE Aruba switches. Design VLAN, ACL and high-availability topologies for data centers and branch offices.",
-            visual: "switching"
+            imageUrl: "assets/photos/switching.jpg"
         },
         {
             id: "skill-os",
             title: "Operating Systems",
             description:
                 "Administer Windows Server and Linux distributions (CentOS, Ubuntu, Oracle Linux). Build automated provisioning, patching and compliance workflows.",
-            visual: "os"
+            imageUrl: "assets/photos/os.jpg"
         },
         {
             id: "skill-virtualization",
             title: "Virtualization & Cloud",
             description:
                 "Operate VMware vSphere, Hyper-V, Citrix Xen, Proxmox and Nutanix. Optimize hybrid environments spanning private clouds and Azure / GCP public clouds.",
-            visual: "virtualization"
+            imageUrl: "assets/photos/virtualization.jpg"
         },
         {
             id: "skill-database",
             title: "Database Reliability",
             description:
                 "Maintain MSSQL and MySQL Cluster. Build redundancy, backup and monitoring policies to keep data consistent and performant.",
-            visual: "database"
+            imageUrl: "assets/photos/database.jpg"
         },
         {
             id: "skill-system",
             title: "System Integration",
             description:
                 "Roll out Active Directory, WSUS and Windows Server application services. Centralize identity governance and patch management.",
-            visual: "system"
+            imageUrl: "assets/photos/system.jpg"
         },
         {
             id: "skill-storage",
             title: "Storage & Backup",
             description:
                 "Support NetApp, Synology and QNAP environments. Design snapshot, off-site backup and storage capacity strategies for critical workloads.",
-            visual: "storage"
+            imageUrl: "assets/photos/storage.jpg"
         },
         {
             id: "skill-monitoring",
             title: "Observability Platforms",
             description:
                 "Deploy MRTG, Prometheus, Grafana, LibreNMS and ELK stacks. Build dashboards, alerting and trend analysis for better service visibility.",
-            visual: "monitoring"
+            imageUrl: "assets/photos/monitoring.jpg"
         },
         {
             id: "skill-coding",
             title: "Scripting & Automation",
             description:
                 "Create automation with Python, Windows Script Host and Linux shell scripts. Reduce repetitive tasks and deliver reliable operations playbooks.",
-            visual: "coding"
+            imageUrl: "assets/photos/coding.jpg"
         }
     ];
 
@@ -128,7 +128,7 @@
     const closePanelBtn = document.getElementById("closePanel");
     const fieldTitle = document.getElementById("fieldTitle");
     const fieldDescription = document.getElementById("fieldDescription");
-    const fieldVisual = document.getElementById("fieldVisual");
+    const fieldImageUrl = document.getElementById("fieldImageUrl");
 
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
@@ -188,6 +188,13 @@
         try {
             const parsed = JSON.parse(saved);
             if (Array.isArray(parsed)) {
+                // --- Data migration ---
+                parsed.forEach(skill => {
+                    if (skill.visual && !skill.imageUrl) {
+                        skill.imageUrl = VISUALS[skill.visual]?.image || "";
+                    }
+                });
+                // --- End migration ---
                 return parsed;
             }
         } catch (error) {
@@ -215,7 +222,8 @@
         skillGrid.innerHTML = "";
 
         skills.forEach((skill) => {
-            const visual = VISUALS[skill.visual] ?? VISUALS.default;
+            const imageUrl = skill.imageUrl || VISUALS.default.image;
+            const altText = skill.title || VISUALS.default.label;
             const article = document.createElement("article");
             article.className = "skill-card";
             article.dataset.id = skill.id;
@@ -223,7 +231,7 @@
             article.innerHTML = `
                 <div class="card-inner">
                     <figure class="card-media">
-                        <img src="${visual.image}" alt="${escapeHTML(visual.label)}">
+                        <img src="${imageUrl}" alt="${escapeHTML(altText)}">
                     </figure>
                     <div class="card-body">
                         <h3>${escapeHTML(skill.title)}</h3>
@@ -319,9 +327,9 @@
         event.preventDefault();
         const title = fieldTitle.value.trim();
         const description = fieldDescription.value.trim();
-        const visual = fieldVisual.value;
-        if (!title || !description || !visual) return;
-        const newSkill = { id: `skill-${Date.now()}`, title, description, visual };
+        const imageUrl = fieldImageUrl.value.trim(); // Get the URL
+        if (!title || !description) return; // visual/imageUrl is now optional
+        const newSkill = { id: `skill-${Date.now()}`, title, description, imageUrl }; // Use imageUrl
         skills = [newSkill, ...skills];
         persistSkills();
         renderSkills();

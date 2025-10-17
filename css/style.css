@@ -3,7 +3,7 @@
   --bg: #f8d34c;
   --text: #1c2431;
   --muted: #4b5563;
-  --accent: #0c7cd5;
+  --accent: #a3aab4;
   --card-radius: 22px;
   --shadow: 0 24px 50px rgba(28, 36, 49, 0.16);
   --frame-gap: 0.25rem;
@@ -338,9 +338,8 @@ body {
 }
 
 .modal__content--wide {
-  width: min(94vw, 520px);
+  width: min(94vw, 420px);
 }
-
 .modal__header {
   display: flex;
   justify-content: space-between;
