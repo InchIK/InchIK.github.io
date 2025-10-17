@@ -110,6 +110,7 @@
 
     const skillGrid = document.getElementById("skillGrid");
     const adminBar = document.getElementById("adminBar");
+    const modeStatus = document.getElementById("modeStatus");
     const loginModal = document.getElementById("loginModal");
     const panelModal = document.getElementById("panelModal");
     const profileModal = document.getElementById("profileModal");
@@ -258,7 +259,18 @@
 
     function syncAdminUI() {
         if (!adminBar) return;
-        adminBar.hidden = !isAdmin;
+        if (adminBar) {
+            if (isAdmin) {
+                adminBar.hidden = false;
+                adminBar.dataset.state = "on";
+            } else {
+                adminBar.hidden = true;
+                adminBar.dataset.state = "off";
+            }
+        }
+        if (modeStatus) {
+            modeStatus.textContent = isAdmin ? "管理模式開啟" : "";
+        }
         if (!isAdmin) {
             closeDialog(panelModal);
             closeDialog(profileModal);

@@ -135,13 +135,31 @@ body {
     box-shadow: 0 8px 22px rgba(12, 124, 213, 0.28);
 }
 
+.admin-bar[data-state="off"] {
+    background: linear-gradient(90deg, #b7bdc9, #9da3b1);
+    color: #1c2431;
+}
+
+.admin-bar[data-state="off"] .admin-btn {
+    background: rgba(28, 36, 49, 0.15);
+    color: #1c2431;
+}
+
+.admin-bar[data-state="off"] .admin-btn--quiet {
+    background: rgba(28, 36, 49, 0.08);
+}
+
+.admin-bar[data-state="off"] .admin-bar__actions {
+    display: none;
+}
+
 .admin-bar__actions {
     display: flex;
     gap: 0.8rem;
 }
 
 .admin-bar[hidden] {
-    display: none !重要;
+    display: none !important;
 }
 
 .admin-btn {
