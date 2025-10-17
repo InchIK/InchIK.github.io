@@ -2,8 +2,7 @@
     const STORAGE_KEY = "resumeSkills";
     const PROFILE_KEY = "resumeProfile";
     const SESSION_KEY = "resumeAdmin";
-    const CREDENTIAL_ENDPOINT = "db/auth.json";
-    const DEFAULT_CREDENTIALS = { username: "admin", password: "changeme123" };
+    const ADMIN_EMAIL = "kungyc@gmail.com"; // Admin's email
 
     const DEFAULT_SKILLS = [
         {
@@ -111,15 +110,9 @@
     const skillGrid = document.getElementById("skillGrid");
     const adminBar = document.getElementById("adminBar");
     const modeStatus = document.getElementById("modeStatus");
-    const loginModal = document.getElementById("loginModal");
     const panelModal = document.getElementById("panelModal");
     const profileModal = document.getElementById("profileModal");
 
-    const loginForm = document.getElementById("loginForm");
-    const loginError = document.getElementById("loginError");
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const cancelLoginBtn = document.getElementById("cancelLogin");
     const openLoginBtn = document.getElementById("openLogin");
     const logoutBtn = document.getElementById("logout");
 
@@ -152,12 +145,24 @@
     let profile = loadProfile();
     let skills = loadSkills();
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
-    let credentials = { ...DEFAULT_CREDENTIALS };
-    const credentialsPromise = loadCredentials();
 
     renderProfile();
     renderSkills();
     syncAdminUI();
+
+    // Firebase auth tools
+    const { auth, provider, signInWithPopup, onAuthStateChanged, signOut } = window.firebaseTools;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === ADMIN_EMAIL) {
+            isAdmin = true;
+            sessionStorage.setItem(SESSION_KEY, "true");
+        } else {
+            isAdmin = false;
+            sessionStorage.removeItem(SESSION_KEY);
+        }
+        syncAdminUI();
+    });
 
     function loadProfile() {
         const saved = localStorage.getItem(PROFILE_KEY);
@@ -193,22 +198,6 @@
 
     function persistSkills() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(skills));
-    }
-
-    async function loadCredentials() {
-        try {
-            const response = await fetch(CREDENTIAL_ENDPOINT, { cache: "no-store" });
-            if (!response.ok) throw new Error(response.statusText);
-            const data = await response.json();
-            if (data && typeof data === "object" && data.username && data.password) {
-                credentials = { username: String(data.username), password: String(data.password) };
-            } else {
-                throw new Error("Credential schema invalid");
-            }
-        } catch (error) {
-            console.warn("載入管理帳密時發生問題，改用預設帳密。", error);
-            credentials = { ...DEFAULT_CREDENTIALS };
-        }
     }
 
     function renderProfile() {
@@ -300,37 +289,21 @@
     }
 
     openLoginBtn?.addEventListener("click", () => {
-        loginError.hidden = true;
-        usernameInput.value = "";
-        passwordInput.value = "";
-        openDialog(loginModal);
-        usernameInput?.focus();
-    });
-
-    cancelLoginBtn?.addEventListener("click", () => closeDialog(loginModal));
-
-    loginForm?.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        await credentialsPromise;
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value;
-        if (username === credentials.username && password === credentials.password) {
-            isAdmin = true;
-            sessionStorage.setItem(SESSION_KEY, "true");
-            loginError.hidden = true;
-            syncAdminUI();
-            closeDialog(loginModal);
-        } else {
-            loginError.hidden = false;
-            passwordInput.focus();
-            passwordInput.select();
-        }
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const user = result.user;
+                if (user.email !== ADMIN_EMAIL) {
+                    alert("You are not authorized to login.");
+                    signOut(auth);
+                }
+            })
+            .catch((error) => {
+                console.error("Login failed:", error);
+            });
     });
 
     logoutBtn?.addEventListener("click", () => {
-        isAdmin = false;
-        sessionStorage.removeItem(SESSION_KEY);
-        syncAdminUI();
+        signOut(auth);
     });
 
     openPanelBtn?.addEventListener("click", () => {
