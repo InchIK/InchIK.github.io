@@ -1,2 +1,5 @@
 # 自動處理所有文字檔的換行符
 * text=auto
+*.html text eol=lf
+*.js   text eol=lf
+*.json text eol=lf

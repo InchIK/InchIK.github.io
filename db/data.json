@@ -1,0 +1,76 @@
+{
+  "profile": {
+    "name": "[ InchI ]",
+    "email": "kungyc@gmail.com",
+    "summary": "Delivering reliable infrastructure by combining automation, cloud experience and pragmatic operations improvement.",
+    "avatar": "assets/photos/profile.jpg"
+  },
+  "skills": [
+    {
+      "id": "skill-devops",
+      "title": "DevOps Automation",
+      "description": "Experience with Docker, Kubernetes and GitLab CI/CD. Skilled at wiring Jenkins, Ansible and ArgoCD to build automated pipelines from commit to production deployment.",
+      "imageUrl": "assets/photos/devops.jpg"
+    },
+    {
+      "id": "skill-network",
+      "title": "Enterprise Networking",
+      "description": "Plan and maintain WAF, firewalls, switches, Wi-Fi, web servers and VPN. Implement load balancing, HA and rsync replication to keep services consistent across sites.",
+      "imageUrl": "assets/photos/network.jpg"
+    },
+    {
+      "id": "skill-firewall",
+      "title": "Security & Firewalls",
+      "description": "Hands-on with Palo Alto, SonicWALL and Fortigate platforms. Build layered protection, policy governance and incident monitoring to reduce risk.",
+      "imageUrl": "assets/photos/firewall.jpg"
+    },
+    {
+      "id": "skill-switch",
+      "title": "Switching Infrastructure",
+      "description": "Deploy and manage Cisco and HPE Aruba switches. Design VLAN, ACL and high-availability topologies for data centers and branch offices.",
+      "imageUrl": "assets/photos/switching.jpg"
+    },
+    {
+      "id": "skill-os",
+      "title": "Operating Systems",
+      "description": "Administer Windows Server and Linux distributions (CentOS, Ubuntu, Oracle Linux). Build automated provisioning, patching and compliance workflows.",
+      "imageUrl": "assets/photos/os.jpg"
+    },
+    {
+      "id": "skill-virtualization",
+      "title": "Virtualization & Cloud",
+      "description": "Operate VMware vSphere, Hyper-V, Citrix Xen, Proxmox and Nutanix. Optimize hybrid environments spanning private clouds and Azure / GCP public clouds.",
+      "imageUrl": "assets/photos/virtualization.jpg"
+    },
+    {
+      "id": "skill-database",
+      "title": "Database Reliability",
+      "description": "Maintain MSSQL and MySQL Cluster. Build redundancy, backup and monitoring policies to keep data consistent and performant.",
+      "imageUrl": "assets/photos/database.jpg"
+    },
+    {
+      "id": "skill-system",
+      "title": "System Integration",
+      "description": "Roll out Active Directory, WSUS and Windows Server application services. Centralize identity governance and patch management.",
+      "imageUrl": "assets/photos/system.jpg"
+    },
+    {
+      "id": "skill-storage",
+      "title": "Storage & Backup",
+      "description": "Support NetApp, Synology and QNAP environments. Design snapshot, off-site backup and storage capacity strategies for critical workloads.",
+      "imageUrl": "assets/photos/storage.jpg"
+    },
+    {
+      "id": "skill-monitoring",
+      "title": "Observability Platforms",
+      "description": "Deploy MRTG, Prometheus, Grafana, LibreNMS and ELK stacks. Build dashboards, alerting and trend analysis for better service visibility.",
+      "imageUrl": "assets/photos/monitoring.jpg"
+    },
+    {
+      "id": "skill-coding",
+      "title": "Scripting & Automation",
+      "description": "Create automation with Python, Windows Script Host and Linux shell scripts. Reduce repetitive tasks and deliver reliable operations playbooks.",
+      "imageUrl": "assets/photos/coding.jpg"
+    }
+  ]
+}

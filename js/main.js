@@ -1,8 +1,12 @@
-(() => {
-    const STORAGE_KEY = "resumeSkills";
-    const PROFILE_KEY = "resumeProfile";
+(async () => {
+    const STATIC_DATA_URL = "db/data.json";
+    const DATA_STORAGE_KEY = "resumeData";
+    const LEGACY_SKILLS_KEY = "resumeSkills";
+    const LEGACY_PROFILE_KEY = "resumeProfile";
     const SESSION_KEY = "resumeAdmin";
     const ADMIN_EMAIL = "kungyc@gmail.com"; // Admin's email
+    const FIRESTORE_COLLECTION = "resume";
+    const FIRESTORE_DOC_ID = "content";
 
     const DEFAULT_SKILLS = [
         {
@@ -142,71 +146,328 @@
         });
     }
 
-    let profile = loadProfile();
-    let skills = loadSkills();
+    // Firebase tools
+    const {
+        auth,
+        provider,
+        signInWithPopup,
+        onAuthStateChanged,
+        signOut,
+        firestore: firestoreTools
+    } = window.firebaseTools ?? {};
+
+    let profile = { ...DEFAULT_PROFILE };
+    let skills = DEFAULT_SKILLS.map((skill) => ({ ...skill }));
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
 
-    renderProfile();
-    renderSkills();
+    await hydrateData();
     syncAdminUI();
 
-    // Firebase auth tools
-    const { auth, provider, signInWithPopup, onAuthStateChanged, signOut } = window.firebaseTools;
+    if (typeof onAuthStateChanged === "function" && auth) {
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                isAdmin = true;
+                sessionStorage.setItem(SESSION_KEY, "true");
+            } else {
+                isAdmin = false;
+                sessionStorage.removeItem(SESSION_KEY);
+            }
+            syncAdminUI();
+        });
+    }
 
-    onAuthStateChanged(auth, (user) => {
-        if (user && user.email === ADMIN_EMAIL) {
-            isAdmin = true;
-            sessionStorage.setItem(SESSION_KEY, "true");
-        } else {
-            isAdmin = false;
-            sessionStorage.removeItem(SESSION_KEY);
+    async function hydrateData() {
+        const cached = readCachedData();
+        if (cached) {
+            applyData(cached);
+            return;
         }
-        syncAdminUI();
-    });
+
+        const migrated = migrateLegacyStorage();
+        if (migrated) {
+            applyData(migrated);
+            persistData(migrated);
+            return;
+        }
+
+        await loadRemoteData();
+    }
+
+    function readCachedData() {
+        const raw = localStorage.getItem(DATA_STORAGE_KEY);
+        if (!raw) return null;
+        try {
+            return normalizeData(JSON.parse(raw));
+        } catch (error) {
+            console.warn("Failed to parse cached resume data. The cache will be rebuilt.", error);
+            return null;
+        }
+    }
+
+    function migrateLegacyStorage() {
+        const legacyProfileRaw = localStorage.getItem(LEGACY_PROFILE_KEY);
+        const legacySkillsRaw = localStorage.getItem(LEGACY_SKILLS_KEY);
+        if (!legacyProfileRaw && !legacySkillsRaw) return null;
+
+        let profilePayload = {};
+        let skillsPayload = [];
+
+        if (legacyProfileRaw) {
+            try {
+                profilePayload = JSON.parse(legacyProfileRaw) || {};
+            } catch (error) {
+                console.warn("Failed to parse legacy profile data; using defaults instead.", error);
+            }
+            localStorage.removeItem(LEGACY_PROFILE_KEY);
+        }
+
+        if (legacySkillsRaw) {
+            try {
+                skillsPayload = JSON.parse(legacySkillsRaw) || [];
+            } catch (error) {
+                console.warn("Failed to parse legacy skills data; using defaults instead.", error);
+            }
+            localStorage.removeItem(LEGACY_SKILLS_KEY);
+        }
+
+        return normalizeData({
+            profile: profilePayload,
+            skills: skillsPayload
+        });
+    }
+
+    async function loadRemoteData() {
+        const firestoreData = await loadFirestoreData();
+        if (firestoreData) {
+            applyData(firestoreData);
+            persistData(firestoreData, { skipSync: true });
+            return;
+        }
+
+        const staticData = await fetchStaticData(STATIC_DATA_URL);
+        if (staticData) {
+            applyData(staticData);
+            persistData(staticData, { skipSync: true });
+            return;
+        }
+
+        console.warn("Unable to load resume data from Firestore or static JSON; falling back to defaults.");
+        const fallback = normalizeData({
+            profile: DEFAULT_PROFILE,
+            skills: DEFAULT_SKILLS
+        });
+        applyData(fallback);
+        persistData(fallback, { skipSync: true });
+    }
+
+    async function loadFirestoreData() {
+        if (!firestoreTools?.db || !firestoreTools.doc || !firestoreTools.getDoc) {
+            return null;
+        }
+
+        try {
+            const docRef = getResumeDocRef();
+            if (!docRef) return null;
+
+            const snapshot = await firestoreTools.getDoc(docRef);
+            if (snapshot?.exists?.()) {
+                return normalizeData(snapshot.data());
+            }
+
+            const defaults = normalizeData({
+                profile: DEFAULT_PROFILE,
+                skills: DEFAULT_SKILLS
+            });
+            await firestoreTools.setDoc(docRef, {
+                ...serializeForFirestore(defaults),
+                updatedAt: getServerTimestamp()
+            });
+            return defaults;
+        } catch (error) {
+            console.warn("Unable to load resume data from Firestore.", error);
+            return null;
+        }
+    }
+
+    async function fetchStaticData(url) {
+        try {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            const payload = await response.json();
+            return normalizeData(payload);
+        } catch (error) {
+            console.warn(`Unable to load resume data from ${url}.`, error);
+            return null;
+        }
+    }
+
+    function applyData(data) {
+        profile = {
+            ...DEFAULT_PROFILE,
+            ...(data?.profile ?? {})
+        };
+        skills = normalizeSkills(data?.skills);
+    }
+
+    function normalizeData(source) {
+        if (!source || typeof source !== "object") {
+            return {
+                profile: { ...DEFAULT_PROFILE },
+                skills: DEFAULT_SKILLS.map((skill) => ({ ...skill }))
+            };
+        }
+
+        return {
+            profile: {
+                ...DEFAULT_PROFILE,
+                ...(typeof source.profile === "object" && source.profile ? source.profile : {})
+            },
+            skills: normalizeSkills(source.skills)
+        };
+    }
+
+    function normalizeSkills(skillsSource) {
+        const list = Array.isArray(skillsSource) ? skillsSource : [];
+        if (!list.length) {
+            return DEFAULT_SKILLS.map((skill) => ({ ...skill }));
+        }
+
+        return list.map((skill, index) => {
+            const sanitized = {
+                ...(typeof skill === "object" && skill ? skill : {})
+            };
+
+            const visual = typeof sanitized.visual === "string" ? sanitized.visual.trim() : "";
+            const derivedImage = visual && VISUALS[visual]?.image ? VISUALS[visual].image : "";
+
+            const result = {
+                id:
+                    typeof sanitized.id === "string" && sanitized.id.trim()
+                        ? sanitized.id.trim()
+                        : `skill-${index + 1}`,
+                title:
+                    typeof sanitized.title === "string" && sanitized.title.trim()
+                        ? sanitized.title.trim()
+                        : "Untitled Skill",
+                description:
+                    typeof sanitized.description === "string"
+                        ? sanitized.description
+                        : "",
+                imageUrl:
+                    typeof sanitized.imageUrl === "string" && sanitized.imageUrl.trim()
+                        ? sanitized.imageUrl.trim()
+                        : derivedImage
+            };
+
+            if (visual) {
+                result.visual = visual;
+            }
+
+            return result;
+        });
+    }
+
+    function getResumeDocRef() {
+        if (!firestoreTools?.db || !firestoreTools.doc) return null;
+        return firestoreTools.doc(firestoreTools.db, FIRESTORE_COLLECTION, FIRESTORE_DOC_ID);
+    }
+
+    function getServerTimestamp() {
+        if (typeof firestoreTools?.serverTimestamp === "function") {
+            return firestoreTools.serverTimestamp();
+        }
+        return Date.now();
+    }
+
+    function persistData(override, options = {}) {
+        const snapshot = override ?? {
+            profile,
+            skills
+        };
+        try {
+            localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(snapshot));
+        } catch (error) {
+            console.warn("Failed to persist resume data to localStorage.", error);
+        }
+
+        if (!options.skipSync) {
+            syncFirestoreData(snapshot);
+        }
+    }
+
+    async function syncFirestoreData(payload) {
+        if (!firestoreTools?.db || !firestoreTools.setDoc) return;
+
+        const docRef = getResumeDocRef();
+        if (!docRef) return;
+
+        try {
+            await firestoreTools.setDoc(
+                docRef,
+                {
+                    ...serializeForFirestore(payload),
+                    updatedAt: getServerTimestamp()
+                },
+                { merge: false }
+            );
+        } catch (error) {
+            console.warn("Failed to sync resume data to Firestore.", error);
+        }
+    }
+
+    function serializeForFirestore(payload) {
+        const sanitizedProfile = {
+            name: payload.profile?.name ?? DEFAULT_PROFILE.name,
+            email: payload.profile?.email ?? DEFAULT_PROFILE.email,
+            summary: payload.profile?.summary ?? DEFAULT_PROFILE.summary,
+            avatar: payload.profile?.avatar ?? DEFAULT_PROFILE.avatar
+        };
+
+        const sanitizedSkills = (payload.skills ?? []).map((skill, index) => {
+            const visual = typeof skill.visual === "string" ? skill.visual.trim() : "";
+            const base = {
+                id:
+                    typeof skill.id === "string" && skill.id.trim()
+                        ? skill.id.trim()
+                        : `skill-${index + 1}`,
+                title:
+                    typeof skill.title === "string" && skill.title.trim()
+                        ? skill.title.trim()
+                        : "Untitled Skill",
+                description: typeof skill.description === "string" ? skill.description : "",
+                imageUrl:
+                    typeof skill.imageUrl === "string" && skill.imageUrl.trim()
+                        ? skill.imageUrl.trim()
+                        : ""
+            };
+            if (visual) {
+                base.visual = visual;
+            }
+            return base;
+        });
+
+        return {
+            profile: sanitizedProfile,
+            skills: sanitizedSkills
+        };
+    }
 
     function loadProfile() {
-        const saved = localStorage.getItem(PROFILE_KEY);
-        if (!saved) return { ...DEFAULT_PROFILE };
-        try {
-            const parsed = JSON.parse(saved);
-            if (parsed && typeof parsed === "object") {
-                return { ...DEFAULT_PROFILE, ...parsed };
-            }
-        } catch (error) {
-            console.warn("解析自我介紹資料時發生問題，已改用預設值。", error);
-        }
-        return { ...DEFAULT_PROFILE };
+        return { ...profile };
     }
 
     function persistProfile() {
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+        persistData();
     }
 
     function loadSkills() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return [...DEFAULT_SKILLS];
-        try {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
-                // --- Data migration ---
-                parsed.forEach(skill => {
-                    if (skill.visual && !skill.imageUrl) {
-                        skill.imageUrl = VISUALS[skill.visual]?.image || "";
-                    }
-                });
-                // --- End migration ---
-                return parsed;
-            }
-        } catch (error) {
-            console.warn("解析自訂區塊資料時發生問題，已改用預設值。", error);
-        }
-        return [...DEFAULT_SKILLS];
+        return skills.map((skill) => ({ ...skill }));
     }
-
     function persistSkills() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(skills));
+        persistData();
     }
-
     function renderProfile() {
         if (profileNameEl) profileNameEl.textContent = profile.name;
         if (profileEmailEl) profileEmailEl.textContent = profile.email;
