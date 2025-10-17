@@ -445,7 +445,7 @@ body {
   }
 
   .hero__layout {
-    align-items: flex-start;
+    align-items: center;
   }
 
   .hero__login-btn {
