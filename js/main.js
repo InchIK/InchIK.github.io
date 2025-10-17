@@ -1,8 +1,5 @@
 (async () => {
     const STATIC_DATA_URL = "db/data.json";
-    const DATA_STORAGE_KEY = "resumeData";
-    const LEGACY_SKILLS_KEY = "resumeSkills";
-    const LEGACY_PROFILE_KEY = "resumeProfile";
     const SESSION_KEY = "resumeAdmin";
     const ADMIN_EMAIL = "kungyc@gmail.com"; // Admin's email
     const FIRESTORE_COLLECTION = "resume";
@@ -177,87 +174,26 @@
     }
 
     async function hydrateData() {
-        const cached = readCachedData();
-        if (cached) {
-            applyData(cached);
-            return;
-        }
-
-        const migrated = migrateLegacyStorage();
-        if (migrated) {
-            applyData(migrated);
-            persistData(migrated);
-            return;
-        }
-
-        await loadRemoteData();
-    }
-
-    function readCachedData() {
-        const raw = localStorage.getItem(DATA_STORAGE_KEY);
-        if (!raw) return null;
-        try {
-            return normalizeData(JSON.parse(raw));
-        } catch (error) {
-            console.warn("Failed to parse cached resume data. The cache will be rebuilt.", error);
-            return null;
-        }
-    }
-
-    function migrateLegacyStorage() {
-        const legacyProfileRaw = localStorage.getItem(LEGACY_PROFILE_KEY);
-        const legacySkillsRaw = localStorage.getItem(LEGACY_SKILLS_KEY);
-        if (!legacyProfileRaw && !legacySkillsRaw) return null;
-
-        let profilePayload = {};
-        let skillsPayload = [];
-
-        if (legacyProfileRaw) {
-            try {
-                profilePayload = JSON.parse(legacyProfileRaw) || {};
-            } catch (error) {
-                console.warn("Failed to parse legacy profile data; using defaults instead.", error);
-            }
-            localStorage.removeItem(LEGACY_PROFILE_KEY);
-        }
-
-        if (legacySkillsRaw) {
-            try {
-                skillsPayload = JSON.parse(legacySkillsRaw) || [];
-            } catch (error) {
-                console.warn("Failed to parse legacy skills data; using defaults instead.", error);
-            }
-            localStorage.removeItem(LEGACY_SKILLS_KEY);
-        }
-
-        return normalizeData({
-            profile: profilePayload,
-            skills: skillsPayload
-        });
+        const payload = await loadRemoteData();
+        applyData(payload);
     }
 
     async function loadRemoteData() {
         const firestoreData = await loadFirestoreData();
         if (firestoreData) {
-            applyData(firestoreData);
-            persistData(firestoreData, { skipSync: true });
-            return;
+            return firestoreData;
         }
 
         const staticData = await fetchStaticData(STATIC_DATA_URL);
         if (staticData) {
-            applyData(staticData);
-            persistData(staticData, { skipSync: true });
-            return;
+            return staticData;
         }
 
         console.warn("Unable to load resume data from Firestore or static JSON; falling back to defaults.");
-        const fallback = normalizeData({
+        return normalizeData({
             profile: DEFAULT_PROFILE,
             skills: DEFAULT_SKILLS
         });
-        applyData(fallback);
-        persistData(fallback, { skipSync: true });
     }
 
     async function loadFirestoreData() {
@@ -386,15 +322,12 @@
             profile,
             skills
         };
-        try {
-            localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(snapshot));
-        } catch (error) {
-            console.warn("Failed to persist resume data to localStorage.", error);
-        }
 
         if (!options.skipSync) {
             syncFirestoreData(snapshot);
         }
+
+        return snapshot;
     }
 
     async function syncFirestoreData(payload) {
@@ -454,20 +387,6 @@
         };
     }
 
-    function loadProfile() {
-        return { ...profile };
-    }
-
-    function persistProfile() {
-        persistData();
-    }
-
-    function loadSkills() {
-        return skills.map((skill) => ({ ...skill }));
-    }
-    function persistSkills() {
-        persistData();
-    }
     function renderProfile() {
         if (profileNameEl) profileNameEl.textContent = profile.name;
         if (profileEmailEl) profileEmailEl.textContent = profile.email;
@@ -613,7 +532,7 @@
             skills = [newSkill, ...skills];
         }
 
-        persistSkills();
+        persistData();
         renderSkills();
         closeDialog(panelModal);
     });
@@ -638,7 +557,7 @@
             summary: profileSummaryInput.value.trim() || DEFAULT_PROFILE.summary,
             avatar: profileAvatarInput.value.trim() || DEFAULT_PROFILE.avatar
         };
-        persistProfile();
+        persistData();
         renderProfile();
         closeDialog(profileModal);
     });
@@ -653,7 +572,7 @@
         if (action === "delete" && id) {
             if (!window.confirm("您確定要刪除此區塊嗎？")) return;
             skills = skills.filter((skill) => skill.id !== id);
-            persistSkills();
+            persistData();
             renderSkills();
         }
 
