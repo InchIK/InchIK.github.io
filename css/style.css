@@ -99,7 +99,7 @@ body {
 .profile__name {
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 2.1rem);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.05em;
   color: rgba(31, 39, 50, 0.9);
   text-align: center;
 }
@@ -210,18 +210,18 @@ body {
   align-items: start;
 }
 
-    .skill-card {
-        background: linear-gradient(180deg, #cfd1d5, #ebecee);
-        border-radius: var(--card-radius);
-        box-shadow: var(--shadow);
-        padding: var(--frame-gap);
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        max-width: 360px;
-        height: 600px;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
+.skill-card {
+  background: linear-gradient(180deg, #cfd1d5, #ebecee);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  padding: var(--frame-gap);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  height: 600px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 .skill-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 32px 70px rgba(0, 0, 0, 0.18);
@@ -251,12 +251,12 @@ body {
   object-fit: cover;
 }
 
-    .card-body {
-        padding: clamp(1.3rem, 3vw, 1.9rem);
-        display: flex;
-        flex-direction: column;
-        gap: 0.9rem;
-    }
+.card-body {
+  padding: clamp(1.3rem, 3vw, 1.9rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
 .card-body h3 {
   margin: 0;
   font-size: 1.2rem;
