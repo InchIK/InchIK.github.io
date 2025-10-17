@@ -130,6 +130,24 @@
     const fieldTitle = document.getElementById("fieldTitle");
     const fieldDescription = document.getElementById("fieldDescription");
     const fieldImageUrl = document.getElementById("fieldImageUrl");
+    const projectManagerModal = document.getElementById("projectManagerModal");
+    const projectManagerTitle = document.getElementById("projectManagerTitle");
+    const closeProjectManagerBtn = document.getElementById("closeProjectManager");
+    const projectListEl = document.getElementById("projectList");
+    const addProjectBtn = document.getElementById("addProject");
+    const projectEditorModal = document.getElementById("projectEditorModal");
+    const projectEditorTitle = document.getElementById("projectEditorTitle");
+    const projectForm = document.getElementById("projectForm");
+    const projectNameInput = document.getElementById("projectNameInput");
+    const projectSummaryInput = document.getElementById("projectSummaryInput");
+    const projectMediaList = document.getElementById("projectMediaList");
+    const addMediaItemBtn = document.getElementById("addMediaItem");
+    const cancelProjectBtn = document.getElementById("cancelProject");
+    const skillDetailModal = document.getElementById("skillDetailModal");
+    const detailSkillTitle = document.getElementById("detailSkillTitle");
+    const detailSkillIntro = document.getElementById("detailSkillIntro");
+    const detailProjectContainer = document.getElementById("detailProjectContainer");
+    const closeSkillDetailBtn = document.getElementById("closeSkillDetail");
 
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
@@ -156,6 +174,8 @@
     let profile = { ...DEFAULT_PROFILE };
     let skills = DEFAULT_SKILLS.map((skill) => ({ ...skill }));
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
+    let activeSkillId = null;
+    let editingProjectId = null;
 
     await hydrateData();
     syncAdminUI();
@@ -294,7 +314,8 @@
                 imageUrl:
                     typeof sanitized.imageUrl === "string" && sanitized.imageUrl.trim()
                         ? sanitized.imageUrl.trim()
-                        : derivedImage
+                        : derivedImage,
+                projects: normalizeProjects(sanitized.projects)
             };
 
             if (visual) {
@@ -303,6 +324,62 @@
 
             return result;
         });
+    }
+
+    function normalizeProjects(projectSource) {
+        const list = Array.isArray(projectSource) ? projectSource : [];
+        return list.map((project, index) => {
+            const payload = {
+                ...(typeof project === "object" && project ? project : {})
+            };
+            const id =
+                typeof payload.id === "string" && payload.id.trim()
+                    ? payload.id.trim()
+                    : `project-${index + 1}`;
+            return {
+                id,
+                name:
+                    typeof payload.name === "string" && payload.name.trim()
+                        ? payload.name.trim()
+                        : `Untitled Project ${index + 1}`,
+                summary:
+                    typeof payload.summary === "string"
+                        ? payload.summary
+                        : "",
+                media: normalizeMedia(payload.media),
+                createdAt: payload.createdAt || "",
+                updatedAt: payload.updatedAt || ""
+            };
+        });
+    }
+
+    function normalizeMedia(mediaSource) {
+        const list = Array.isArray(mediaSource) ? mediaSource : [];
+        return list
+            .map((item, index) => {
+                const payload = {
+                    ...(typeof item === "object" && item ? item : {})
+                };
+                const type =
+                    payload.type === "file" || payload.type === "image"
+                        ? payload.type
+                        : "image";
+                const url = typeof payload.url === "string" ? payload.url.trim() : "";
+                if (!url) return null;
+                return {
+                    id:
+                        typeof payload.id === "string" && payload.id.trim()
+                            ? payload.id.trim()
+                            : `media-${index + 1}`,
+                    type,
+                    url,
+                    label:
+                        typeof payload.label === "string" && payload.label.trim()
+                            ? payload.label.trim()
+                            : ""
+                };
+            })
+            .filter(Boolean);
     }
 
     function getResumeDocRef() {
@@ -373,7 +450,8 @@
                 imageUrl:
                     typeof skill.imageUrl === "string" && skill.imageUrl.trim()
                         ? skill.imageUrl.trim()
-                        : ""
+                        : "",
+                projects: serializeProjects(skill.projects, index)
             };
             if (visual) {
                 base.visual = visual;
@@ -385,6 +463,65 @@
             profile: sanitizedProfile,
             skills: sanitizedSkills
         };
+    }
+
+    function serializeProjects(projectSource, skillIndex = 0) {
+        const list = Array.isArray(projectSource) ? projectSource : [];
+        return list.map((project, index) => {
+            const payload = {
+                ...(typeof project === "object" && project ? project : {})
+            };
+            const id =
+                typeof payload.id === "string" && payload.id.trim()
+                    ? payload.id.trim()
+                    : `project-${skillIndex + 1}-${index + 1}`;
+            return {
+                id,
+                name:
+                    typeof payload.name === "string" && payload.name.trim()
+                        ? payload.name.trim()
+                        : `Untitled Project ${index + 1}`,
+                summary: typeof payload.summary === "string" ? payload.summary : "",
+                media: serializeMedia(payload.media),
+                createdAt:
+                    typeof payload.createdAt === "string" && payload.createdAt.trim()
+                        ? payload.createdAt.trim()
+                        : "",
+                updatedAt:
+                    typeof payload.updatedAt === "string" && payload.updatedAt.trim()
+                        ? payload.updatedAt.trim()
+                        : new Date().toISOString()
+            };
+        });
+    }
+
+    function serializeMedia(mediaSource) {
+        const list = Array.isArray(mediaSource) ? mediaSource : [];
+        return list
+            .map((item, index) => {
+                const payload = {
+                    ...(typeof item === "object" && item ? item : {})
+                };
+                const url = typeof payload.url === "string" ? payload.url.trim() : "";
+                if (!url) return null;
+                const type =
+                    payload.type === "file" || payload.type === "image"
+                        ? payload.type
+                        : "image";
+                return {
+                    id:
+                        typeof payload.id === "string" && payload.id.trim()
+                            ? payload.id.trim()
+                            : `media-${index + 1}`,
+                    type,
+                    url,
+                    label:
+                        typeof payload.label === "string" && payload.label.trim()
+                            ? payload.label.trim()
+                            : ""
+                };
+            })
+            .filter(Boolean);
     }
 
     function renderProfile() {
@@ -429,12 +566,12 @@
     function renderCardActions(id) {
         return `
             <div class="card-actions">
-                <button type="button" data-action="edit" data-id="${id}">編輯</button>
-                <button type="button" data-action="delete" data-id="${id}">刪除此區塊</button>
+                <button type="button" data-action="projects" data-id="${id}">Manage Projects</button>
+                <button type="button" data-action="edit" data-id="${id}">Edit</button>
+                <button type="button" data-action="delete" data-id="${id}">Delete</button>
             </div>
         `;
     }
-
     function syncAdminUI() {
         if (!adminBar) return;
         if (adminBar) {
@@ -562,35 +699,405 @@
         closeDialog(profileModal);
     });
 
+    closeProjectManagerBtn?.addEventListener("click", () => {
+        activeSkillId = null;
+        closeDialog(projectManagerModal);
+    });
+
+    addProjectBtn?.addEventListener("click", () => {
+        if (!activeSkillId) return;
+        openProjectEditor();
+    });
+
+    cancelProjectBtn?.addEventListener("click", () => {
+        editingProjectId = null;
+        closeDialog(projectEditorModal);
+    });
+
+    addMediaItemBtn?.addEventListener("click", () => {
+        addMediaRow();
+    });
+
+    projectMediaList?.addEventListener("click", (event) => {
+        const removeBtn = event.target instanceof HTMLElement ? event.target.closest(".media-remove") : null;
+        if (!removeBtn) return;
+        const item = removeBtn.closest(".media-item");
+        item?.remove();
+    });
+
+    projectListEl?.addEventListener("click", (event) => {
+        const button = event.target instanceof HTMLElement ? event.target.closest("button[data-project-action]") : null;
+        if (!button) return;
+        const skill = getSkillById(activeSkillId);
+        if (!skill) return;
+
+        const projectId = button.dataset.projectId;
+        if (!projectId) return;
+
+        const action = button.dataset.projectAction;
+        if (action === "edit") {
+            const projectToEdit = skill.projects.find((project) => project.id === projectId);
+            if (!projectToEdit) return;
+            openProjectEditor(projectToEdit);
+        }
+
+        if (action === "delete") {
+            if (!window.confirm("Are you sure you want to delete this project?")) return;
+            skill.projects = skill.projects.filter((project) => project.id !== projectId);
+            persistData();
+            renderProjectManager();
+            if (skillDetailModal?.open) {
+                renderSkillDetail(skill);
+            }
+        }
+    });
+
+    projectForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!activeSkillId) return;
+
+        const skill = getSkillById(activeSkillId);
+        if (!skill) return;
+
+        const name = projectNameInput.value.trim();
+        const summary = projectSummaryInput.value.trim();
+        if (!name) {
+            projectNameInput.focus();
+            return;
+        }
+
+        const media = collectMediaItems();
+        const now = new Date().toISOString();
+
+        if (!Array.isArray(skill.projects)) {
+            skill.projects = [];
+        }
+
+        if (editingProjectId) {
+            const projectIndex = skill.projects.findIndex((project) => project.id === editingProjectId);
+            if (projectIndex > -1) {
+                skill.projects[projectIndex] = {
+                    ...skill.projects[projectIndex],
+                    name,
+                    summary,
+                    media,
+                    updatedAt: now
+                };
+            }
+        } else {
+            skill.projects.push({
+                id: generateId("project"),
+                name,
+                summary,
+                media,
+                createdAt: now,
+                updatedAt: now
+            });
+        }
+
+        persistData();
+        renderProjectManager();
+        if (skillDetailModal?.open) {
+            renderSkillDetail(skill);
+        }
+        closeDialog(projectEditorModal);
+        editingProjectId = null;
+    });
+
+    closeSkillDetailBtn?.addEventListener("click", () => {
+        closeDialog(skillDetailModal);
+    });
+
     skillGrid?.addEventListener("click", (event) => {
         const target = event.target;
-        if (!(target instanceof HTMLElement) || !isAdmin) return;
+        if (!(target instanceof HTMLElement)) return;
 
         const action = target.dataset.action;
         const id = target.dataset.id;
 
-        if (action === "delete" && id) {
-            if (!window.confirm("您確定要刪除此區塊嗎？")) return;
-            skills = skills.filter((skill) => skill.id !== id);
-            persistData();
-            renderSkills();
+        if (action && isAdmin) {
+            if (action === "delete" && id) {
+                if (!window.confirm("Are you sure you want to delete this skill?")) return;
+                skills = skills.filter((skill) => skill.id !== id);
+                persistData();
+                renderSkills();
+                return;
+            }
+
+            if (action === "edit" && id) {
+                const skillToEdit = getSkillById(id);
+                if (!skillToEdit) return;
+                fieldTitle.value = skillToEdit.title;
+                fieldDescription.value = skillToEdit.description;
+                fieldImageUrl.value = skillToEdit.imageUrl || "";
+                panelForm.dataset.editingId = id;
+                openDialog(panelModal);
+                return;
+            }
+
+            if (action === "projects" && id) {
+                openProjectManager(id);
+                return;
+            }
         }
 
-        if (action === "edit" && id) {
-            const skillToEdit = skills.find((skill) => skill.id === id);
-            if (!skillToEdit) return;
+        if (target.closest(".card-actions")) return;
 
-            // Populate the modal for editing
-            fieldTitle.value = skillToEdit.title;
-            fieldDescription.value = skillToEdit.description;
-            fieldImageUrl.value = skillToEdit.imageUrl || "";
-
-            // Set identifier for edit mode
-            panelForm.dataset.editingId = id;
-
-            openDialog(panelModal);
-        }
+        const card = target.closest(".skill-card");
+        if (!card) return;
+        const skillId = card.dataset.id;
+        const skill = getSkillById(skillId);
+        if (!skill) return;
+        openSkillDetail(skill);
     });
+
+    function getSkillById(id) {
+        if (!id) return null;
+        return skills.find((skill) => skill.id === id) ?? null;
+    }
+
+    function openProjectManager(skillId) {
+        const skill = getSkillById(skillId);
+        if (!skill) return;
+        activeSkillId = skill.id;
+        editingProjectId = null;
+        renderProjectManager();
+        openDialog(projectManagerModal);
+    }
+
+    function renderProjectManager() {
+        if (!projectListEl) return;
+        const skill = getSkillById(activeSkillId);
+        if (!skill) return;
+        projectManagerTitle.textContent = `${skill.title} - Projects`;
+
+        if (!skill.projects || !skill.projects.length) {
+            projectListEl.innerHTML = `<div class="project-empty">No projects yet. Click "Add Project" to begin.</div>`;
+            return;
+        }
+
+        const sorted = [...skill.projects].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+        projectListEl.innerHTML = sorted
+            .map((project) => {
+                const plain = truncate(stripMarkdown(project.summary || ""), 120);
+                return `
+                    <article class="project-item" data-project-id="${project.id}">
+                        <div class="project-item__header">
+                            <div class="project-item__name">${escapeHTML(project.name)}</div>
+                            <div class="project-item__actions">
+                                <button type="button" class="admin-btn" data-project-action="edit" data-project-id="${project.id}">Edit</button>
+                                <button type="button" class="admin-btn admin-btn--quiet" data-project-action="delete" data-project-id="${project.id}">Delete</button>
+                            </div>
+                        </div>
+                        <div class="project-item__intro">${escapeHTML(plain)}</div>
+                        <div class="project-item__meta">Media: ${project.media.length}</div>
+                    </article>
+                `;
+            })
+            .join("");
+    }
+
+    function openProjectEditor(project) {
+        if (!projectForm) return;
+        projectForm.reset();
+        editingProjectId = project?.id ?? null;
+        projectEditorTitle.textContent = editingProjectId ? "Edit Project" : "Add Project";
+        projectNameInput.value = project?.name ?? "";
+        projectSummaryInput.value = project?.summary ?? "";
+        projectMediaList.innerHTML = "";
+        const mediaItems = project?.media?.length ? project.media : [];
+        if (mediaItems.length) {
+            mediaItems.forEach((item) => addMediaRow(item));
+        } else {
+            addMediaRow();
+        }
+        openDialog(projectEditorModal);
+    }
+
+    function addMediaRow(media) {
+        if (!projectMediaList) return;
+        const row = document.createElement("div");
+        row.className = "media-item";
+        row.dataset.mediaId = media?.id ?? generateId("media");
+
+        const typeSelect = document.createElement("select");
+        typeSelect.innerHTML = `
+            <option value="image">Image</option>
+            <option value="file">File</option>
+        `;
+        typeSelect.value = media?.type === "file" ? "file" : "image";
+
+        const urlInput = document.createElement("input");
+        urlInput.type = "text";
+        urlInput.placeholder = "https://example.com/resource";
+        urlInput.value = media?.url ?? "";
+
+        const labelInput = document.createElement("input");
+        labelInput.type = "text";
+        labelInput.placeholder = "Optional description";
+        labelInput.value = media?.label ?? "";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "media-remove";
+        removeBtn.setAttribute("aria-label", "Remove media");
+        removeBtn.textContent = "×";
+
+        row.append(typeSelect, urlInput, labelInput, removeBtn);
+        projectMediaList.appendChild(row);
+        return row;
+    }
+
+    function collectMediaItems() {
+        if (!projectMediaList) return [];
+        const rows = Array.from(projectMediaList.querySelectorAll(".media-item"));
+        return rows
+            .map((row) => {
+                const select = row.querySelector("select");
+                const [urlInput, labelInput] = row.querySelectorAll("input");
+                const url = urlInput?.value.trim();
+                if (!url) return null;
+                return {
+                    id: row.dataset.mediaId || generateId("media"),
+                    type: select?.value === "file" ? "file" : "image",
+                    url,
+                    label: labelInput?.value.trim() ?? ""
+                };
+            })
+            .filter(Boolean);
+    }
+
+    function openSkillDetail(skill) {
+        renderSkillDetail(skill);
+        openDialog(skillDetailModal);
+    }
+
+    function renderSkillDetail(skill) {
+        if (!detailSkillTitle || !detailProjectContainer || !detailSkillIntro) return;
+        detailSkillTitle.textContent = skill.title;
+        detailSkillIntro.innerHTML = `<p>${escapeHTML(skill.description || "")}</p>`;
+
+        if (!skill.projects || !skill.projects.length) {
+            detailProjectContainer.innerHTML = `<div class="project-empty">No projects have been added for this skill yet.</div>`;
+            return;
+        }
+
+        detailProjectContainer.innerHTML = skill.projects
+            .map((project) => {
+                const mediaHtml = project.media.length
+                    ? `<div class="project-media-gallery">
+                        ${project.media
+                            .map((item) => renderProjectMedia(item))
+                            .join("")}
+                       </div>`
+                    : "";
+                const markdown = renderMarkdownToHTML(project.summary || "");
+                return `
+                    <article class="detail-project">
+                        <h3>${escapeHTML(project.name)}</h3>
+                        ${mediaHtml}
+                        <div class="markdown-body">${markdown}</div>
+                    </article>
+                `;
+            })
+            .join("");
+    }
+
+    function renderProjectMedia(media) {
+        const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
+        if (media.type === "file") {
+            return `
+                <div class="project-media-card">
+                    ${label}
+                    <a href="${escapeAttribute(media.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(media.url)}</a>
+                </div>
+            `;
+        }
+        return `
+            <div class="project-media-card">
+                <img src="${escapeAttribute(media.url)}" alt="${escapeHTML(media.label || media.url)}">
+                ${label}
+            </div>
+        `;
+    }
+
+    function renderMarkdownToHTML(markdown) {
+        const safe = escapeHTML(markdown ?? "");
+        if (!safe.trim()) return "<p>No project description provided.</p>";
+
+        const lines = safe.split(/\r?\n/);
+        let html = "";
+        let inList = false;
+
+        const closeList = () => {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+        };
+
+        lines.forEach((line) => {
+            if (/^\s*-\s+/.test(line)) {
+                if (!inList) {
+                    html += "<ul>";
+                    inList = true;
+                }
+                const content = line.replace(/^\s*-\s+/, "");
+                html += `<li>${applyInlineMarkdown(content)}</li>`;
+                return;
+            }
+
+            closeList();
+
+            if (/^###\s+/.test(line)) {
+                html += `<h4>${applyInlineMarkdown(line.replace(/^###\s+/, ""))}</h4>`;
+            } else if (/^##\s+/.test(line)) {
+                html += `<h3>${applyInlineMarkdown(line.replace(/^##\s+/, ""))}</h3>`;
+            } else if (/^#\s+/.test(line)) {
+                html += `<h2>${applyInlineMarkdown(line.replace(/^#\s+/, ""))}</h2>`;
+            } else if (line.trim() === "") {
+                html += "<p></p>";
+            } else {
+                html += `<p>${applyInlineMarkdown(line)}</p>`;
+            }
+        });
+
+        closeList();
+        return html;
+    }
+
+    function applyInlineMarkdown(text) {
+        return text
+            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.+?)\*/g, "<em>$1</em>")
+            .replace(/`(.+?)`/g, "<code>$1</code>")
+            .replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    }
+
+    function stripMarkdown(text) {
+        return (text || "")
+            .replace(/```[\s\S]*?```/g, "")
+            .replace(/`([^`]+)`/g, "$1")
+            .replace(/\*\*(.+?)\*\*/g, "$1")
+            .replace(/\*(.+?)\*/g, "$1")
+            .replace(/\[(.+?)\]\((.+?)\)/g, "$1")
+            .replace(/^#{1,6}\s*/gm, "")
+            .replace(/^\s*-\s+/gm, "")
+            .replace(/\r?\n/g, " ")
+            .trim();
+    }
+
+    function truncate(text, length = 120) {
+        if (!text) return "";
+        return text.length > length ? `${text.slice(0, length)}…` : text;
+    }
+
+    function generateId(prefix) {
+        if (typeof crypto?.randomUUID === "function") {
+            return `${prefix}-${crypto.randomUUID()}`;
+        }
+        return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    }
 
     function escapeHTML(value) {
         return String(value)
@@ -599,5 +1106,9 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+        return escapeHTML(value);
     }
 })();

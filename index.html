@@ -182,5 +182,84 @@
         </div>
       </form>
     </dialog>
+
+    <dialog class="modal" id="projectManagerModal">
+      <div class="modal__content modal__content--xl" id="projectManagerContent">
+        <div class="modal__header">
+          <h2 id="projectManagerTitle">管理專案</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeProjectManager"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div id="projectList" class="project-list"></div>
+        <div class="modal__actions modal__actions--split">
+          <button type="button" id="addProject" class="primary">
+            新增專案
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="projectEditorModal">
+      <form method="dialog" class="modal__content" id="projectForm">
+        <div class="modal__header">
+          <h2 id="projectEditorTitle">專案內容</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="cancelProject"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <label class="field">
+          <span>專案名稱</span>
+          <input type="text" id="projectNameInput" required />
+        </label>
+        <label class="field">
+          <span>專案說明 (支援 Markdown)</span>
+          <textarea id="projectSummaryInput" rows="6"></textarea>
+        </label>
+        <div class="field">
+          <span>媒體項目</span>
+          <div class="media-hint">可加入圖片或檔案連結並提供說明文字。</div>
+          <div id="projectMediaList" class="media-list"></div>
+          <button
+            type="button"
+            id="addMediaItem"
+            class="admin-btn admin-btn--ghost"
+          >
+            新增媒體
+          </button>
+        </div>
+        <div class="modal__actions">
+          <button type="submit" class="primary">儲存專案</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="skillDetailModal">
+      <div class="modal__content modal__content--xl" id="skillDetailContent">
+        <div class="modal__header">
+          <h2 id="detailSkillTitle"></h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeSkillDetail"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div id="detailSkillIntro" class="detail-skill-intro"></div>
+        <div id="detailProjectContainer" class="detail-projects"></div>
+      </div>
+    </dialog>
   </body>
 </html>
