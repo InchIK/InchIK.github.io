@@ -256,7 +256,6 @@ body {
         display: flex;
         flex-direction: column;
         gap: 0.9rem;
-        overflow: auto;
     }
 .card-body h3 {
   margin: 0;
@@ -283,6 +282,10 @@ body {
   font-size: 0.93rem;
   text-align: justify;
   line-height: 1.7;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .card-actions {
