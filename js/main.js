@@ -808,6 +808,35 @@
         closeDialog(skillDetailModal);
     });
 
+    detailProjectContainer?.addEventListener("click", (event) => {
+        if (!isAdmin) return;
+        const button = event.target instanceof HTMLElement ? event.target.closest("button[data-detail-action]") : null;
+        if (!button) return;
+
+        const action = button.dataset.detailAction;
+        const skillId = button.dataset.skillId;
+        const projectId = button.dataset.projectId;
+
+        if (!skillId || !projectId) return;
+
+        const skill = getSkillById(skillId);
+        if (!skill) return;
+
+        if (action === "edit") {
+            const projectToEdit = skill.projects.find((project) => project.id === projectId);
+            if (!projectToEdit) return;
+            activeSkillId = skillId;
+            openProjectEditor(projectToEdit);
+        }
+
+        if (action === "delete") {
+            if (!window.confirm("確定要刪除此專案嗎？")) return;
+            skill.projects = skill.projects.filter((project) => project.id !== projectId);
+            persistData();
+            renderSkillDetail(skill);
+        }
+    });
+
     skillGrid?.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
@@ -992,9 +1021,18 @@
                        </div>`
                     : "";
                 const markdown = renderMarkdownToHTML(project.summary || "");
+                const actionsHtml = isAdmin
+                    ? `<div class="detail-project__actions">
+                        <button type="button" class="detail-project__btn" data-detail-action="edit" data-skill-id="${skill.id}" data-project-id="${project.id}">編輯</button>
+                        <button type="button" class="detail-project__btn detail-project__btn--delete" data-detail-action="delete" data-skill-id="${skill.id}" data-project-id="${project.id}">刪除</button>
+                       </div>`
+                    : "";
                 return `
-                    <article class="detail-project">
-                        <h3>${escapeHTML(project.name)}</h3>
+                    <article class="detail-project" data-project-id="${project.id}">
+                        <div class="detail-project__header">
+                            <h3>${escapeHTML(project.name)}</h3>
+                            ${actionsHtml}
+                        </div>
                         ${mediaHtml}
                         <div class="markdown-body">${markdown}</div>
                     </article>
