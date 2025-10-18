@@ -436,10 +436,12 @@ body:has(.admin-bar:not([hidden])) {
 
 /* 關於我標題專屬圖標 */
 .section__title-highlight--about::before {
-  content: "🏠";
-  background: none;
+  width: 1.5em;
+  height: 1.5em;
+  background: linear-gradient(to right, #CC8800, #FFD700);
+  -webkit-mask: url("../assets/photos/about.png") center/contain no-repeat;
+  mask: url("../assets/photos/about.png") center/contain no-repeat;
   filter: none;
-  font-size: 1.2em;
 }
 
 /* 技能列表標題專屬圖標 - 左深右淺漸層 */
