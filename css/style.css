@@ -211,6 +211,171 @@ body:has(.admin-bar:not([hidden])) {
   margin-bottom: 1.5rem;
 }
 
+/* ===== 關於我區塊 ===== */
+.about-me-section {
+  margin-bottom: 3rem;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.8rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.about-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.about-item__label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: rgba(28, 36, 49, 0.9);
+}
+
+.about-item__value {
+  font-size: 0.95rem;
+  color: rgba(28, 36, 49, 0.75);
+  margin-left: 1.5rem;
+}
+
+.about-item__content {
+  margin-left: 0.5rem;
+}
+
+/* 經歷項目 */
+.experience-entry {
+  margin-left: 1rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed rgba(28, 36, 49, 0.1);
+}
+
+.experience-entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.experience-header {
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  color: rgba(28, 36, 49, 0.85);
+  font-size: 0.95rem;
+}
+
+.experience-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.experience-skill-tag {
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(28, 36, 49, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.experience-skill-tag:hover {
+  transform: translateY(-1px);
+}
+
+/* 學歷標籤 */
+.education-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-left: 0.5rem;
+}
+
+.education-tag {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(28, 36, 49, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.education-tag:hover {
+  transform: translateY(-1px);
+}
+
+/* 證書網格 */
+.certificate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-left: 0.5rem;
+}
+
+.certificate-item {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.certificate-item:hover {
+  transform: translateY(-2px);
+}
+
+.certificate-thumbnail {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(28, 36, 49, 0.1);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.certificate-thumbnail:hover {
+  border-color: rgba(12, 124, 213, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.certificate-title {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: rgba(28, 36, 49, 0.75);
+  font-weight: 500;
+}
+
+/* 網站列表 */
+.website-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.website-item {
+  font-size: 0.95rem;
+  color: rgba(28, 36, 49, 0.75);
+}
+
+.website-item a {
+  color: #0c7cd5;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.website-item a:hover {
+  text-decoration: underline;
+  color: #0f63b8;
+}
+
 /* ===== 技能標籤容器 ===== */
 .skill-tags-container {
   display: flex;
@@ -267,6 +432,14 @@ body:has(.admin-bar:not([hidden])) {
   flex-shrink: 0;
   animation: iconFloat 3s ease-in-out infinite;
   filter: none;
+}
+
+/* 關於我標題專屬圖標 */
+.section__title-highlight--about::before {
+  content: "🏠";
+  background: none;
+  filter: none;
+  font-size: 1.2em;
 }
 
 /* 技能列表標題專屬圖標 - 左深右淺漸層 */
@@ -511,6 +684,83 @@ body:has(.admin-bar:not([hidden])) {
   width: min(90vw, 600px) !important;
   padding: 2rem !important;
   max-width: 600px !important;
+}
+
+/* 關於我管理 Modal */
+.modal__content--about-me {
+  width: min(90vw, 700px) !important;
+  padding: 2rem !important;
+  max-width: 700px !important;
+}
+
+.about-me-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 經歷管理列表 */
+.experience-manager-list,
+.education-manager-list,
+.certificate-manager-list,
+.website-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.manager-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(28, 36, 49, 0.1);
+  border-radius: 8px;
+}
+
+.manager-item__fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.manager-item input,
+.manager-item textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid rgba(28, 36, 49, 0.15);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.manager-item textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.manager-item__remove {
+  border: none;
+  background: rgba(217, 83, 79, 0.1);
+  color: #d9534f;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.manager-item__remove:hover {
+  background: #d9534f;
+  color: #fff;
 }
 
 .skill-tags-manager {

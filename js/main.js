@@ -160,6 +160,25 @@
     const newSkillTagInput = document.getElementById("newSkillTagInput");
     const addSkillTagBtn = document.getElementById("addSkillTag");
 
+    const editAboutMeBtn = document.getElementById("editAboutMe");
+    const aboutMeModal = document.getElementById("aboutMeModal");
+    const closeAboutMeBtn = document.getElementById("closeAboutMe");
+    const saveAboutMeBtn = document.getElementById("saveAboutMe");
+    const aboutLocationEl = document.getElementById("aboutLocation");
+    const experienceListEl = document.getElementById("experienceList");
+    const educationListEl = document.getElementById("educationList");
+    const certificateListEl = document.getElementById("certificateList");
+    const websiteListEl = document.getElementById("websiteList");
+    const aboutLocationInput = document.getElementById("aboutLocationInput");
+    const experienceManagerList = document.getElementById("experienceManagerList");
+    const educationManagerList = document.getElementById("educationManagerList");
+    const certificateManagerList = document.getElementById("certificateManagerList");
+    const websiteManagerList = document.getElementById("websiteManagerList");
+    const addExperienceBtn = document.getElementById("addExperience");
+    const addEducationBtn = document.getElementById("addEducation");
+    const addCertificateBtn = document.getElementById("addCertificate");
+    const addWebsiteBtn = document.getElementById("addWebsite");
+
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
     const profileSummaryEl = document.getElementById("profileSummary");
@@ -185,6 +204,13 @@
     let profile = { ...DEFAULT_PROFILE };
     let skills = DEFAULT_SKILLS.map((skill) => ({ ...skill }));
     let skillTags = [];
+    let aboutMe = {
+        location: "",
+        experiences: [],
+        education: [],
+        certificates: [],
+        websites: []
+    };
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
@@ -278,6 +304,7 @@
         };
         skills = normalizeSkills(data?.skills);
         skillTags = Array.isArray(data?.skillTags) ? data.skillTags : [];
+        aboutMe = normalizeAboutMe(data?.aboutMe);
     }
 
     function normalizeData(source) {
@@ -285,7 +312,14 @@
             return {
                 profile: { ...DEFAULT_PROFILE },
                 skills: DEFAULT_SKILLS.map((skill) => ({ ...skill })),
-                skillTags: []
+                skillTags: [],
+                aboutMe: {
+                    location: "",
+                    experiences: [],
+                    education: [],
+                    certificates: [],
+                    websites: []
+                }
             };
         }
 
@@ -295,7 +329,46 @@
                 ...(typeof source.profile === "object" && source.profile ? source.profile : {})
             },
             skills: normalizeSkills(source.skills),
-            skillTags: Array.isArray(source.skillTags) ? source.skillTags : []
+            skillTags: Array.isArray(source.skillTags) ? source.skillTags : [],
+            aboutMe: normalizeAboutMe(source.aboutMe)
+        };
+    }
+
+    function normalizeAboutMe(source) {
+        if (!source || typeof source !== "object") {
+            return {
+                location: "",
+                experiences: [],
+                education: [],
+                certificates: [],
+                websites: []
+            };
+        }
+
+        return {
+            location: typeof source.location === "string" ? source.location : "",
+            experiences: Array.isArray(source.experiences) ? source.experiences.map((exp, i) => ({
+                id: exp.id || `exp-${i + 1}`,
+                company: exp.company || "",
+                years: exp.years || "",
+                skills: Array.isArray(exp.skills) ? exp.skills : []
+            })) : [],
+            education: Array.isArray(source.education) ? source.education.map((edu, i) => ({
+                id: edu.id || `edu-${i + 1}`,
+                school: edu.school || "",
+                degree: edu.degree || ""
+            })) : [],
+            certificates: Array.isArray(source.certificates) ? source.certificates.map((cert, i) => ({
+                id: cert.id || `cert-${i + 1}`,
+                title: cert.title || "",
+                imageUrl: cert.imageUrl || "",
+                description: cert.description || ""
+            })) : [],
+            websites: Array.isArray(source.websites) ? source.websites.map((web, i) => ({
+                id: web.id || `web-${i + 1}`,
+                label: web.label || "",
+                url: web.url || ""
+            })) : []
         };
     }
 
@@ -413,7 +486,8 @@
         const snapshot = override ?? {
             profile,
             skills,
-            skillTags
+            skillTags,
+            aboutMe
         };
 
         if (!options.skipSync) {
@@ -475,10 +549,19 @@
             return base;
         });
 
+        const sanitizedAboutMe = {
+            location: payload.aboutMe?.location || "",
+            experiences: Array.isArray(payload.aboutMe?.experiences) ? payload.aboutMe.experiences : [],
+            education: Array.isArray(payload.aboutMe?.education) ? payload.aboutMe.education : [],
+            certificates: Array.isArray(payload.aboutMe?.certificates) ? payload.aboutMe.certificates : [],
+            websites: Array.isArray(payload.aboutMe?.websites) ? payload.aboutMe.websites : []
+        };
+
         return {
             profile: sanitizedProfile,
             skills: sanitizedSkills,
-            skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : []
+            skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : [],
+            aboutMe: sanitizedAboutMe
         };
     }
 
@@ -601,6 +684,130 @@
         });
     }
 
+    function renderAboutMe() {
+        renderLocation();
+        renderExperiences();
+        renderEducation();
+        renderCertificates();
+        renderWebsites();
+    }
+
+    function renderLocation() {
+        if (!aboutLocationEl) return;
+        aboutLocationEl.textContent = aboutMe.location || "未設定";
+    }
+
+    function renderExperiences() {
+        if (!experienceListEl) return;
+        experienceListEl.innerHTML = "";
+
+        if (!aboutMe.experiences || aboutMe.experiences.length === 0) {
+            experienceListEl.innerHTML = '<div style="margin-left: 1rem; color: rgba(28, 36, 49, 0.5);">暫無經歷</div>';
+            return;
+        }
+
+        aboutMe.experiences.forEach((exp) => {
+            const div = document.createElement("div");
+            div.className = "experience-entry";
+
+            const header = document.createElement("div");
+            header.className = "experience-header";
+            header.textContent = `• ${exp.company} | ${exp.years}`;
+
+            const skillsDiv = document.createElement("div");
+            skillsDiv.className = "experience-skills";
+
+            exp.skills.forEach((skill) => {
+                const skillTag = document.createElement("span");
+                skillTag.className = "experience-skill-tag";
+                skillTag.textContent = skill;
+                const hue = Math.floor(Math.random() * 360);
+                skillTag.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
+                skillsDiv.appendChild(skillTag);
+            });
+
+            div.appendChild(header);
+            if (exp.skills && exp.skills.length > 0) {
+                div.appendChild(skillsDiv);
+            }
+            experienceListEl.appendChild(div);
+        });
+    }
+
+    function renderEducation() {
+        if (!educationListEl) return;
+        educationListEl.innerHTML = "";
+
+        if (!aboutMe.education || aboutMe.education.length === 0) {
+            educationListEl.innerHTML = '<div style="color: rgba(28, 36, 49, 0.5);">暫無學歷</div>';
+            return;
+        }
+
+        aboutMe.education.forEach((edu) => {
+            const span = document.createElement("span");
+            span.className = "education-tag";
+            span.textContent = `${edu.school} ${edu.degree}`;
+            const hue = Math.floor(Math.random() * 360);
+            span.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
+            educationListEl.appendChild(span);
+        });
+    }
+
+    function renderCertificates() {
+        if (!certificateListEl) return;
+        certificateListEl.innerHTML = "";
+
+        if (!aboutMe.certificates || aboutMe.certificates.length === 0) {
+            certificateListEl.innerHTML = '<div style="color: rgba(28, 36, 49, 0.5);">暫無證書</div>';
+            return;
+        }
+
+        aboutMe.certificates.forEach((cert) => {
+            const div = document.createElement("div");
+            div.className = "certificate-item";
+            div.dataset.certId = cert.id;
+
+            const img = document.createElement("img");
+            img.className = "certificate-thumbnail";
+            img.src = cert.imageUrl || "assets/photos/default.jpg";
+            img.alt = cert.title;
+
+            const title = document.createElement("div");
+            title.className = "certificate-title";
+            title.textContent = cert.title;
+
+            div.appendChild(img);
+            div.appendChild(title);
+            certificateListEl.appendChild(div);
+
+            // 點擊預覽
+            div.addEventListener("click", () => {
+                if (imagePreviewImg && imagePreviewTitle && imagePreviewModal) {
+                    imagePreviewImg.src = cert.imageUrl || "assets/photos/default.jpg";
+                    imagePreviewTitle.textContent = cert.description || cert.title;
+                    openDialog(imagePreviewModal);
+                }
+            });
+        });
+    }
+
+    function renderWebsites() {
+        if (!websiteListEl) return;
+        websiteListEl.innerHTML = "";
+
+        if (!aboutMe.websites || aboutMe.websites.length === 0) {
+            websiteListEl.innerHTML = '<div style="color: rgba(28, 36, 49, 0.5);">暫無網站連結</div>';
+            return;
+        }
+
+        aboutMe.websites.forEach((web) => {
+            const div = document.createElement("div");
+            div.className = "website-item";
+            div.innerHTML = `• ${escapeHTML(web.label)}: <a href="${escapeAttribute(web.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(web.url)}</a>`;
+            websiteListEl.appendChild(div);
+        });
+    }
+
     function renderCardActions(id) {
         return `
             <div class="card-actions">
@@ -631,7 +838,9 @@
         if (openLoginBtn) openLoginBtn.hidden = isAdmin;
         if (editProfileBtn) editProfileBtn.hidden = !isAdmin;
         if (editSkillTagsBtn) editSkillTagsBtn.hidden = !isAdmin;
+        if (editAboutMeBtn) editAboutMeBtn.hidden = !isAdmin;
         renderProfile();
+        renderAboutMe();
         renderSkillTags();
         renderSkills();
     }
@@ -1303,5 +1512,198 @@
 
     function escapeAttribute(value) {
         return escapeHTML(value);
+    }
+
+    // ===== 關於我管理功能 =====
+    editAboutMeBtn?.addEventListener("click", () => {
+        if (!isAdmin) return;
+        // 填入現有資料
+        if (aboutLocationInput) aboutLocationInput.value = aboutMe.location || "";
+        renderAboutMeManager();
+        openDialog(aboutMeModal);
+    });
+
+    closeAboutMeBtn?.addEventListener("click", () => {
+        closeDialog(aboutMeModal);
+    });
+
+    saveAboutMeBtn?.addEventListener("click", () => {
+        // 收集資料
+        aboutMe.location = aboutLocationInput?.value.trim() || "";
+        aboutMe.experiences = collectExperiences();
+        aboutMe.education = collectEducation();
+        aboutMe.certificates = collectCertificates();
+        aboutMe.websites = collectWebsites();
+
+        persistData();
+        renderAboutMe();
+        closeDialog(aboutMeModal);
+    });
+
+    function renderAboutMeManager() {
+        renderExperienceManager();
+        renderEducationManager();
+        renderCertificateManager();
+        renderWebsiteManager();
+    }
+
+    // 經歷管理
+    addExperienceBtn?.addEventListener("click", () => {
+        addExperienceItem();
+    });
+
+    function renderExperienceManager() {
+        if (!experienceManagerList) return;
+        experienceManagerList.innerHTML = "";
+        aboutMe.experiences.forEach((exp) => addExperienceItem(exp));
+    }
+
+    function addExperienceItem(data = null) {
+        if (!experienceManagerList) return;
+        const div = document.createElement("div");
+        div.className = "manager-item";
+        div.dataset.expId = data?.id || generateId("exp");
+
+        div.innerHTML = `
+            <div class="manager-item__fields">
+                <input type="text" placeholder="公司名稱" value="${escapeHTML(data?.company || '')}" data-field="company" />
+                <input type="text" placeholder="年資 (例: 3年)" value="${escapeHTML(data?.years || '')}" data-field="years" />
+                <input type="text" placeholder="技能 (逗號分隔)" value="${data?.skills ? data.skills.join(', ') : ''}" data-field="skills" />
+            </div>
+            <button type="button" class="manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
+        experienceManagerList.appendChild(div);
+    }
+
+    function collectExperiences() {
+        if (!experienceManagerList) return [];
+        const items = experienceManagerList.querySelectorAll(".manager-item");
+        return Array.from(items).map(item => ({
+            id: item.dataset.expId || generateId("exp"),
+            company: item.querySelector('[data-field="company"]')?.value.trim() || "",
+            years: item.querySelector('[data-field="years"]')?.value.trim() || "",
+            skills: item.querySelector('[data-field="skills"]')?.value.split(',').map(s => s.trim()).filter(Boolean) || []
+        })).filter(exp => exp.company);
+    }
+
+    // 學歷管理
+    addEducationBtn?.addEventListener("click", () => {
+        addEducationItem();
+    });
+
+    function renderEducationManager() {
+        if (!educationManagerList) return;
+        educationManagerList.innerHTML = "";
+        aboutMe.education.forEach((edu) => addEducationItem(edu));
+    }
+
+    function addEducationItem(data = null) {
+        if (!educationManagerList) return;
+        const div = document.createElement("div");
+        div.className = "manager-item";
+        div.dataset.eduId = data?.id || generateId("edu");
+
+        div.innerHTML = `
+            <div class="manager-item__fields">
+                <input type="text" placeholder="學校名稱" value="${escapeHTML(data?.school || '')}" data-field="school" />
+                <input type="text" placeholder="學位/科系" value="${escapeHTML(data?.degree || '')}" data-field="degree" />
+            </div>
+            <button type="button" class="manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
+        educationManagerList.appendChild(div);
+    }
+
+    function collectEducation() {
+        if (!educationManagerList) return [];
+        const items = educationManagerList.querySelectorAll(".manager-item");
+        return Array.from(items).map(item => ({
+            id: item.dataset.eduId || generateId("edu"),
+            school: item.querySelector('[data-field="school"]')?.value.trim() || "",
+            degree: item.querySelector('[data-field="degree"]')?.value.trim() || ""
+        })).filter(edu => edu.school);
+    }
+
+    // 證書管理
+    addCertificateBtn?.addEventListener("click", () => {
+        addCertificateItem();
+    });
+
+    function renderCertificateManager() {
+        if (!certificateManagerList) return;
+        certificateManagerList.innerHTML = "";
+        aboutMe.certificates.forEach((cert) => addCertificateItem(cert));
+    }
+
+    function addCertificateItem(data = null) {
+        if (!certificateManagerList) return;
+        const div = document.createElement("div");
+        div.className = "manager-item";
+        div.dataset.certId = data?.id || generateId("cert");
+
+        div.innerHTML = `
+            <div class="manager-item__fields">
+                <input type="text" placeholder="證書名稱" value="${escapeHTML(data?.title || '')}" data-field="title" />
+                <input type="text" placeholder="圖片網址" value="${escapeHTML(data?.imageUrl || '')}" data-field="imageUrl" />
+                <input type="text" placeholder="說明" value="${escapeHTML(data?.description || '')}" data-field="description" />
+            </div>
+            <button type="button" class="manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
+        certificateManagerList.appendChild(div);
+    }
+
+    function collectCertificates() {
+        if (!certificateManagerList) return [];
+        const items = certificateManagerList.querySelectorAll(".manager-item");
+        return Array.from(items).map(item => ({
+            id: item.dataset.certId || generateId("cert"),
+            title: item.querySelector('[data-field="title"]')?.value.trim() || "",
+            imageUrl: item.querySelector('[data-field="imageUrl"]')?.value.trim() || "",
+            description: item.querySelector('[data-field="description"]')?.value.trim() || ""
+        })).filter(cert => cert.title);
+    }
+
+    // 網站管理
+    addWebsiteBtn?.addEventListener("click", () => {
+        addWebsiteItem();
+    });
+
+    function renderWebsiteManager() {
+        if (!websiteManagerList) return;
+        websiteManagerList.innerHTML = "";
+        aboutMe.websites.forEach((web) => addWebsiteItem(web));
+    }
+
+    function addWebsiteItem(data = null) {
+        if (!websiteManagerList) return;
+        const div = document.createElement("div");
+        div.className = "manager-item";
+        div.dataset.webId = data?.id || generateId("web");
+
+        div.innerHTML = `
+            <div class="manager-item__fields">
+                <input type="text" placeholder="網站名稱 (例: GitHub)" value="${escapeHTML(data?.label || '')}" data-field="label" />
+                <input type="text" placeholder="網址" value="${escapeHTML(data?.url || '')}" data-field="url" />
+            </div>
+            <button type="button" class="manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
+        websiteManagerList.appendChild(div);
+    }
+
+    function collectWebsites() {
+        if (!websiteManagerList) return [];
+        const items = websiteManagerList.querySelectorAll(".manager-item");
+        return Array.from(items).map(item => ({
+            id: item.dataset.webId || generateId("web"),
+            label: item.querySelector('[data-field="label"]')?.value.trim() || "",
+            url: item.querySelector('[data-field="url"]')?.value.trim() || ""
+        })).filter(web => web.label && web.url);
     }
 })();

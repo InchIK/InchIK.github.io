@@ -98,6 +98,9 @@
         <button type="button" id="editProfile" class="admin-btn">
           編輯自我介紹
         </button>
+        <button type="button" id="editAboutMe" class="admin-btn">
+          編輯關於我
+        </button>
         <button type="button" id="editSkillTags" class="admin-btn">
           編輯技能標籤
         </button>
@@ -110,10 +113,49 @@
 
     <main class="content">
       <section class="section">
+        <!-- 關於我 -->
+        <h2 class="section__title">
+          <span class="section__title-highlight section__title-highlight--about">關於我</span>
+        </h2>
+        <div class="about-content">
+          <!-- 棲息地 -->
+          <div class="about-item">
+            <span class="about-item__label">📍 棲息地：</span>
+            <span id="aboutLocation" class="about-item__value"></span>
+          </div>
+
+          <!-- 經歷 -->
+          <div class="about-item">
+            <div class="about-item__label">💼 經歷：</div>
+            <div id="experienceList" class="about-item__content"></div>
+          </div>
+
+          <!-- 學歷 -->
+          <div class="about-item">
+            <div class="about-item__label">🎓 學歷：</div>
+            <div id="educationList" class="about-item__content education-tags"></div>
+          </div>
+
+          <!-- 專業證書 -->
+          <div class="about-item">
+            <div class="about-item__label">📜 專業證書：</div>
+            <div id="certificateList" class="about-item__content certificate-grid"></div>
+          </div>
+
+          <!-- 個人網站 -->
+          <div class="about-item">
+            <div class="about-item__label">🔗 個人相關網站：</div>
+            <div id="websiteList" class="about-item__content website-list"></div>
+          </div>
+        </div>
+
+        <!-- 技能列表 -->
         <h2 class="section__title">
           <span class="section__title-highlight section__title-highlight--skills">技能列表</span>
         </h2>
         <div id="skillTagsContainer" class="skill-tags-container"></div>
+
+        <!-- 專業領域項目 -->
         <h2 class="section__title">
           <span class="section__title-highlight">專業領域項目</span>
         </h2>
@@ -317,6 +359,68 @@
               新增標籤
             </button>
           </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="aboutMeModal">
+      <div class="modal__content modal__content--about-me">
+        <div class="modal__header">
+          <h2>編輯關於我</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeAboutMe"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div class="about-me-manager">
+          <!-- 棲息地 -->
+          <div class="field">
+            <span>📍 棲息地</span>
+            <input type="text" id="aboutLocationInput" placeholder="例如：台北市, 台灣" />
+          </div>
+
+          <!-- 經歷管理 -->
+          <div class="field">
+            <span>💼 經歷</span>
+            <div id="experienceManagerList" class="experience-manager-list"></div>
+            <button type="button" id="addExperience" class="admin-btn admin-btn--ghost">
+              新增經歷
+            </button>
+          </div>
+
+          <!-- 學歷管理 -->
+          <div class="field">
+            <span>🎓 學歷</span>
+            <div id="educationManagerList" class="education-manager-list"></div>
+            <button type="button" id="addEducation" class="admin-btn admin-btn--ghost">
+              新增學歷
+            </button>
+          </div>
+
+          <!-- 證書管理 -->
+          <div class="field">
+            <span>📜 專業證書</span>
+            <div id="certificateManagerList" class="certificate-manager-list"></div>
+            <button type="button" id="addCertificate" class="admin-btn admin-btn--ghost">
+              新增證書
+            </button>
+          </div>
+
+          <!-- 網站管理 -->
+          <div class="field">
+            <span>🔗 個人相關網站</span>
+            <div id="websiteManagerList" class="website-manager-list"></div>
+            <button type="button" id="addWebsite" class="admin-btn admin-btn--ghost">
+              新增網站
+            </button>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button type="button" id="saveAboutMe" class="primary">儲存</button>
         </div>
       </div>
     </dialog>
