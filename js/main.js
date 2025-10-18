@@ -148,6 +148,10 @@
     const detailSkillIntro = document.getElementById("detailSkillIntro");
     const detailProjectContainer = document.getElementById("detailProjectContainer");
     const closeSkillDetailBtn = document.getElementById("closeSkillDetail");
+    const imagePreviewModal = document.getElementById("imagePreviewModal");
+    const imagePreviewImg = document.getElementById("imagePreviewImg");
+    const imagePreviewTitle = document.getElementById("imagePreviewTitle");
+    const closeImagePreviewBtn = document.getElementById("closeImagePreview");
 
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
@@ -808,9 +812,36 @@
         closeDialog(skillDetailModal);
     });
 
+    closeImagePreviewBtn?.addEventListener("click", () => {
+        closeDialog(imagePreviewModal);
+    });
+
+    // 圖片預覽和檔案下載事件處理
     detailProjectContainer?.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+
+        // 處理圖片點擊預覽
+        if (target.tagName === "IMG" && target.dataset.mediaType === "image") {
+            const imageUrl = target.dataset.mediaUrl;
+            const imageLabel = target.dataset.mediaLabel || "圖片預覽";
+            if (imageUrl && imagePreviewImg && imagePreviewTitle) {
+                imagePreviewImg.src = imageUrl;
+                imagePreviewTitle.textContent = imageLabel;
+                openDialog(imagePreviewModal);
+            }
+            return;
+        }
+
+        // 處理檔案下載
+        if (target.tagName === "A" && target.dataset.mediaType === "file") {
+            // 瀏覽器會自動處理 download 屬性
+            return;
+        }
+
+        // 管理員專案編輯/刪除按鈕
         if (!isAdmin) return;
-        const button = event.target instanceof HTMLElement ? event.target.closest("button[data-detail-action]") : null;
+        const button = target.closest("button[data-detail-action]");
         if (!button) return;
 
         const action = button.dataset.detailAction;
@@ -1042,18 +1073,19 @@
     }
 
     function renderProjectMedia(media) {
-        const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
         if (media.type === "file") {
+            const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
             return `
-                <div class="project-media-card">
+                <div class="project-media-card project-media-card--file">
                     ${label}
-                    <a href="${escapeAttribute(media.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(media.url)}</a>
+                    <a href="${escapeAttribute(media.url)}" download data-media-type="file"><img src="assets/photos/file.svg" alt="file icon" class="file-icon">${escapeHTML(media.label || media.url)}</a>
                 </div>
             `;
         }
+        const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
         return `
             <div class="project-media-card">
-                <img src="${escapeAttribute(media.url)}" alt="${escapeHTML(media.label || media.url)}">
+                <img src="${escapeAttribute(media.url)}" alt="${escapeHTML(media.label || media.url)}" data-media-type="image" data-media-url="${escapeAttribute(media.url)}" data-media-label="${escapeHTML(media.label || '')}">
                 ${label}
             </div>
         `;
