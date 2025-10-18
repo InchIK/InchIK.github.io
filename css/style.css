@@ -220,11 +220,8 @@ body:has(.admin-bar:not([hidden])) {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1.8rem;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 12px;
+  padding: 0;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .about-item {
@@ -1509,7 +1506,6 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 關於我區塊調整 */
   .about-content {
-    padding: 1.5rem 1.2rem;
     gap: 1.3rem;
   }
 
@@ -1557,7 +1553,6 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 關於我區塊手機優化 */
   .about-content {
-    padding: 1.2rem 1rem;
     gap: 1.2rem;
   }
 
@@ -1750,7 +1745,6 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 關於我區塊小手機優化 */
   .about-content {
-    padding: 1rem 0.8rem;
     gap: 1rem;
   }
 
@@ -1884,7 +1878,6 @@ body:has(.admin-bar:not([hidden])) {
 @media (max-width: 400px) {
   /* 關於我區塊超小螢幕優化 */
   .about-content {
-    padding: 0.8rem 0.6rem;
     gap: 0.9rem;
   }
 
