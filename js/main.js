@@ -179,6 +179,14 @@
     const addCertificateBtn = document.getElementById("addCertificate");
     const addWebsiteBtn = document.getElementById("addWebsite");
 
+    const editShareLinksBtn = document.getElementById("editShareLinks");
+    const shareLinksModal = document.getElementById("shareLinksModal");
+    const closeShareLinksBtn = document.getElementById("closeShareLinks");
+    const saveShareLinksBtn = document.getElementById("saveShareLinks");
+    const shareLinksGrid = document.getElementById("shareLinksGrid");
+    const shareLinksManagerList = document.getElementById("shareLinksManagerList");
+    const addShareLinkBtn = document.getElementById("addShareLink");
+
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
     const profileSummaryEl = document.getElementById("profileSummary");
@@ -211,6 +219,7 @@
         certificates: [],
         websites: []
     };
+    let shareLinks = [];
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
@@ -305,6 +314,8 @@
         skills = normalizeSkills(data?.skills);
         skillTags = Array.isArray(data?.skillTags) ? data.skillTags : [];
         aboutMe = normalizeAboutMe(data?.aboutMe);
+        shareLinks = normalizeShareLinks(data?.shareLinks);
+        console.log("applyData 後的 shareLinks:", shareLinks);
     }
 
     function normalizeData(source) {
@@ -319,7 +330,8 @@
                     education: [],
                     certificates: [],
                     websites: []
-                }
+                },
+                shareLinks: []
             };
         }
 
@@ -330,7 +342,8 @@
             },
             skills: normalizeSkills(source.skills),
             skillTags: Array.isArray(source.skillTags) ? source.skillTags : [],
-            aboutMe: normalizeAboutMe(source.aboutMe)
+            aboutMe: normalizeAboutMe(source.aboutMe),
+            shareLinks: normalizeShareLinks(source.shareLinks)
         };
     }
 
@@ -370,6 +383,17 @@
                 url: web.url || ""
             })) : []
         };
+    }
+
+    function normalizeShareLinks(source) {
+        if (!Array.isArray(source)) return [];
+
+        return source.map((link, i) => ({
+            id: link.id || `share-${i + 1}`,
+            name: link.name || "",
+            description: link.description || "",
+            url: link.url || ""
+        })).filter(link => link.name); // 只要有名稱就保留
     }
 
     function normalizeSkills(skillsSource) {
@@ -487,7 +511,8 @@
             profile,
             skills,
             skillTags,
-            aboutMe
+            aboutMe,
+            shareLinks
         };
 
         if (!options.skipSync) {
@@ -557,11 +582,21 @@
             websites: Array.isArray(payload.aboutMe?.websites) ? payload.aboutMe.websites : []
         };
 
+        const sanitizedShareLinks = Array.isArray(payload.shareLinks)
+            ? payload.shareLinks.map(link => ({
+                id: link.id || "",
+                name: link.name || "",
+                description: link.description || "",
+                url: link.url || ""
+            })).filter(link => link.name) // 只要有名稱就保留
+            : [];
+
         return {
             profile: sanitizedProfile,
             skills: sanitizedSkills,
             skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : [],
-            aboutMe: sanitizedAboutMe
+            aboutMe: sanitizedAboutMe,
+            shareLinks: sanitizedShareLinks
         };
     }
 
@@ -808,6 +843,121 @@
         });
     }
 
+    // ===== 分享連結渲染 =====
+    function renderShareLinks() {
+        if (!shareLinksGrid) return;
+        shareLinksGrid.innerHTML = "";
+
+        if (!shareLinks || shareLinks.length === 0) {
+            return; // 沒有分享連結時不顯示任何內容
+        }
+
+        shareLinks.forEach((link) => {
+            const card = document.createElement("div");
+            card.className = "share-link-card";
+            card.style.backgroundColor = generateRandomColor();
+
+            // 如果沒有 URL，改變游標樣式
+            if (!link.url || !link.url.trim()) {
+                card.style.cursor = "default";
+            }
+
+            const text = document.createElement("div");
+            text.className = "share-link-text";
+            text.textContent = generateAbbreviation(link.name);
+
+            const tooltip = document.createElement("div");
+            tooltip.className = "share-link-tooltip";
+
+            // 建立兩行結構：名稱 + 說明
+            const tooltipName = document.createElement("div");
+            tooltipName.className = "share-link-tooltip__name";
+            tooltipName.textContent = link.name;
+
+            if (link.description && link.description.trim()) {
+                const tooltipDesc = document.createElement("div");
+                tooltipDesc.className = "share-link-tooltip__desc";
+                tooltipDesc.textContent = link.description;
+                tooltip.appendChild(tooltipName);
+                tooltip.appendChild(tooltipDesc);
+            } else {
+                // 如果沒有說明，只顯示名稱
+                tooltip.appendChild(tooltipName);
+            }
+
+            card.appendChild(text);
+            card.appendChild(tooltip);
+
+            // Hover 時調整 tooltip 位置，避免超出螢幕
+            card.addEventListener("mouseenter", () => {
+                setTimeout(() => {
+                    const rect = card.getBoundingClientRect();
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    const cardCenter = rect.left + rect.width / 2;
+
+                    // 檢查是否超出左邊
+                    if (rect.left < tooltipRect.width / 2) {
+                        tooltip.style.left = "0";
+                        tooltip.style.right = "auto";
+                        tooltip.style.transform = "translateX(0) translateY(0)";
+                        const arrowOffset = cardCenter - rect.left;
+                        tooltip.style.setProperty('--arrow-left', `${arrowOffset}px`);
+                    }
+                    // 檢查是否超出右邊
+                    else if (rect.right + tooltipRect.width / 2 > window.innerWidth) {
+                        tooltip.style.left = "auto";
+                        tooltip.style.right = "0";
+                        tooltip.style.transform = "translateX(0) translateY(0)";
+                        const arrowOffset = rect.right - cardCenter;
+                        tooltip.style.setProperty('--arrow-left', `calc(100% - ${arrowOffset}px)`);
+                    }
+                    // 正常居中
+                    else {
+                        tooltip.style.left = "50%";
+                        tooltip.style.right = "auto";
+                        tooltip.style.transform = "translateX(-50%) translateY(0)";
+                        tooltip.style.setProperty('--arrow-left', '50%');
+                    }
+                }, 10);
+            });
+
+            // 點擊開新視窗（如果有URL）
+            card.addEventListener("click", () => {
+                if (link.url && link.url.trim()) {
+                    window.open(link.url, "_blank", "noopener,noreferrer");
+                }
+            });
+
+            shareLinksGrid.appendChild(card);
+        });
+    }
+
+    // 生成圖標文字（英文取首尾，中文取首字）
+    function generateAbbreviation(name) {
+        if (!name) return "";
+
+        const trimmed = name.trim();
+        // 判斷是否包含中文
+        const hasChinese = /[\u4e00-\u9fa5]/.test(trimmed);
+
+        if (hasChinese) {
+            // 中文：取第一個字
+            return trimmed.charAt(0);
+        } else {
+            // 英文：取第一個和最後一個字母
+            if (trimmed.length === 1) return trimmed.toUpperCase();
+            return (trimmed.charAt(0) + trimmed.charAt(trimmed.length - 1)).toUpperCase();
+        }
+    }
+
+    // 生成隨機明亮的背景色（HSL）
+    function generateRandomColor() {
+        const hue = Math.floor(Math.random() * 360);
+        const saturation = 60 + Math.floor(Math.random() * 20); // 60-80%
+        const lightness = 50 + Math.floor(Math.random() * 15);  // 50-65%
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+
     function renderCardActions(id) {
         return `
             <div class="card-actions">
@@ -839,9 +989,11 @@
         if (editProfileBtn) editProfileBtn.hidden = !isAdmin;
         if (editSkillTagsBtn) editSkillTagsBtn.hidden = !isAdmin;
         if (editAboutMeBtn) editAboutMeBtn.hidden = !isAdmin;
+        if (editShareLinksBtn) editShareLinksBtn.hidden = !isAdmin;
         renderProfile();
         renderAboutMe();
         renderSkillTags();
+        renderShareLinks();
         renderSkills();
     }
 
@@ -1705,5 +1857,64 @@
             label: item.querySelector('[data-field="label"]')?.value.trim() || "",
             url: item.querySelector('[data-field="url"]')?.value.trim() || ""
         })).filter(web => web.label && web.url);
+    }
+
+    // ===== 分享連結管理功能 =====
+    editShareLinksBtn?.addEventListener("click", () => {
+        if (!isAdmin) return;
+        renderShareLinksManager();
+        openDialog(shareLinksModal);
+    });
+
+    closeShareLinksBtn?.addEventListener("click", () => {
+        closeDialog(shareLinksModal);
+    });
+
+    saveShareLinksBtn?.addEventListener("click", () => {
+        shareLinks = collectShareLinks();
+        persistData();
+        renderShareLinks();
+        closeDialog(shareLinksModal);
+    });
+
+    addShareLinkBtn?.addEventListener("click", () => {
+        addShareLinkItem();
+    });
+
+    function renderShareLinksManager() {
+        if (!shareLinksManagerList) return;
+        shareLinksManagerList.innerHTML = "";
+        shareLinks.forEach((link) => addShareLinkItem(link));
+    }
+
+    function addShareLinkItem(data = null) {
+        if (!shareLinksManagerList) return;
+        const div = document.createElement("div");
+        div.className = "share-link-manager-item";
+        div.dataset.linkId = data?.id || generateId("share");
+
+        div.innerHTML = `
+            <div class="share-link-manager-item__fields">
+                <input type="text" placeholder="分享名稱（例如：GitHub 或 個人部落格）" value="${escapeHTML(data?.name || '')}" data-field="name" />
+                <input type="text" placeholder="說明（hover時顯示）" value="${escapeHTML(data?.description || '')}" data-field="description" />
+                <input type="text" placeholder="連結網址" value="${escapeHTML(data?.url || '')}" data-field="url" />
+            </div>
+            <button type="button" class="share-link-manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".share-link-manager-item__remove")?.addEventListener("click", () => div.remove());
+        shareLinksManagerList.appendChild(div);
+    }
+
+    function collectShareLinks() {
+        if (!shareLinksManagerList) return [];
+        const items = shareLinksManagerList.querySelectorAll(".share-link-manager-item");
+
+        return Array.from(items).map(item => ({
+            id: item.dataset.linkId || generateId("share"),
+            name: item.querySelector('[data-field="name"]')?.value.trim() || "",
+            description: item.querySelector('[data-field="description"]')?.value.trim() || "",
+            url: item.querySelector('[data-field="url"]')?.value.trim() || ""
+        })).filter(link => link.name); // 只要有名稱就保留
     }
 })();

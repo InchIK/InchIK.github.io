@@ -90,6 +90,11 @@
             </p>
           </div>
         </div>
+
+        <!-- 分享連結區塊 -->
+        <div class="share-links-section">
+          <div id="shareLinksGrid" class="share-links-grid"></div>
+        </div>
       </div>
     </header>
 
@@ -103,6 +108,9 @@
         </button>
         <button type="button" id="editSkillTags" class="admin-btn">
           編輯技能標籤
+        </button>
+        <button type="button" id="editShareLinks" class="admin-btn">
+          編輯分享連結
         </button>
         <button type="button" id="openPanel" class="admin-btn">新增區塊</button>
         <button type="button" id="logout" class="admin-btn admin-btn--quiet">
@@ -421,6 +429,31 @@
         </div>
         <div class="modal__actions">
           <button type="button" id="saveAboutMe" class="primary">儲存</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="shareLinksModal">
+      <div class="modal__content modal__content--share-links">
+        <div class="modal__header">
+          <h2>管理分享連結</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeShareLinks"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div class="share-links-manager">
+          <div id="shareLinksManagerList" class="share-links-manager-list"></div>
+          <button type="button" id="addShareLink" class="admin-btn admin-btn--ghost">
+            新增分享連結
+          </button>
+        </div>
+        <div class="modal__actions">
+          <button type="button" id="saveShareLinks" class="primary">儲存</button>
         </div>
       </div>
     </dialog>

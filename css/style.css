@@ -423,7 +423,7 @@ body:has(.admin-bar:not([hidden])) {
   display: inline-block;
   width: 1.5em;
   height: 1.5em;
-  background: linear-gradient(to right, #CC8800, #FFD700);
+  background: linear-gradient(to right, #cc8800, #ffd700);
   -webkit-mask: url("../assets/photos/skills.png") center/contain no-repeat;
   mask: url("../assets/photos/skills.png") center/contain no-repeat;
   flex-shrink: 0;
@@ -435,7 +435,7 @@ body:has(.admin-bar:not([hidden])) {
 .section__title-highlight--about::before {
   width: 1.5em;
   height: 1.5em;
-  background: linear-gradient(to right, #CC8800, #FFD700);
+  background: linear-gradient(to right, #cc8800, #ffd700);
   -webkit-mask: url("../assets/photos/about.png") center/contain no-repeat;
   mask: url("../assets/photos/about.png") center/contain no-repeat;
   filter: none;
@@ -445,14 +445,15 @@ body:has(.admin-bar:not([hidden])) {
 .section__title-highlight--skills::before {
   width: 1.5em;
   height: 1.5em;
-  background: linear-gradient(to right, #CC8800, #FFD700);
+  background: linear-gradient(to right, #cc8800, #ffd700);
   -webkit-mask: url("../assets/photos/tools.png") center/contain no-repeat;
   mask: url("../assets/photos/tools.png") center/contain no-repeat;
   filter: none;
 }
 
 @keyframes iconFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -2050,5 +2051,269 @@ body:has(.admin-bar:not([hidden])) {
 
   .modal__content--skill-detail::-webkit-scrollbar-thumb {
     border: 0;
+  }
+}
+
+/* ===== 分享連結區塊 ===== */
+.share-links-section {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  width: 100%;
+}
+
+.share-links-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* 分享連結卡片 */
+.share-link-card {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: visible;
+}
+
+.share-link-card:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.share-link-card:active {
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* 卡片文字 */
+.share-link-text {
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  letter-spacing: 0.05em;
+}
+
+/* Tooltip 提示框 */
+.share-link-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(28, 36, 49, 0.95);
+  color: white;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  white-space: normal;
+  min-width: 250px;
+  max-width: 500px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+
+.share-link-tooltip__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #ffd700;
+}
+
+.share-link-tooltip__desc {
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.share-link-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-left, 50%);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(28, 36, 49, 0.95);
+  pointer-events: none;
+}
+
+.share-link-card:hover .share-link-tooltip {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 分享連結管理器 */
+.share-links-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.share-links-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.share-link-manager-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(28, 36, 49, 0.1);
+  border-radius: 8px;
+}
+
+.share-link-manager-item__fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.share-link-manager-item input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid rgba(28, 36, 49, 0.15);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.share-link-manager-item input:focus {
+  outline: none;
+  border-color: #0c7cd5;
+  box-shadow: 0 0 0 3px rgba(12, 124, 213, 0.1);
+}
+
+.share-link-manager-item__remove {
+  border: none;
+  background: rgba(217, 83, 79, 0.1);
+  color: #d9534f;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.share-link-manager-item__remove:hover {
+  background: #d9534f;
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* Modal 寬度設定 */
+.modal__content--share-links {
+  width: min(90vw, 650px) !important;
+  padding: 2rem !important;
+  max-width: 650px !important;
+}
+
+/* 響應式設計 - 分享連結 */
+@media (max-width: 768px) {
+  .share-links-section {
+    max-width: 100%;
+  }
+
+  .share-links-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .share-links-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+  }
+
+  .share-link-text {
+    font-size: 1.1rem;
+  }
+
+  .share-link-tooltip {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .modal__content--share-links {
+    width: 95vw !important;
+    padding: 1.5rem !important;
+  }
+
+  .share-link-manager-item {
+    padding: 0.6rem;
+  }
+
+  .share-link-manager-item input {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .share-links-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+
+  .share-link-card {
+    border-radius: 6px;
+  }
+
+  .share-link-text {
+    font-size: 1rem;
+  }
+
+  .modal__content--share-links {
+    width: 97vw !important;
+    padding: 1.2rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .share-links-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .share-link-card {
+    border-radius: 6px;
+  }
+
+  .share-link-text {
+    font-size: 0.9rem;
+  }
+
+  .share-link-tooltip {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .modal__content--share-links {
+    width: 100vw !important;
+    padding: 1rem !important;
+    border-radius: 0 !important;
   }
 }
