@@ -98,6 +98,9 @@
         <button type="button" id="editProfile" class="admin-btn">
           編輯自我介紹
         </button>
+        <button type="button" id="editSkillTags" class="admin-btn">
+          編輯技能標籤
+        </button>
         <button type="button" id="openPanel" class="admin-btn">新增區塊</button>
         <button type="button" id="logout" class="admin-btn admin-btn--quiet">
           登出
@@ -107,6 +110,10 @@
 
     <main class="content">
       <section class="section">
+        <h2 class="section__title">
+          <span class="section__title-highlight section__title-highlight--skills">技能列表</span>
+        </h2>
+        <div id="skillTagsContainer" class="skill-tags-container"></div>
         <h2 class="section__title">
           <span class="section__title-highlight">專業領域項目</span>
         </h2>
@@ -280,6 +287,36 @@
         </div>
         <div class="image-preview-container">
           <img id="imagePreviewImg" src="" alt="預覽圖片" />
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="skillTagsModal">
+      <div class="modal__content modal__content--skill-tags">
+        <div class="modal__header">
+          <h2>管理技能標籤</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeSkillTags"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div class="skill-tags-manager">
+          <div id="skillTagsList" class="skill-tags-list"></div>
+          <div class="skill-tags-input-area">
+            <input
+              type="text"
+              id="newSkillTagInput"
+              placeholder="輸入新技能標籤"
+              class="skill-tags-input"
+            />
+            <button type="button" id="addSkillTag" class="admin-btn primary">
+              新增標籤
+            </button>
+          </div>
         </div>
       </div>
     </dialog>

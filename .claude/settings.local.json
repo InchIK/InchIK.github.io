@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git reset --hard HEAD~1)",
+      "Bash(dir /b \"e:\\Code\\inchi\\InchIK.github.io\\assets\\photos\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

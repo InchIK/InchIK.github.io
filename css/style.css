@@ -211,6 +211,36 @@ body:has(.admin-bar:not([hidden])) {
   margin-bottom: 1.5rem;
 }
 
+/* ===== 技能標籤容器 ===== */
+.skill-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(28, 36, 49, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.skill-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
 .section__title-highlight {
   position: relative;
   display: inline-flex;
@@ -231,13 +261,22 @@ body:has(.admin-bar:not([hidden])) {
   display: inline-block;
   width: 1.5em;
   height: 1.5em;
-  background-image: url("../assets/photos/skills.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background: linear-gradient(to right, #CC8800, #FFD700);
+  -webkit-mask: url("../assets/photos/skills.png") center/contain no-repeat;
+  mask: url("../assets/photos/skills.png") center/contain no-repeat;
   flex-shrink: 0;
   animation: iconFloat 3s ease-in-out infinite;
-  filter: brightness(0) saturate(100%) invert(54%) sepia(78%) saturate(1845%) hue-rotate(7deg) brightness(95%) contrast(101%);
+  filter: none;
+}
+
+/* 技能列表標題專屬圖標 - 左深右淺漸層 */
+.section__title-highlight--skills::before {
+  width: 1.5em;
+  height: 1.5em;
+  background: linear-gradient(to right, #CC8800, #FFD700);
+  -webkit-mask: url("../assets/photos/tools.png") center/contain no-repeat;
+  mask: url("../assets/photos/tools.png") center/contain no-repeat;
+  filter: none;
 }
 
 @keyframes iconFloat {
@@ -465,6 +504,104 @@ body:has(.admin-bar:not([hidden])) {
   padding: 2rem !important;
   max-width: 1200px !important;
   background: rgba(255, 255, 255, 0.98) !important;
+}
+
+/* 技能標籤管理 Modal */
+.modal__content--skill-tags {
+  width: min(90vw, 600px) !important;
+  padding: 2rem !important;
+  max-width: 600px !important;
+}
+
+.skill-tags-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.skill-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 1.2rem;
+  border: 1px dashed rgba(28, 36, 49, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  min-height: 120px;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.skill-tags-list:empty::after {
+  content: "目前沒有技能標籤，請新增標籤";
+  width: 100%;
+  text-align: center;
+  color: rgba(28, 36, 49, 0.5);
+  font-size: 0.9rem;
+}
+
+.skill-tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(28, 36, 49, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.skill-tag-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.skill-tag-remove {
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(217, 83, 79, 0.9);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.skill-tag-remove:hover {
+  background: rgba(217, 83, 79, 0.9);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.skill-tags-input-area {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.skill-tags-input {
+  flex: 1;
+  border: 1px solid rgba(28, 36, 49, 0.18);
+  border-radius: 10px;
+  padding: 0.8rem;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.skill-tags-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(12, 124, 213, 0.2);
 }
 
 .image-preview-container {

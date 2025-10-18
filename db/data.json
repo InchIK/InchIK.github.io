@@ -5,6 +5,18 @@
     "summary": "Delivering reliable infrastructure by combining automation, cloud experience and pragmatic operations improvement.",
     "avatar": "assets/photos/profile.jpg"
   },
+  "skillTags": [
+    "Python",
+    "Docker",
+    "Kubernetes",
+    "Git",
+    "Jenkins",
+    "Ansible",
+    "Linux",
+    "VMware",
+    "Firewall",
+    "Network"
+  ],
   "skills": [
     {
       "id": "skill-devops",

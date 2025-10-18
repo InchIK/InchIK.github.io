@@ -109,10 +109,12 @@
     };
 
     const skillGrid = document.getElementById("skillGrid");
+    const skillTagsContainer = document.getElementById("skillTagsContainer");
     const adminBar = document.getElementById("adminBar");
     const modeStatus = document.getElementById("modeStatus");
     const panelModal = document.getElementById("panelModal");
     const profileModal = document.getElementById("profileModal");
+    const skillTagsModal = document.getElementById("skillTagsModal");
 
     const openLoginBtn = document.getElementById("openLogin");
     const logoutBtn = document.getElementById("logout");
@@ -152,6 +154,11 @@
     const imagePreviewImg = document.getElementById("imagePreviewImg");
     const imagePreviewTitle = document.getElementById("imagePreviewTitle");
     const closeImagePreviewBtn = document.getElementById("closeImagePreview");
+    const editSkillTagsBtn = document.getElementById("editSkillTags");
+    const closeSkillTagsBtn = document.getElementById("closeSkillTags");
+    const skillTagsList = document.getElementById("skillTagsList");
+    const newSkillTagInput = document.getElementById("newSkillTagInput");
+    const addSkillTagBtn = document.getElementById("addSkillTag");
 
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
@@ -177,6 +184,7 @@
 
     let profile = { ...DEFAULT_PROFILE };
     let skills = DEFAULT_SKILLS.map((skill) => ({ ...skill }));
+    let skillTags = [];
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
@@ -269,13 +277,15 @@
             ...(data?.profile ?? {})
         };
         skills = normalizeSkills(data?.skills);
+        skillTags = Array.isArray(data?.skillTags) ? data.skillTags : [];
     }
 
     function normalizeData(source) {
         if (!source || typeof source !== "object") {
             return {
                 profile: { ...DEFAULT_PROFILE },
-                skills: DEFAULT_SKILLS.map((skill) => ({ ...skill }))
+                skills: DEFAULT_SKILLS.map((skill) => ({ ...skill })),
+                skillTags: []
             };
         }
 
@@ -284,7 +294,8 @@
                 ...DEFAULT_PROFILE,
                 ...(typeof source.profile === "object" && source.profile ? source.profile : {})
             },
-            skills: normalizeSkills(source.skills)
+            skills: normalizeSkills(source.skills),
+            skillTags: Array.isArray(source.skillTags) ? source.skillTags : []
         };
     }
 
@@ -401,7 +412,8 @@
     function persistData(override, options = {}) {
         const snapshot = override ?? {
             profile,
-            skills
+            skills,
+            skillTags
         };
 
         if (!options.skipSync) {
@@ -465,7 +477,8 @@
 
         return {
             profile: sanitizedProfile,
-            skills: sanitizedSkills
+            skills: sanitizedSkills,
+            skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : []
         };
     }
 
@@ -567,6 +580,27 @@
         });
     }
 
+    function renderSkillTags() {
+        if (!skillTagsContainer) return;
+        skillTagsContainer.innerHTML = "";
+
+        if (!skillTags || skillTags.length === 0) return;
+
+        skillTags.forEach((tag) => {
+            const span = document.createElement("span");
+            span.className = "skill-tag";
+            span.textContent = tag;
+
+            // 產生隨機 HSL 顏色：固定飽和度和亮度，只改變色相
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 70;
+            const lightness = 85;
+            span.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+            skillTagsContainer.appendChild(span);
+        });
+    }
+
     function renderCardActions(id) {
         return `
             <div class="card-actions">
@@ -596,7 +630,9 @@
         }
         if (openLoginBtn) openLoginBtn.hidden = isAdmin;
         if (editProfileBtn) editProfileBtn.hidden = !isAdmin;
+        if (editSkillTagsBtn) editSkillTagsBtn.hidden = !isAdmin;
         renderProfile();
+        renderSkillTags();
         renderSkills();
     }
 
@@ -910,6 +946,93 @@
         if (!skill) return;
         openSkillDetail(skill);
     });
+
+    // 技能標籤管理
+    editSkillTagsBtn?.addEventListener("click", () => {
+        if (!isAdmin) return;
+        renderSkillTagsManager();
+        openDialog(skillTagsModal);
+        newSkillTagInput?.focus();
+    });
+
+    closeSkillTagsBtn?.addEventListener("click", () => {
+        closeDialog(skillTagsModal);
+    });
+
+    addSkillTagBtn?.addEventListener("click", () => {
+        const newTag = newSkillTagInput?.value.trim();
+        if (!newTag) return;
+
+        if (skillTags.includes(newTag)) {
+            alert("此標籤已存在！");
+            return;
+        }
+
+        skillTags.push(newTag);
+        persistData();
+        renderSkillTags();
+        renderSkillTagsManager();
+        newSkillTagInput.value = "";
+        newSkillTagInput.focus();
+    });
+
+    newSkillTagInput?.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addSkillTagBtn?.click();
+        }
+    });
+
+    skillTagsList?.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+
+        const removeBtn = target.closest(".skill-tag-remove");
+        if (!removeBtn) return;
+
+        const tagText = removeBtn.dataset.tag;
+        if (!tagText) return;
+
+        if (!window.confirm(`確定要刪除標籤「${tagText}」嗎？`)) return;
+
+        skillTags = skillTags.filter(tag => tag !== tagText);
+        persistData();
+        renderSkillTags();
+        renderSkillTagsManager();
+    });
+
+    function renderSkillTagsManager() {
+        if (!skillTagsList) return;
+        skillTagsList.innerHTML = "";
+
+        if (!skillTags || skillTags.length === 0) {
+            return;
+        }
+
+        skillTags.forEach((tag) => {
+            const div = document.createElement("div");
+            div.className = "skill-tag-item";
+
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 70;
+            const lightness = 85;
+            div.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+            const span = document.createElement("span");
+            span.textContent = tag;
+
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "skill-tag-remove";
+            removeBtn.type = "button";
+            removeBtn.textContent = "×";
+            removeBtn.dataset.tag = tag;
+            removeBtn.setAttribute("aria-label", `刪除標籤 ${tag}`);
+
+            div.appendChild(span);
+            div.appendChild(removeBtn);
+            skillTagsList.appendChild(div);
+        });
+    }
 
     function getSkillById(id) {
         if (!id) return null;
