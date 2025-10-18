@@ -1507,6 +1507,21 @@ body:has(.admin-bar:not([hidden])) {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* 關於我區塊調整 */
+  .about-content {
+    padding: 1.5rem 1.2rem;
+    gap: 1.3rem;
+  }
+
+  .certificate-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .certificate-thumbnail {
+    height: 85px;
+  }
+
   /* 小螢幕管理欄調整 */
   body:has(.admin-bar:not([hidden])) {
     padding-top: 3.2rem;
@@ -1540,6 +1555,77 @@ body:has(.admin-bar:not([hidden])) {
     width: 100%;
   }
 
+  /* 關於我區塊手機優化 */
+  .about-content {
+    padding: 1.2rem 1rem;
+    gap: 1.2rem;
+  }
+
+  .about-item__label {
+    font-size: 1rem;
+  }
+
+  .about-item__value {
+    font-size: 0.9rem;
+    margin-left: 1rem;
+  }
+
+  .experience-entry {
+    margin-left: 0.5rem;
+  }
+
+  .experience-skills {
+    margin-left: 0;
+  }
+
+  .experience-skill-tag {
+    padding: 0.25rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .education-tags {
+    margin-left: 0;
+  }
+
+  .education-tag {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .certificate-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.7rem;
+    margin-left: 0;
+  }
+
+  .certificate-thumbnail {
+    height: 75px;
+  }
+
+  .certificate-title {
+    font-size: 0.8rem;
+  }
+
+  .website-list {
+    margin-left: 0.5rem;
+  }
+
+  .website-item {
+    font-size: 0.9rem;
+    word-break: break-all;
+  }
+
+  /* 技能標籤手機優化 */
+  .skill-tags-container {
+    gap: 0.6rem;
+  }
+
+  .skill-tag {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Modal 優化 */
   .modal__content--profile {
     width: 94vw !important;
     padding: 1.5rem !important;
@@ -1564,6 +1650,16 @@ body:has(.admin-bar:not([hidden])) {
     width: 97vw !important;
     padding: 1.5rem 1rem !important;
     background: rgba(218, 218, 218, 0.7) !important;
+  }
+
+  .modal__content--skill-tags {
+    width: 96vw !important;
+    padding: 1.5rem 1.2rem !important;
+  }
+
+  .modal__content--about-me {
+    width: 97vw !important;
+    padding: 1.5rem 1.2rem !important;
   }
 
   .modal__content--image-preview {
@@ -1652,6 +1748,71 @@ body:has(.admin-bar:not([hidden])) {
     margin-inline: 0.8rem;
   }
 
+  /* 關於我區塊小手機優化 */
+  .about-content {
+    padding: 1rem 0.8rem;
+    gap: 1rem;
+  }
+
+  .about-item__label {
+    font-size: 0.95rem;
+  }
+
+  .about-item__value {
+    font-size: 0.85rem;
+    margin-left: 0.8rem;
+  }
+
+  .experience-header {
+    font-size: 0.9rem;
+  }
+
+  .experience-skill-tag {
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .education-tag {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .certificate-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .certificate-thumbnail {
+    height: 70px;
+  }
+
+  .certificate-title {
+    font-size: 0.75rem;
+  }
+
+  .website-item {
+    font-size: 0.85rem;
+  }
+
+  /* 技能標籤小手機優化 */
+  .skill-tag {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  /* 標題調整 */
+  .section__title {
+    font-size: 1.5rem;
+  }
+
+  .section__title-highlight::before,
+  .section__title-highlight--about::before,
+  .section__title-highlight--skills::before {
+    width: 1.3em;
+    height: 1.3em;
+  }
+
+  /* Modal 優化 */
   .modal__content--profile,
   .modal__content--panel {
     width: 96vw !important;
@@ -1672,6 +1833,22 @@ body:has(.admin-bar:not([hidden])) {
     width: 98vw !important;
     padding: 1.2rem 0.8rem !important;
     background: rgba(218, 218, 218, 0.7) !important;
+  }
+
+  .modal__content--skill-tags,
+  .modal__content--about-me {
+    width: 98vw !important;
+    padding: 1.2rem 1rem !important;
+  }
+
+  .manager-item {
+    padding: 0.6rem;
+  }
+
+  .manager-item input,
+  .manager-item textarea {
+    padding: 0.5rem;
+    font-size: 0.85rem;
   }
 
   .detail-project {
@@ -1705,11 +1882,91 @@ body:has(.admin-bar:not([hidden])) {
 
 /* ===== 響應式設計 - 400px 以下 (超小螢幕) ===== */
 @media (max-width: 400px) {
+  /* 關於我區塊超小螢幕優化 */
+  .about-content {
+    padding: 0.8rem 0.6rem;
+    gap: 0.9rem;
+  }
+
+  .about-item__label {
+    font-size: 0.9rem;
+  }
+
+  .about-item__value {
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+  }
+
+  .experience-entry {
+    margin-left: 0.2rem;
+  }
+
+  .experience-header {
+    font-size: 0.85rem;
+  }
+
+  .experience-skill-tag {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .education-tag {
+    padding: 0.25rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .certificate-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .certificate-thumbnail {
+    height: 65px;
+  }
+
+  .certificate-title {
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+  }
+
+  .website-list {
+    margin-left: 0.3rem;
+  }
+
+  .website-item {
+    font-size: 0.8rem;
+  }
+
+  /* 技能標籤超小螢幕優化 */
+  .skill-tags-container {
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  /* 標題進一步調整 */
+  .section__title {
+    font-size: 1.3rem;
+  }
+
+  .section__title-highlight::before,
+  .section__title-highlight--about::before,
+  .section__title-highlight--skills::before {
+    width: 1.2em;
+    height: 1.2em;
+  }
+
+  /* Modal 全螢幕優化 */
   .modal__content--profile,
   .modal__content--panel,
   .modal__content--project-editor,
   .modal__content--project-manager,
-  .modal__content--skill-detail {
+  .modal__content--skill-detail,
+  .modal__content--skill-tags,
+  .modal__content--about-me {
     width: 100vw !important;
     padding: 1rem 0.8rem !important;
     border-radius: 0 !important;
@@ -1723,6 +1980,22 @@ body:has(.admin-bar:not([hidden])) {
   .modal {
     border-radius: 0;
     max-width: 100vw;
+  }
+
+  .manager-item {
+    padding: 0.5rem;
+  }
+
+  .manager-item input,
+  .manager-item textarea {
+    padding: 0.45rem;
+    font-size: 0.8rem;
+  }
+
+  .manager-item__remove {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
   }
 
   .detail-project {
