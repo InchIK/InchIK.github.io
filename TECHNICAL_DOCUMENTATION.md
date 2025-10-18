@@ -9,7 +9,15 @@
 **核心特色：**
 
 *   **動態內容管理**：管理員登入後，可以直接在網頁上編輯個人資料、新增/修改/刪除技能區塊與相關專案。
-*   **可管理的技能標籤**：在獨立的「技能列表」區塊中，以彩色橢圓形狀展示關鍵技能，並可透過管理介面即時增刪。
+*   **可管理的技能標籤**：
+    *   在獨立的「技能列表」區塊中，以彩色橢圓形狀展示關鍵技能標籤
+    *   每個標籤具有隨機生成的 HSL 背景顏色（色相隨機，飽和度70%，亮度85%）
+    *   標題圖標使用 tools.png，帶有金黃色到深黃色的漸層效果（左深右淺）
+    *   可透過管理介面即時新增、刪除標籤，支援 Enter 鍵快速新增
+*   **視覺設計亮點**：
+    *   標題圖標採用 CSS mask 技術實現漸層效果（金黃 #FFD700 到深黃 #CC8800）
+    *   圖標帶有浮動動畫效果（3秒循環，上下浮動5px）
+    *   文字使用銀灰色漸層（#c0c0c0 到 #4a4a4a）
 *   **即時資料庫**：所有內容主要儲存在 Firestore 中，任何修改都會即時同步。
 *   **備援機制**：當 Firebase 無法連線時，系統會自動降級讀取本地的 `db/data.json` 檔案，確保網站在多數情況下依然能正常顯示。
 *   **響應式設計**：網頁佈局能適應從桌面到手機等不同尺寸的裝置。
@@ -79,9 +87,10 @@ InchIK.github.io/
     *   這是程式的進入點，負責協調從 Firestore 或靜態檔案載入資料的整個流程。
 *   **資料正規化 (`normalizeData`, `normalizeSkills`, etc.)**:
     *   這些函式確保不論資料來源為何（Firestore, JSON, 或預設值），其物件結構都是一致且安全的，避免因缺少某些欄位而導致錯誤。
-*   **渲染函式 (`renderProfile`, `renderSkills`, `renderSkillTags`)**:
+*   **渲染函式 (`renderProfile`, `renderSkills`, `renderSkillTags`, `renderSkillTagsManager`)**:
     *   負責將資料轉換為 HTML 字串或 DOM 元素，並更新到頁面的對應區塊。
-    *   `renderSkillTags` 會為每個標籤產生隨機背景色。
+    *   `renderSkillTags`: 在主頁面渲染技能標籤，為每個標籤產生隨機 HSL 背景色（色相0-360度隨機，飽和度70%，亮度85%）
+    *   `renderSkillTagsManager`: 在管理視窗中渲染可編輯的標籤列表，每個標籤帶有刪除按鈕
 *   **管理員 UI (`syncAdminUI`)**:
     *   根據 `isAdmin` 這個布林值，來決定是否顯示管理員工具列與相關按鈕。這是在登入狀態改變時會被呼叫的關鍵函式。
 *   **Firebase 互動**:
@@ -150,8 +159,17 @@ InchIK.github.io/
     *   `index.html` 的 `<head>` 區塊中包含了 Firebase 的設定物件 `firebaseConfig`。如果未來需要更換 Firebase 專案，請在此處更新對應的配置金鑰。
 4.  **開發流程**:
     *   **修改內容**: 建議直接透過管理員登入後在 UI 上進行操作，資料會自動同步到 Firestore。
-        *   **編輯技能標籤**: 點擊管理列的「編輯技能標籤」按鈕進行增刪。
+        *   **編輯技能標籤**:
+            *   點擊管理工具列的「編輯技能標籤」按鈕開啟管理視窗
+            *   在輸入框中輸入新標籤名稱，點擊「新增標籤」或按 Enter 鍵
+            *   點擊標籤右側的「×」按鈕可刪除該標籤
+            *   所有變更會即時儲存到 Firestore 並更新頁面顯示
         *   **編輯其他區塊**: 透過對應的編輯按鈕進行操作。
     *   **修改樣式**: 所有樣式都在 `css/style.css`。
+        *   技能標籤樣式：`.skill-tag`, `.skill-tags-container`
+        *   標籤管理視窗：`.skill-tags-manager`, `.skill-tag-item`, `.skill-tag-remove`
+        *   標題圖標漸層：`.section__title-highlight::before` 使用 CSS mask 實現
     *   **修改功能**: 所有互動邏輯都在 `js/main.js`。
+        *   技能標籤相關函式：`renderSkillTags()`, `renderSkillTagsManager()`
+        *   事件監聽器：`editSkillTagsBtn`, `addSkillTagBtn`, `skillTagsList` (刪除)
     *   **更新備援資料**: 如果您透過 Firebase 更新了大量內容，建議手動將 Firestore `resume/content` 文件中的 JSON 內容複製一份，貼到 `db/data.json` 中，以確保備援資料也是最新的。
