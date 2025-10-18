@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(git reset --hard HEAD~1)",
-      "Bash(dir /b \"e:\\Code\\inchi\\InchIK.github.io\\assets\\photos\")"
+      "Bash(dir /b \"e:\\Code\\inchi\\InchIK.github.io\\assets\\photos\")",
+      "Bash(git pull --rebase)",
+      "Bash(git add .claude/settings.local.json)",
+      "Bash(git commit -m \"更新設定檔\")"
     ],
     "deny": [],
     "ask": []
