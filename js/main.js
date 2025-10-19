@@ -861,45 +861,118 @@
         else if (screenWidth <= 500) columnsPerRow = 3;
         else if (screenWidth <= 600) columnsPerRow = 4;
 
+        const gap = 16; // 1rem = 16px
+        const cardWidth = (shareLinksGrid.offsetWidth - gap * (columnsPerRow - 1)) / columnsPerRow;
+
+        // 計算卡片分配
         const totalRows = Math.ceil(totalCount / columnsPerRow);
-
-        // 只有總行數 > 5 時，才啟用水流效果於最後5行
-        // 否則所有卡片都保持整齊排列
         const enableWaterfall = totalRows > 5;
-        const lastFiveRowsStartIndex = enableWaterfall
-            ? totalCount - (5 * columnsPerRow)
-            : totalCount + 1; // 設定為不可能的索引，禁用水流效果
+        const regularRowsCount = enableWaterfall ? 5 : totalRows; // 前面整齊排列的行數
+        const regularCardsCount = regularRowsCount * columnsPerRow; // 前面整齊排列的卡片數
 
-        // 預先計算最後5行中每一列（垂直方向）要隱藏哪些位置
-        const hidePositions = new Set();
-        if (enableWaterfall) {
-            // 針對每一個垂直列（column）
+        // 每一列的高度陣列（單位：卡片數量）
+        const columnHeights = new Array(columnsPerRow).fill(regularRowsCount);
+
+        // 卡片位置映射表：cardIndex -> { col, row }
+        const cardPositions = [];
+
+        // 1. 前面的整齊區域
+        for (let i = 0; i < Math.min(regularCardsCount, totalCount); i++) {
+            const row = Math.floor(i / columnsPerRow);
+            const col = i % columnsPerRow;
+            cardPositions.push({ col, row });
+        }
+
+        // 2. 如果啟用水流效果，分配剩餘的卡片
+        if (enableWaterfall && totalCount > regularCardsCount) {
+            const remainingCards = totalCount - regularCardsCount;
+
+            // 計算每一列應該多放幾個卡片
+            // 先隨機決定每一列要缺 0-5 個（從底部開始缺）
+            const missingCardsPerColumn = [];
             for (let col = 0; col < columnsPerRow; col++) {
-                // 每一列隨機隱藏 0-5 個卡片，且只從最後面開始缺
-                const hideCount = Math.floor(Math.random() * 6); // 0-5
+                const missing = Math.floor(Math.random() * 6); // 0-5
+                missingCardsPerColumn.push(missing);
+            }
 
-                // 從最後一行開始往上隱藏
-                for (let i = 0; i < hideCount; i++) {
-                    const rowToHide = 4 - i; // 從第5行(index=4)開始往上：4, 3, 2, 1, 0
+            // 計算每一列實際要放幾個卡片
+            const extraCardsPerColumn = [];
+            let totalAssigned = 0;
 
-                    // 計算在整個陣列中的絕對索引
-                    const absoluteIndex = lastFiveRowsStartIndex + (rowToHide * columnsPerRow) + col;
-                    if (absoluteIndex < totalCount) {
-                        hidePositions.add(absoluteIndex);
+            for (let col = 0; col < columnsPerRow; col++) {
+                const maxExtra = 5; // 每一列最多多放5個
+                const extra = Math.max(0, maxExtra - missingCardsPerColumn[col]);
+                extraCardsPerColumn.push(extra);
+                totalAssigned += extra;
+            }
+
+            // 如果分配的位置不夠，需要調整
+            if (totalAssigned < remainingCards) {
+                const deficit = remainingCards - totalAssigned;
+                // 將不足的部分平均分配到各列
+                for (let i = 0; i < deficit; i++) {
+                    const col = i % columnsPerRow;
+                    extraCardsPerColumn[col]++;
+                }
+            }
+
+            // 如果分配的位置太多，需要削減（從缺塊最少的列開始削減）
+            if (totalAssigned > remainingCards) {
+                const excess = totalAssigned - remainingCards;
+                // 將多餘的位置從各列削減
+                for (let i = 0; i < excess; i++) {
+                    // 找出當前分配最多的列
+                    let maxCol = 0;
+                    for (let col = 1; col < columnsPerRow; col++) {
+                        if (extraCardsPerColumn[col] > extraCardsPerColumn[maxCol]) {
+                            maxCol = col;
+                        }
                     }
+                    extraCardsPerColumn[maxCol] = Math.max(0, extraCardsPerColumn[maxCol] - 1);
+                }
+            }
+
+            // 更新列高度
+            for (let col = 0; col < columnsPerRow; col++) {
+                columnHeights[col] += extraCardsPerColumn[col];
+            }
+
+            // 將剩餘卡片按列分配
+            let cardIndex = regularCardsCount;
+            for (let col = 0; col < columnsPerRow; col++) {
+                const extraCount = extraCardsPerColumn[col];
+                for (let i = 0; i < extraCount; i++) {
+                    const row = regularRowsCount + i;
+                    cardPositions.push({ col, row });
+                    cardIndex++;
                 }
             }
         }
 
+        // 計算容器總高度
+        const maxHeight = Math.max(...columnHeights);
+        const containerHeight = maxHeight * cardWidth + (maxHeight - 1) * gap;
+        shareLinksGrid.style.height = `${containerHeight}px`;
+
+        // 渲染所有卡片
         shareLinks.forEach((link, index) => {
             const card = document.createElement("div");
             card.className = "share-link-card";
             card.style.backgroundColor = generateRandomColor();
 
-            // 判斷是否為最後5行（且總行數 > 5）
-            const isInLastFiveRows = index >= lastFiveRowsStartIndex;
+            // 獲取這張卡片的位置
+            const pos = cardPositions[index];
+            if (!pos) return;
 
-            if (isInLastFiveRows) {
+            // 設定卡片位置和尺寸
+            card.style.width = `${cardWidth}px`;
+            card.style.left = `${pos.col * (cardWidth + gap)}px`;
+            card.style.top = `${pos.row * (cardWidth + gap)}px`;
+
+            // 判斷是否為水流區域的卡片（第6行以後）
+            const isWaterfallCard = pos.row >= regularRowsCount;
+
+            if (isWaterfallCard) {
                 // 添加水流效果類別
                 card.classList.add("share-link-card--waterfall");
 
@@ -909,13 +982,7 @@
 
                 // 隨機的輕微垂直偏移（製造更自然的水流感）
                 const randomOffset = (Math.random() - 0.5) * 10; // -5px 到 +5px
-                card.style.marginTop = `${randomOffset}px`;
-
-                // 檢查這張卡片是否應該被隱藏
-                if (hidePositions.has(index)) {
-                    card.style.visibility = "hidden";
-                    card.style.pointerEvents = "none";
-                }
+                card.style.transform = `translateY(${randomOffset}px)`;
             }
 
             // 如果沒有 URL，改變游標樣式
@@ -1978,4 +2045,14 @@
             url: item.querySelector('[data-field="url"]')?.value.trim() || ""
         })).filter(link => link.name); // 只要有名稱就保留
     }
+
+    // ===== 響應式支援 =====
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        // 防抖動：等待調整完成後才重新渲染
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            renderShareLinks();
+        }, 200);
+    });
 })();

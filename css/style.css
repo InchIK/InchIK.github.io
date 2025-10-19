@@ -2028,16 +2028,17 @@ body:has(.admin-bar:not([hidden])) {
 }
 
 .share-links-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
+  position: relative;
+  width: 100%;
   padding: 0;
-  max-width: 100%;
+  /* 高度由 JS 動態設定 */
 }
 
 /* 分享連結卡片 */
 .share-link-card {
-  position: relative;
+  position: absolute;
+  /* left 和 top 由 JS 動態設定 */
+  /* width 由 JS 動態設定 */
   aspect-ratio: 1;
   border-radius: 8px;
   display: flex;
