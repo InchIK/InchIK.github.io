@@ -385,7 +385,8 @@
             websites: Array.isArray(source.websites) ? source.websites.map((web, i) => ({
                 id: web.id || `web-${i + 1}`,
                 label: web.label || "",
-                url: web.url || ""
+                url: web.url || "",
+                icon: web.icon || ""
             })) : []
         };
     }
