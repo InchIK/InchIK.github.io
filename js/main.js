@@ -176,7 +176,6 @@
     const certificateManagerList = document.getElementById("certificateManagerList");
     const websiteManagerList = document.getElementById("websiteManagerList");
     const addExperienceBtn = document.getElementById("addExperience");
-    const addPositionBtn = document.getElementById("addPosition");
     const addEducationBtn = document.getElementById("addEducation");
     const addCertificateBtn = document.getElementById("addCertificate");
     const addWebsiteBtn = document.getElementById("addWebsite");
@@ -1934,38 +1933,24 @@
     }
 
     // 職務管理
-    addPositionBtn?.addEventListener("click", () => {
-        addPositionItem();
-    });
-
     function renderPositionManager() {
         if (!positionManagerList) return;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = "positionInput";
+        input.placeholder = "職務名稱（使用逗號分隔，例如：DevOps, 雲端架構師, 伺服器管理員）";
+        input.value = aboutMe.positions.join(", ");
         positionManagerList.innerHTML = "";
-        aboutMe.positions.forEach((position) => addPositionItem(position));
-    }
-
-    function addPositionItem(positionName = "") {
-        if (!positionManagerList) return;
-        const div = document.createElement("div");
-        div.className = "manager-item";
-
-        div.innerHTML = `
-            <div class="manager-item__fields">
-                <input type="text" placeholder="職務名稱（例如：DevOps、雲端架構師）" value="${escapeHTML(positionName)}" data-field="position" />
-            </div>
-            <button type="button" class="manager-item__remove">×</button>
-        `;
-
-        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
-        positionManagerList.appendChild(div);
+        positionManagerList.appendChild(input);
     }
 
     function collectPositions() {
-        if (!positionManagerList) return [];
-        const items = positionManagerList.querySelectorAll(".manager-item");
-        return Array.from(items)
-            .map(item => item.querySelector('[data-field="position"]')?.value.trim() || "")
-            .filter(pos => pos);
+        const input = document.getElementById("positionInput");
+        if (!input) return [];
+        return input.value
+            .split(",")
+            .map(p => p.trim())
+            .filter(p => p);
     }
 
     // 學歷管理
