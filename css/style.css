@@ -591,6 +591,24 @@ body:has(.admin-bar:not([hidden])) {
   max-height: 90vh;
   overflow: hidden;
   box-shadow: var(--shadow);
+  animation: cinemaScreenOpen 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center center;
+}
+
+/* 電影院螢幕展開動畫 */
+@keyframes cinemaScreenOpen {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
 }
 
 .modal__content {
