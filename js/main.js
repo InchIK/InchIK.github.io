@@ -852,10 +852,71 @@
             return; // 沒有分享連結時不顯示任何內容
         }
 
-        shareLinks.forEach((link) => {
+        const totalCount = shareLinks.length;
+
+        // 根據螢幕寬度決定每行幾個
+        const screenWidth = window.innerWidth;
+        let columnsPerRow = 5; // 預設5個
+        if (screenWidth <= 400) columnsPerRow = 3;
+        else if (screenWidth <= 500) columnsPerRow = 3;
+        else if (screenWidth <= 600) columnsPerRow = 4;
+
+        const totalRows = Math.ceil(totalCount / columnsPerRow);
+
+        // 只有總行數 > 5 時，才啟用水流效果於最後5行
+        // 否則所有卡片都保持整齊排列
+        const enableWaterfall = totalRows > 5;
+        const lastFiveRowsStartIndex = enableWaterfall
+            ? totalCount - (5 * columnsPerRow)
+            : totalCount + 1; // 設定為不可能的索引，禁用水流效果
+
+        // 預先計算最後5行中每一列（垂直方向）要隱藏哪些位置
+        const hidePositions = new Set();
+        if (enableWaterfall) {
+            // 針對每一個垂直列（column）
+            for (let col = 0; col < columnsPerRow; col++) {
+                // 每一列隨機隱藏 0-5 個卡片，且只從最後面開始缺
+                const hideCount = Math.floor(Math.random() * 6); // 0-5
+
+                // 從最後一行開始往上隱藏
+                for (let i = 0; i < hideCount; i++) {
+                    const rowToHide = 4 - i; // 從第5行(index=4)開始往上：4, 3, 2, 1, 0
+
+                    // 計算在整個陣列中的絕對索引
+                    const absoluteIndex = lastFiveRowsStartIndex + (rowToHide * columnsPerRow) + col;
+                    if (absoluteIndex < totalCount) {
+                        hidePositions.add(absoluteIndex);
+                    }
+                }
+            }
+        }
+
+        shareLinks.forEach((link, index) => {
             const card = document.createElement("div");
             card.className = "share-link-card";
             card.style.backgroundColor = generateRandomColor();
+
+            // 判斷是否為最後5行（且總行數 > 5）
+            const isInLastFiveRows = index >= lastFiveRowsStartIndex;
+
+            if (isInLastFiveRows) {
+                // 添加水流效果類別
+                card.classList.add("share-link-card--waterfall");
+
+                // 隨機動畫延遲（0-1秒）
+                const randomDelay = Math.random() * 1;
+                card.style.animationDelay = `${randomDelay}s`;
+
+                // 隨機的輕微垂直偏移（製造更自然的水流感）
+                const randomOffset = (Math.random() - 0.5) * 10; // -5px 到 +5px
+                card.style.marginTop = `${randomOffset}px`;
+
+                // 檢查這張卡片是否應該被隱藏
+                if (hidePositions.has(index)) {
+                    card.style.visibility = "hidden";
+                    card.style.pointerEvents = "none";
+                }
+            }
 
             // 如果沒有 URL，改變游標樣式
             if (!link.url || !link.url.trim()) {

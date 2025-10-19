@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>個人履歷｜技術領域專長</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Chocolate+Classical+Sans&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Chocolate+Classical+Sans&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
     <script type="module">
       // Import the functions you need from the SDKs you need
@@ -123,49 +126,63 @@
       <section class="section">
         <!-- 關於我 -->
         <h2 class="section__title">
-          <span class="section__title-highlight section__title-highlight--about">關於我</span>
+          <span class="section__title-highlight section__title-highlight--about"
+            >{ 關於我 }</span
+          >
         </h2>
         <div class="about-content">
           <!-- 棲息地 -->
           <div class="about-item">
-            <span class="about-item__label">📍 棲息地：</span>
+            <span class="about-item__label">棲息地：</span>
             <span id="aboutLocation" class="about-item__value"></span>
           </div>
 
           <!-- 經歷 -->
           <div class="about-item">
-            <div class="about-item__label">💼 經歷：</div>
+            <div class="about-item__label">經歷：</div>
             <div id="experienceList" class="about-item__content"></div>
           </div>
 
           <!-- 學歷 -->
           <div class="about-item">
-            <div class="about-item__label">🎓 學歷：</div>
-            <div id="educationList" class="about-item__content education-tags"></div>
+            <div class="about-item__label">學歷：</div>
+            <div
+              id="educationList"
+              class="about-item__content education-tags"
+            ></div>
           </div>
 
           <!-- 專業證書 -->
           <div class="about-item">
-            <div class="about-item__label">📜 專業證書：</div>
-            <div id="certificateList" class="about-item__content certificate-grid"></div>
+            <div class="about-item__label">專業證書：</div>
+            <div
+              id="certificateList"
+              class="about-item__content certificate-grid"
+            ></div>
           </div>
 
           <!-- 個人網站 -->
           <div class="about-item">
-            <div class="about-item__label">🔗 個人相關網站：</div>
-            <div id="websiteList" class="about-item__content website-list"></div>
+            <div class="about-item__label">個人相關網站：</div>
+            <div
+              id="websiteList"
+              class="about-item__content website-list"
+            ></div>
           </div>
         </div>
 
         <!-- 技能列表 -->
         <h2 class="section__title">
-          <span class="section__title-highlight section__title-highlight--skills">技能列表</span>
+          <span
+            class="section__title-highlight section__title-highlight--skills"
+            >{ 技能列表 }</span
+          >
         </h2>
         <div id="skillTagsContainer" class="skill-tags-container"></div>
 
         <!-- 專業領域項目 -->
         <h2 class="section__title">
-          <span class="section__title-highlight">專業領域項目</span>
+          <span class="section__title-highlight">{ 專業領域項目 }</span>
         </h2>
         <div class="skill-grid" id="skillGrid"></div>
       </section>
@@ -174,7 +191,11 @@
     <footer class="footer"></footer>
 
     <dialog class="modal" id="profileModal">
-      <form method="dialog" class="modal__content modal__content--profile" id="profileForm">
+      <form
+        method="dialog"
+        class="modal__content modal__content--profile"
+        id="profileForm"
+      >
         <h2>編輯自我介紹</h2>
         <label class="field">
           <span>顯示名稱（含括號）</span>
@@ -244,7 +265,10 @@
     </dialog>
 
     <dialog class="modal" id="projectManagerModal">
-      <div class="modal__content modal__content--project-manager" id="projectManagerContent">
+      <div
+        class="modal__content modal__content--project-manager"
+        id="projectManagerContent"
+      >
         <div class="modal__header">
           <h2 id="projectManagerTitle">管理專案</h2>
           <button
@@ -266,7 +290,11 @@
     </dialog>
 
     <dialog class="modal" id="projectEditorModal">
-      <form method="dialog" class="modal__content modal__content--project-editor" id="projectForm">
+      <form
+        method="dialog"
+        class="modal__content modal__content--project-editor"
+        id="projectForm"
+      >
         <div class="modal__header">
           <h2 id="projectEditorTitle">專案內容</h2>
           <button
@@ -305,7 +333,10 @@
     </dialog>
 
     <dialog class="modal" id="skillDetailModal">
-      <div class="modal__content modal__content--skill-detail" id="skillDetailContent">
+      <div
+        class="modal__content modal__content--skill-detail"
+        id="skillDetailContent"
+      >
         <div class="modal__header">
           <h2 id="detailSkillTitle"></h2>
           <button
@@ -388,14 +419,25 @@
           <!-- 棲息地 -->
           <div class="field">
             <span>📍 棲息地</span>
-            <input type="text" id="aboutLocationInput" placeholder="例如：台北市, 台灣" />
+            <input
+              type="text"
+              id="aboutLocationInput"
+              placeholder="例如：台北市, 台灣"
+            />
           </div>
 
           <!-- 經歷管理 -->
           <div class="field">
             <span>💼 經歷</span>
-            <div id="experienceManagerList" class="experience-manager-list"></div>
-            <button type="button" id="addExperience" class="admin-btn admin-btn--ghost">
+            <div
+              id="experienceManagerList"
+              class="experience-manager-list"
+            ></div>
+            <button
+              type="button"
+              id="addExperience"
+              class="admin-btn admin-btn--ghost"
+            >
               新增經歷
             </button>
           </div>
@@ -404,7 +446,11 @@
           <div class="field">
             <span>🎓 學歷</span>
             <div id="educationManagerList" class="education-manager-list"></div>
-            <button type="button" id="addEducation" class="admin-btn admin-btn--ghost">
+            <button
+              type="button"
+              id="addEducation"
+              class="admin-btn admin-btn--ghost"
+            >
               新增學歷
             </button>
           </div>
@@ -412,8 +458,15 @@
           <!-- 證書管理 -->
           <div class="field">
             <span>📜 專業證書</span>
-            <div id="certificateManagerList" class="certificate-manager-list"></div>
-            <button type="button" id="addCertificate" class="admin-btn admin-btn--ghost">
+            <div
+              id="certificateManagerList"
+              class="certificate-manager-list"
+            ></div>
+            <button
+              type="button"
+              id="addCertificate"
+              class="admin-btn admin-btn--ghost"
+            >
               新增證書
             </button>
           </div>
@@ -422,7 +475,11 @@
           <div class="field">
             <span>🔗 個人相關網站</span>
             <div id="websiteManagerList" class="website-manager-list"></div>
-            <button type="button" id="addWebsite" class="admin-btn admin-btn--ghost">
+            <button
+              type="button"
+              id="addWebsite"
+              class="admin-btn admin-btn--ghost"
+            >
               新增網站
             </button>
           </div>
@@ -447,13 +504,22 @@
           </button>
         </div>
         <div class="share-links-manager">
-          <div id="shareLinksManagerList" class="share-links-manager-list"></div>
-          <button type="button" id="addShareLink" class="admin-btn admin-btn--ghost">
+          <div
+            id="shareLinksManagerList"
+            class="share-links-manager-list"
+          ></div>
+          <button
+            type="button"
+            id="addShareLink"
+            class="admin-btn admin-btn--ghost"
+          >
             新增分享連結
           </button>
         </div>
         <div class="modal__actions">
-          <button type="button" id="saveShareLinks" class="primary">儲存</button>
+          <button type="button" id="saveShareLinks" class="primary">
+            儲存
+          </button>
         </div>
       </div>
     </dialog>

@@ -410,45 +410,12 @@ body:has(.admin-bar:not([hidden])) {
   gap: 0.6rem;
   font-family: "Chocolate Classical Sans", sans-serif;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 0.8em;
   background: linear-gradient(to right, #c0c0c0, #4a4a4a);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 0.1em;
-}
-
-.section__title-highlight::before {
-  content: "";
-  display: inline-block;
-  width: 1.5em;
-  height: 1.5em;
-  background: linear-gradient(to right, #cc8800, #ffd700);
-  -webkit-mask: url("../assets/photos/skills.png") center/contain no-repeat;
-  mask: url("../assets/photos/skills.png") center/contain no-repeat;
-  flex-shrink: 0;
-  animation: iconFloat 3s ease-in-out infinite;
-  filter: none;
-}
-
-/* 關於我標題專屬圖標 */
-.section__title-highlight--about::before {
-  width: 1.5em;
-  height: 1.5em;
-  background: linear-gradient(to right, #cc8800, #ffd700);
-  -webkit-mask: url("../assets/photos/about.png") center/contain no-repeat;
-  mask: url("../assets/photos/about.png") center/contain no-repeat;
-  filter: none;
-}
-
-/* 技能列表標題專屬圖標 - 左深右淺漸層 */
-.section__title-highlight--skills::before {
-  width: 1.5em;
-  height: 1.5em;
-  background: linear-gradient(to right, #cc8800, #ffd700);
-  -webkit-mask: url("../assets/photos/tools.png") center/contain no-repeat;
-  mask: url("../assets/photos/tools.png") center/contain no-repeat;
-  filter: none;
 }
 
 @keyframes iconFloat {
@@ -2080,6 +2047,27 @@ body:has(.admin-bar:not([hidden])) {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: visible;
+}
+
+/* 水流效果：最後4行的卡片 */
+.share-link-card--waterfall {
+  animation: waterfall-flow 2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes waterfall-flow {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .share-link-card:hover {
