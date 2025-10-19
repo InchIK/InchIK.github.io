@@ -1,175 +1,806 @@
-# **個人履歷網站 - 技術交接文件**
+# 個人作品集網站 - 完整技術文件
 
-## 1. 專案總覽 (Project Overview)
+> **版本**: 2.0  
+> **最後更新**: 2025-10-19  
+> **維護者**: InchIK  
+> **專案類型**: 靜態網站 (GitHub Pages + Firebase)
 
-本專案是一個動態的個人履歷網頁，旨在展示個人的專業技能、專案經驗與個人簡介。
+---
 
-此專案前端採用純 HTML/CSS/JavaScript 實現，並巧妙地整合了 **Firebase** 作為後端服務 (Backend-as-a-Service, BaaS)，實現了內容的動態管理和即時更新，同時也設計了離線備援機制。
+## 📑 目錄
 
-**核心特色：**
+1. [專案概述](#專案概述)
+2. [技術架構](#技術架構)
+3. [檔案結構](#檔案結構)
+4. [功能模組說明](#功能模組說明)
+5. [CSS 設計系統](#css-設計系統)
+6. [Firebase 整合](#firebase-整合)
+7. [響應式設計](#響應式設計)
+8. [維護指南](#維護指南)
+9. [常見問題與解決方案](#常見問題與解決方案)
+10. [部署流程](#部署流程)
 
-*   **動態內容管理**：管理員登入後，可以直接在網頁上編輯個人資料、新增/修改/刪除技能區塊與相關專案。
-*   **可管理的技能標籤**：
-    *   在獨立的「技能列表」區塊中，以彩色橢圓形狀展示關鍵技能標籤
-    *   每個標籤具有隨機生成的 HSL 背景顏色（色相隨機，飽和度70%，亮度85%）
-    *   標題圖標使用 tools.png，帶有金黃色到深黃色的漸層效果（左深右淺）
-    *   可透過管理介面即時新增、刪除標籤，支援 Enter 鍵快速新增
-*   **視覺設計亮點**：
-    *   標題圖標採用 CSS mask 技術實現漸層效果（金黃 #FFD700 到深黃 #CC8800）
-    *   圖標帶有浮動動畫效果（3秒循環，上下浮動5px）
-    *   文字使用銀灰色漸層（#c0c0c0 到 #4a4a4a）
-*   **即時資料庫**：所有內容主要儲存在 Firestore 中，任何修改都會即時同步。
-*   **備援機制**：當 Firebase 無法連線時，系統會自動降級讀取本地的 `db/data.json` 檔案，確保網站在多數情況下依然能正常顯示。
-*   **響應式設計**：網頁佈局能適應從桌面到手機等不同尺寸的裝置。
+---
 
-## 2. 技術架構 (Technical Architecture)
+## 專案概述
 
-本專案為一個**無伺服器 (Serverless)** 架構的單頁應用 (SPA)，前端直接與後端服務溝通。
+### 專案簡介
+這是一個基於 GitHub Pages 的個人作品集網站，具備完整的內容管理功能，使用 Firebase Firestore 作為資料儲存後端。網站支援即時編輯、響應式設計，並提供豐富的互動效果。
 
-### **前端 (Frontend)**
+### 核心特色
+- ✅ 無需後端伺服器，純前端運作
+- ✅ Firebase Firestore 即時資料同步
+- ✅ 完整的管理介面（需 Google 登入）
+- ✅ 全裝置響應式設計（桌面/平板/手機）
+- ✅ 支援瀏覽器縮放 50%-200%
+- ✅ 符合 WCAG 無障礙標準（觸控目標 ≥44px）
+- ✅ 電影院風格 Modal 動畫效果
+- ✅ 瀑布流排版演算法
 
-*   **HTML5**: 負責網頁的整體結構，包含所有的 UI 元素與互動視窗 (Modal)。
-*   **CSS3**: 負責所有視覺樣式與響應式設計。大量使用 CSS 變數 (`:root`) 來管理顏色與尺寸，便於統一修改風格。
-*   **JavaScript (ESM)**:
-    *   所有前端邏輯都集中在 `js/main.js` 中。
-    *   採用現代 JavaScript 的模組化 (`import`) 與非同步語法 (`async/await`)。
-    *   不依賴任何大型前端框架 (如 React, Vue)，直接操作 DOM 來渲染畫面。
+### 技術棧
+- **前端框架**: 純 Vanilla JavaScript (ES6+)
+- **樣式**: CSS3 (使用 CSS 變數與 clamp() 實現流暢響應式)
+- **資料庫**: Firebase Firestore
+- **認證**: Firebase Authentication (Google OAuth)
+- **部署**: GitHub Pages
+- **版本控制**: Git/GitHub
 
-### **後端與資料庫 (Backend & Database)**
+---
 
-本專案完全依賴 **Firebase** 提供的服務。
+## 技術架構
 
-*   **Firebase Authentication**:
-    *   **用途**: 處理管理員登入驗證。
-    *   **機制**: 採用 Google 帳號彈出式視窗登入。在 `js/main.js` 中，有一個 `ADMIN_EMAIL` 常數。只有使用此信箱登入的 Google 帳號才會被授予管理員權限。
-*   **Firestore (NoSQL 資料庫)**:
-    *   **用途**: 作為主要的資料儲存中心。
-    *   **結構**: 所有網站內容（個人資料、技能、專案等）都儲存在一個名為 `resume` 的 Collection 中的單一文件 `content` 內。這種設計簡化了資料讀取，一次請求即可獲取所有頁面所需內容。
+### 系統架構圖
 
-### **資料流 (Data Flow)**
+```
+┌─────────────────────────────────────────────────────────┐
+│                    GitHub Pages (靜態託管)                │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │  index.html  │  │ css/style.css│  │  js/main.js  │  │
+│  │  (結構)      │  │  (樣式)      │  │  (邏輯)      │  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│         │                 │                 │           │
+│         └─────────────────┴─────────────────┘           │
+│                           │                             │
+└───────────────────────────┼─────────────────────────────┘
+                            │
+                            ▼
+              ┌─────────────────────────┐
+              │   Firebase Services     │
+              ├─────────────────────────┤
+              │ • Firestore Database    │
+              │ • Authentication        │
+              └─────────────────────────┘
+```
 
-1.  **載入**: 瀏覽器載入 `index.html`，並執行 `js/main.js`。
-2.  **資料獲取 (`hydrateData` 函式)**:
-    *   **優先嘗試**: `loadFirestoreData` 函式會嘗試從 Firestore 讀取 `resume/content` 文件。
-    *   **備援 #1**: 如果讀取 Firestore 失敗（例如網路問題或 Firebase 配置錯誤），`fetchStaticData` 函式會接著嘗試讀取專案內的 `db/data.json` 檔案。
-    *   **備援 #2**: 如果連 `data.json` 也讀取失敗，系統會使用寫死在 `js/main.js` 裡的預設內容。
-3.  **渲染**: 獲取資料後，`renderProfile()`、`renderSkillTags()` 和 `renderSkills()` 等函式會將資料動態渲染到 HTML 頁面上。
-4.  **管理員操作**:
-    *   管理員登入後，頁面會顯示「編輯」、「新增」等按鈕。
-    *   點擊按鈕會觸發對應的互動視窗。
-    *   在視窗中儲存變更後，`persistData` 函式會被呼叫。
-    *   `persistData` 會將更新後的完整資料物件寫回 **Firestore**，完成資料同步。
-    *   最後，重新渲染頁面 UI 以顯示最新內容。
+### 資料流程
 
-## 3. 專案結構 (Project Structure)
+```
+使用者操作 → DOM 事件 → JavaScript 處理 → Firebase API → Firestore
+                                                    │
+                                                    ▼
+使用者介面 ← DOM 更新 ← JavaScript 渲染 ← 即時資料監聽
+```
+
+---
+
+## 檔案結構
 
 ```
 InchIK.github.io/
-├─── index.html             # 主 HTML 檔案，包含所有頁面結構與 Modal
-├─── css/
-│    └─── style.css         # 唯一的 CSS 檔案，包含所有樣式
-├─── js/
-│    └─── main.js           # 核心 JavaScript 檔案，包含所有應用程式邏輯
-├─── db/
-│    ├─── auth.json         # (未使用於主要邏輯) 可能是測試用的假資料
-│    └─── data.json         # 靜態備援資料檔案
-└─── assets/
-     └─── photos/           # 存放所有圖片資源
+│
+├── index.html                          # 主要 HTML 結構
+├── css/
+│   └── style.css                       # 全域樣式與響應式設計
+├── js/
+│   └── main.js                         # 核心 JavaScript 邏輯
+├── assets/
+│   └── photos/                         # 圖片資源
+│       ├── avatar.jpg                  # 個人頭像
+│       ├── about.png                   # 關於我圖標
+│       ├── skills.png                  # 技能圖標
+│       ├── projects.png                # 專案圖標
+│       ├── web.png                     # 預設網站圖標
+│       ├── github.png linkedin.png     # 社交媒體圖標
+│       └── [證書圖片].png              # 專業證書縮圖
+│
+├── TECHNICAL_DOCUMENTATION.md          # 技術文件（本文件）
+├── RESPONSIVE_OPTIMIZATION_PLAN.md     # 響應式優化計劃
+├── SHARE_LINKS_FIREBASE_SETUP.md       # 分享連結設定指南
+├── EXPERIENCE_POSITION_FIREBASE_SETUP.md # 職務設定指南
+│
+└── README.md                           # 專案說明
 ```
 
-## 4. 核心程式邏輯 (`js/main.js`)
+---
 
-這是整個專案的核心，以下是主要功能區塊的解析：
+## 功能模組說明
 
-*   **常數與 DOM 元素**:
-    *   檔案開頭定義了所有重要的常數（如 `ADMIN_EMAIL`）和獲取的 DOM 元素節點。
-*   **資料初始化 (`hydrateData`, `loadRemoteData`)**:
-    *   這是程式的進入點，負責協調從 Firestore 或靜態檔案載入資料的整個流程。
-*   **資料正規化 (`normalizeData`, `normalizeSkills`, etc.)**:
-    *   這些函式確保不論資料來源為何（Firestore, JSON, 或預設值），其物件結構都是一致且安全的，避免因缺少某些欄位而導致錯誤。
-*   **渲染函式 (`renderProfile`, `renderSkills`, `renderSkillTags`, `renderSkillTagsManager`)**:
-    *   負責將資料轉換為 HTML 字串或 DOM 元素，並更新到頁面的對應區塊。
-    *   `renderSkillTags`: 在主頁面渲染技能標籤，為每個標籤產生隨機 HSL 背景色（色相0-360度隨機，飽和度70%，亮度85%）
-    *   `renderSkillTagsManager`: 在管理視窗中渲染可編輯的標籤列表，每個標籤帶有刪除按鈕
-*   **管理員 UI (`syncAdminUI`)**:
-    *   根據 `isAdmin` 這個布林值，來決定是否顯示管理員工具列與相關按鈕。這是在登入狀態改變時會被呼叫的關鍵函式。
-*   **Firebase 互動**:
-    *   `onAuthStateChanged`: 監聽 Firebase 的登入狀態，並據此更新 `isAdmin` 狀態。
-    *   `signInWithPopup`, `signOut`: 處理登入與登出流程。
-    *   `syncFirestoreData`: 負責將本地的資料變更寫回 Firestore。
-*   **互動視窗 (Modal) 邏輯**:
-    *   檔案後半部充滿了對各個 Modal（如個人資料、技能、專案、技能標籤）的事件監聽器。
-    *   **開啟**: 點擊編輯/新增按鈕時，會將現有資料填入表單，並呼叫 `openDialog` 顯示視窗。
-    *   **儲存**: 提交表單時，會從輸入框收集新資料，更新記憶體中的全域資料物件，呼叫 `persistData` 存回後端，然後重新渲染 UI 並關閉視窗。
+### 1. 個人資料模組 (Profile)
 
-## 5. 資料模型 (Data Model)
+**功能**: 顯示個人頭像、姓名、聯絡方式、自我介紹
 
-儲存在 Firestore 和 `data.json` 中的資料結構是一致的。
-
-```json
+**資料結構**:
+```javascript
 {
-  "profile": {
-    "name": "string",
-    "email": "string",
-    "summary": "string",
-    "avatar": "string (url or path)"
-  },
-  "skillTags": [
-    "string",
-    "string"
-  ],
-  "skills": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "imageUrl": "string (url or path)",
-      "projects": [
-        {
-          "id": "string",
-          "name": "string",
-          "summary": "string (supports Markdown)",
-          "createdAt": "ISO_string_date",
-          "updatedAt": "ISO_string_date",
-          "media": [
-            {
-              "id": "string",
-              "type": "'image' | 'file'",
-              "url": "string",
-              "label": "string"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+  name: "姓名",
+  contact: "聯絡資訊",
+  summary: "自我介紹文字"
 }
 ```
 
-## 6. 如何接手與開發 (Getting Started)
+**關鍵檔案**:
+- HTML: `index.html` - `.hero__content` 區塊
+- CSS: `css/style.css` - `.profile` 相關樣式
+- JS: `js/main.js` - `renderProfile()`, `saveProfile()`
 
-1.  **環境設定**:
-    *   由於這是純前端專案，您只需要一個能提供本地服務的工具（例如 VS Code 的 `Live Server` 擴充功能）即可在本地端運行 `index.html`。
-2.  **成為管理員**:
-    *   打開 `js/main.js` 檔案。
-    *   找到 `const ADMIN_EMAIL = "kungyc@gmail.com";` 這一行。
-    *   將其信箱改為您自己的 Google 帳號信箱。
-    *   在網頁上點擊「管理登入」，並使用您的 Google 帳號登入，即可獲得管理員權限。
-3.  **Firebase 配置**:
-    *   `index.html` 的 `<head>` 區塊中包含了 Firebase 的設定物件 `firebaseConfig`。如果未來需要更換 Firebase 專案，請在此處更新對應的配置金鑰。
-4.  **開發流程**:
-    *   **修改內容**: 建議直接透過管理員登入後在 UI 上進行操作，資料會自動同步到 Firestore。
-        *   **編輯技能標籤**:
-            *   點擊管理工具列的「編輯技能標籤」按鈕開啟管理視窗
-            *   在輸入框中輸入新標籤名稱，點擊「新增標籤」或按 Enter 鍵
-            *   點擊標籤右側的「×」按鈕可刪除該標籤
-            *   所有變更會即時儲存到 Firestore 並更新頁面顯示
-        *   **編輯其他區塊**: 透過對應的編輯按鈕進行操作。
-    *   **修改樣式**: 所有樣式都在 `css/style.css`。
-        *   技能標籤樣式：`.skill-tag`, `.skill-tags-container`
-        *   標籤管理視窗：`.skill-tags-manager`, `.skill-tag-item`, `.skill-tag-remove`
-        *   標題圖標漸層：`.section__title-highlight::before` 使用 CSS mask 實現
-    *   **修改功能**: 所有互動邏輯都在 `js/main.js`。
-        *   技能標籤相關函式：`renderSkillTags()`, `renderSkillTagsManager()`
-        *   事件監聽器：`editSkillTagsBtn`, `addSkillTagBtn`, `skillTagsList` (刪除)
-    *   **更新備援資料**: 如果您透過 Firebase 更新了大量內容，建議手動將 Firestore `resume/content` 文件中的 JSON 內容複製一份，貼到 `db/data.json` 中，以確保備援資料也是最新的。
+---
+
+### 2. 關於我模組 (About Me)
+
+**功能**:
+- 📍 棲息地（單一項目）
+- 💼 經歷（公司、年資、技能標籤）
+- 🎓 學歷（學校、學位標籤）
+- 📜 專業證書（縮圖預覽，可點擊放大）
+- 🔗 個人網站連結（支援自訂圖標）
+- 🎯 適任職務（標籤列表）
+
+**資料結構**:
+```javascript
+aboutMe: {
+  location: "台灣台北市",
+  experiences: [
+    {
+      id: "exp-1",
+      company: "公司名稱",
+      years: "2020-2023",
+      skills: ["技能1", "技能2"]
+    }
+  ],
+  educations: [
+    {
+      id: "edu-1",
+      school: "學校名稱",
+      degree: "學位名稱"
+    }
+  ],
+  certificates: [
+    {
+      id: "cert-1",
+      title: "證書名稱",
+      image: "assets/photos/cert.png"
+    }
+  ],
+  websites: [
+    {
+      id: "web-1",
+      label: "GitHub",
+      url: "https://github.com/username",
+      icon: "assets/photos/github.png"  // 選填
+    }
+  ],
+  positions: ["DevOps", "雲端架構師"]
+}
+```
+
+**關鍵實作**:
+- **證書預覽**: 點擊縮圖開啟全螢幕 Modal
+- **網站圖標**: 無圖標時使用預設 `web.png`，白色背景確保可見性
+- **技能標籤配色**: 統一淺灰色 `#c0c0c0`
+
+---
+
+### 3. 技能標籤模組 (Skill Tags)
+
+**功能**: 全域技能標籤管理，可關聯到技能卡片
+
+**資料結構**:
+```javascript
+skillTags: ["JavaScript", "Python", "Docker", "Kubernetes"]
+```
+
+**樣式特性**:
+- 隨機 HSL 背景色（色相隨機，飽和度 70%，亮度 85%）
+- 圓角膠囊設計 (`border-radius: 999px`)
+- Hover 效果：上浮 2px + 陰影加深
+
+---
+
+### 4. 分享連結模組 (Share Links)
+
+**功能**:
+- 正方形圓角卡片顯示
+- 智慧文字縮寫（英文取首尾字母，中文取首字）
+- 智慧 Tooltip 定位（避免超出螢幕邊界）
+- 瀑布流排版效果
+- 垂直漸層配色（深灰到淺灰）
+
+**資料結構**:
+```javascript
+shareLinks: [
+  {
+    id: "link-1",
+    name: "GitHub",
+    description: "我的程式碼倉庫",
+    url: "https://github.com/username"  // 選填
+  }
+]
+```
+
+**瀑布流演算法**:
+1. 前 5 行保持整齊（每行 5 個）
+2. 第 6 行開始，每一列隨機缺 0-5 個卡片
+3. 缺的卡片從底部開始（使用 `visibility: hidden`）
+4. 剩餘卡片平均分配到各列
+
+**配色系統**:
+- 最上面一行：`#4a4a4a`（深灰）
+- 最下面一行：`#c0c0c0`（淺灰）
+- 中間行：RGB 線性插值計算顏色
+
+**響應式佈局**:
+- 桌面（>1024px）：5 欄，位於個人資料下方
+- 平板/手機（≤1024px）：移至頁面最下方，透明背景
+- 600px 以下：4 欄
+- 500px 以下：3 欄
+
+---
+
+### 5. Modal 系統
+
+**電影院螢幕展開動畫**:
+```css
+@keyframes cinemaScreenOpen {
+  0% {
+    transform: scale(0, 0);  /* 縮放到 0 */
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1, 0);  /* 水平展開完成 */
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1, 1);  /* 垂直展開完成 */
+    opacity: 1;
+  }
+}
+```
+
+**Modal 類型與尺寸**:
+
+| Modal 類型 | 桌面寬度 | 手機寬度 | 用途 |
+|-----------|---------|---------|------|
+| profile | 500px | 94vw | 編輯個人資料 |
+| panel | 550px | 94vw | 編輯技能區塊 |
+| project-editor | 720px | 95vw | 編輯專案 |
+| skill-detail | 2000px | 97vw | 技能詳情（特大） |
+| about-me | 700px | 97vw | 關於我管理 |
+
+**響應式行為**:
+- 400px 以下：所有 Modal 自動全螢幕（100vw, border-radius: 0）
+
+---
+
+## CSS 設計系統
+
+### CSS 變數架構
+
+#### 1. 間距系統
+```css
+:root {
+  --spacing-xs: clamp(0.25rem, 1vw, 0.5rem);   /* 4-8px */
+  --spacing-sm: clamp(0.5rem, 2vw, 1rem);      /* 8-16px */
+  --spacing-md: clamp(1rem, 3vw, 1.5rem);      /* 16-24px */
+  --spacing-lg: clamp(1.5rem, 4vw, 2rem);      /* 24-32px */
+  --spacing-xl: clamp(2rem, 5vw, 3rem);        /* 32-48px */
+}
+```
+
+**使用場景**:
+- `xs`: 標籤內距、小間距
+- `sm`: 按鈕內距、卡片間距
+- `md`: 區塊間距、容器內距
+- `lg`: 大區塊間距
+- `xl`: 主要區塊間距
+
+#### 2. 字體大小系統
+```css
+:root {
+  --font-xs: clamp(0.7rem, 1.5vw, 0.85rem);    /* 11.2-13.6px */
+  --font-sm: clamp(0.8rem, 1.8vw, 0.95rem);    /* 12.8-15.2px */
+  --font-base: clamp(0.9rem, 2vw, 1.05rem);    /* 14.4-16.8px */
+  --font-md: clamp(1rem, 2.2vw, 1.2rem);       /* 16-19.2px */
+  --font-lg: clamp(1.2rem, 2.5vw, 1.5rem);     /* 19.2-24px */
+  --font-xl: clamp(1.5rem, 3vw, 2rem);         /* 24-32px */
+  --font-2xl: clamp(1.8rem, 3.5vw, 2.5rem);    /* 28.8-40px */
+}
+```
+
+**使用場景**:
+- `xs`: 次要文字、提示文字
+- `sm`: 內文、描述文字
+- `base`: 主要內文、表單輸入
+- `md`: 小標題、按鈕文字
+- `lg`: 卡片標題
+- `xl`: Modal 標題
+- `2xl`: 區塊主標題
+
+#### 3. 其他變數
+```css
+:root {
+  --bg: #f8d34c;                                /* 背景色 */
+  --text: #1c2431;                              /* 文字色 */
+  --card-radius: 22px;                          /* 卡片圓角 */
+  --touch-target-min: 44px;                     /* 最小觸控目標 */
+}
+```
+
+### clamp() 函數說明
+
+**語法**: `clamp(最小值, 理想值, 最大值)`
+
+**範例**:
+```css
+font-size: clamp(0.9rem, 2vw, 1.05rem);
+/*
+  - 最小 0.9rem (14.4px)
+  - 理想 2vw (視窗寬度 2%)
+  - 最大 1.05rem (16.8px)
+*/
+```
+
+**優點**:
+- 無需 media query 即可實現流暢縮放
+- 支援瀏覽器縮放（50%-200%）
+- 減少響應式斷點中的覆蓋
+
+### 響應式斷點
+
+| 斷點 | 寬度 | 用途 |
+|-----|------|------|
+| 超大桌面 | >1400px | 預設樣式 |
+| 大桌面 | 1200px-1400px | 技能詳情 Modal 調整 |
+| 小桌面 | 1024px-1200px | 分享連結位置調整 |
+| 平板 | 820px-1024px | 頭像縮小、按鈕調整 |
+| 大手機 | 600px-680px | 技能卡片單欄 |
+| 一般手機 | 500px-600px | Modal 優化 |
+| 小手機 | 400px-500px | 進一步縮小間距 |
+| 超小手機 | <400px | 全螢幕 Modal |
+
+### 觸控目標標準
+
+所有互動元素符合 **WCAG 2.5.5 (Level AAA)** 標準：
+- 最小尺寸: `44x44px`
+- 實作方式: `min-width: var(--touch-target-min); min-height: var(--touch-target-min);`
+
+**已優化元素**:
+- ✅ 所有按鈕
+- ✅ 所有標籤
+- ✅ 移除按鈕
+- ✅ 表單輸入
+- ✅ 卡片操作按鈕
+
+---
+
+## Firebase 整合
+
+### Firestore 資料結構
+
+#### 文件路徑
+```
+portfolio/
+└── data/
+    └── (單一文件，包含所有資料)
+```
+
+#### 完整資料結構
+```javascript
+{
+  // 個人資料
+  profile: {
+    name: "姓名",
+    contact: "聯絡資訊",
+    summary: "自我介紹"
+  },
+
+  // 關於我
+  aboutMe: {
+    location: "台灣台北市",
+    experiences: [...],
+    educations: [...],
+    certificates: [...],
+    websites: [...],
+    positions: [...]
+  },
+
+  // 技能標籤
+  skillTags: ["JavaScript", "Python"],
+
+  // 技能區塊
+  panels: [...],
+
+  // 專案
+  projects: [...],
+
+  // 分享連結
+  shareLinks: [...]
+}
+```
+
+### 資料同步機制
+
+#### 讀取資料
+```javascript
+// 即時監聽
+db.collection("portfolio").doc("data").onSnapshot((doc) => {
+  if (doc.exists) {
+    const data = doc.data();
+    renderAll(data);
+  }
+});
+```
+
+#### 儲存資料
+```javascript
+async function syncFirestoreData() {
+  try {
+    await db.collection("portfolio").doc("data").set({
+      profile, aboutMe, skillTags, panels, projects, shareLinks
+    }, { merge: true });
+    console.log("✅ Firebase 同步成功");
+  } catch (err) {
+    console.error("❌ Firebase 同步失敗:", err);
+  }
+}
+```
+
+#### 重要：資料正規化
+確保資料一致性，特別注意 **icon 欄位**必須被保留：
+
+```javascript
+function normalizeAboutMe(source) {
+  return {
+    websites: Array.isArray(source.websites)
+      ? source.websites.map(web => ({
+          id: web.id || generateId("web"),
+          label: web.label || "",
+          url: web.url || "",
+          icon: web.icon || ""  // ⚠️ 關鍵：確保 icon 欄位被保留
+        }))
+      : []
+  };
+}
+```
+
+### Google 認證流程
+
+```javascript
+// 登入
+async function signIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  await auth.signInWithPopup(provider);
+}
+
+// 監聽認證狀態
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    showAdminBar();  // 顯示管理介面
+  } else {
+    hideAdminBar();  // 隱藏管理介面
+  }
+});
+```
+
+---
+
+## 維護指南
+
+### 日常維護任務
+
+#### 1. 新增技能標籤
+1. 登入網站（右上角 Google 登入）
+2. 點擊「管理模式」
+3. 點擊「管理技能標籤」
+4. 輸入標籤名稱（逗號分隔多個標籤）
+5. 點擊「儲存」
+
+#### 2. 新增/編輯關於我內容
+1. 登入並開啟管理模式
+2. 在「關於我」區塊點擊「編輯」
+3. 編輯所需項目：
+   - 棲息地、經歷、學歷、證書、網站、職務
+4. 點擊「儲存」
+
+#### 3. 新增分享連結
+1. 登入並開啟管理模式
+2. 點擊「管理分享連結」
+3. 輸入名稱、說明、URL（選填）
+4. 點擊「儲存」
+
+### 程式碼維護
+
+#### 修改樣式 - 遵循設計系統
+
+```css
+/* ✅ 好的做法 */
+.my-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-base);
+  min-height: var(--touch-target-min);
+}
+
+/* ❌ 不好的做法 */
+.my-button {
+  padding: 0.5rem 1rem;      /* 應使用 CSS 變數 */
+  font-size: 14px;           /* 應使用 CSS 變數 */
+  height: 40px;              /* 應使用 min-height */
+}
+```
+
+#### 新增響應式樣式
+
+```css
+/* 基礎樣式：優先使用 clamp() */
+.my-element {
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  padding: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* 只在需要結構性改變時使用 media query */
+@media (max-width: 600px) {
+  .my-element {
+    flex-direction: column;  /* 改變佈局方向 */
+  }
+}
+```
+
+### Git 工作流程
+
+**提交規範**:
+```bash
+# 新增功能
+git commit -m "新增: 功能描述"
+
+# 修復錯誤
+git commit -m "修復: 錯誤描述"
+
+# 優化代碼
+git commit -m "優化: 優化項目"
+```
+
+**部署流程**:
+```bash
+# 1. 測試完成
+# 2. 提交變更
+git add .
+git commit -m "提交訊息"
+
+# 3. 推送到 GitHub（自動部署）
+git push origin main
+
+# 4. 等待 GitHub Pages 部署（約 1-2 分鐘）
+```
+
+---
+
+## 常見問題與解決方案
+
+### Q1: 圖片無法顯示
+**解決方案**:
+```javascript
+// 檢查圖片路徑
+console.log("圖片路徑:", imageUrl);
+
+// 使用相對路徑
+// ✅ assets/photos/image.png
+// ❌ /assets/photos/image.png
+```
+
+### Q2: Firebase 資料無法儲存
+**解決方案**:
+```javascript
+// 1. 檢查登入狀態
+console.log("當前用戶:", auth.currentUser);
+
+// 2. 檢查 Firestore 規則
+// Firebase Console → Firestore Database → Rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /portfolio/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
+
+### Q3: 技能標籤刪除後重新整理又出現
+**原因**: 刪除操作沒有等待 Firebase 寫入完成
+
+**解決方案**: 程式碼已修正，使用 `async/await` 確保同步完成
+
+### Q4: 網站圖標不顯示或保存後消失
+**原因**: `normalizeAboutMe()` 函數未包含 `icon` 欄位
+
+**解決方案**: 已修正，確保正規化時保留 `icon` 欄位
+
+### Q5: 分享連結瀑布流排版異常
+**解決方案**:
+```javascript
+// 手動觸發重新排版
+arrangeWaterfallLayout();
+
+// 監聽視窗大小改變
+window.addEventListener('resize', debounce(() => {
+  arrangeWaterfallLayout();
+}, 200));
+```
+
+### Q6: 手機上觸控按鈕太小
+**解決方案**:
+```css
+/* 確保所有互動元素使用觸控目標變數 */
+.my-button {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+```
+
+---
+
+## 部署流程
+
+### GitHub Pages 設定
+
+1. Repository Settings → Pages
+2. Source 選擇 `main` 分支
+3. 資料夾選擇 `/ (root)`
+4. 勾選 "Enforce HTTPS"
+
+### Firebase 設定
+
+1. **建立 Firebase 專案**
+   - 前往 [Firebase Console](https://console.firebase.google.com/)
+   - 點擊「新增專案」
+
+2. **啟用 Firestore**
+   - Firestore Database → 建立資料庫
+   - 選擇地區（建議 `asia-east1` 台灣）
+
+3. **設定安全規則**
+   ```javascript
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /portfolio/{document=**} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
+     }
+   }
+   ```
+
+4. **啟用 Authentication**
+   - Authentication → Google 登入
+   - 加入授權網域：`inchik.github.io`
+
+5. **取得 Firebase 設定**
+   - 複製 `firebaseConfig` 物件
+   - 貼到 `js/main.js`
+
+### 部署檢查清單
+
+**部署前**:
+- [ ] 本地測試所有功能正常
+- [ ] Firebase 設定正確
+- [ ] 圖片資源已上傳
+- [ ] Git commit 訊息清晰
+
+**部署後**:
+- [ ] 訪問網站確認可正常訪問
+- [ ] 測試 Google 登入功能
+- [ ] 測試管理介面功能
+- [ ] 測試響應式設計
+
+---
+
+## 附錄
+
+### 常用 Git 指令
+
+```bash
+# 查看狀態
+git status
+
+# 暫存所有變更
+git add .
+
+# 提交變更
+git commit -m "提交訊息"
+
+# 推送到遠端
+git push origin main
+
+# 查看提交歷史
+git log --oneline -10
+
+# 回滾到指定 commit
+git reset --hard COMMIT_HASH
+```
+
+### 瀏覽器相容性
+
+**支援的瀏覽器**:
+- Chrome 90+ ✅
+- Firefox 88+ ✅
+- Safari 14+ ✅
+- Edge 90+ ✅
+
+**已知問題**:
+- IE 11: 不支援（使用 ES6+ 語法）
+
+### 效能監控
+
+**使用 Lighthouse 測試**:
+1. Chrome DevTools (F12) → Lighthouse
+2. 選擇類別：Performance, Accessibility, Best Practices, SEO
+3. 點擊「Generate report」
+
+**目標分數**:
+- Performance: >90
+- Accessibility: >90
+- Best Practices: >90
+- SEO: >80
+
+### 安全性建議
+
+#### Firebase 安全規則
+```javascript
+// ✅ 好的做法
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /portfolio/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+                      request.auth.token.email == 'your-email@gmail.com';
+    }
+  }
+}
+```
+
+#### XSS 防護
+```javascript
+// ✅ 安全的做法
+element.textContent = userInput;
+
+// ❌ 危險做法
+element.innerHTML = userInput;  // 可能注入腳本
+```
+
+---
+
+## 結語
+
+本技術文件涵蓋了整個專案的架構、功能、實作細節與維護指南。
+
+**重要提醒**:
+- 定期備份 Firebase 資料
+- 在修改前先測試
+- 遵循既有的設計系統與編碼風格
+- 善用 Git 版本控制
+
+**聯絡方式**:
+- 技術問題：請在 GitHub Issues 提出
+- 功能建議：歡迎提交 Pull Request
+
+---
+
+**文件版本歷史**:
+- v2.0 (2025-10-19): 完整技術文件，包含所有模組與最佳實踐
+- v1.0 (2025-10-18): 初版技術文件
+
+**本文件由 Claude Code 協助撰寫**
