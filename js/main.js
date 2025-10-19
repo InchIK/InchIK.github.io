@@ -1127,6 +1127,9 @@
 
             shareLinksGrid.appendChild(card);
         });
+
+        // 調整分享連結位置（需要在 DOM 渲染完成後執行）
+        setTimeout(() => handleShareLinksPosition(), 0);
     }
 
     // 生成圖標文字（英文取首尾，中文取首字）
@@ -2150,10 +2153,38 @@
 
     // ===== 響應式支援 =====
     let resizeTimer;
+
+    // 處理分享連結在不同螢幕尺寸的位置
+    function handleShareLinksPosition() {
+        const shareLinksSection = document.querySelector('.share-links-section');
+        const heroContent = document.querySelector('.hero__content');
+        const body = document.body;
+
+        if (!shareLinksSection || !heroContent) return;
+
+        const screenWidth = window.innerWidth;
+
+        // 1024px 以下（平板/手機）：移到 body 最後（整個頁面最下方）
+        if (screenWidth <= 1024) {
+            if (shareLinksSection.parentNode) {
+                body.appendChild(shareLinksSection);
+            }
+        } else {
+            // 桌面版：保持在 hero__content 內
+            if (shareLinksSection.parentNode !== heroContent) {
+                heroContent.appendChild(shareLinksSection);
+            }
+        }
+    }
+
+    // 初始執行一次
+    handleShareLinksPosition();
+
     window.addEventListener("resize", () => {
         // 防抖動：等待調整完成後才重新渲染
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
+            handleShareLinksPosition();
             renderShareLinks();
         }, 200);
     });
