@@ -863,16 +863,12 @@
             const div = document.createElement("div");
             div.className = "website-item";
 
-            // 如果有 icon，顯示圖片；否則顯示項目符號
-            if (web.icon) {
-                const icon = document.createElement("img");
-                icon.className = "website-icon";
-                icon.src = web.icon;
-                icon.alt = web.label;
-                div.appendChild(icon);
-            } else {
-                div.appendChild(document.createTextNode("• "));
-            }
+            // 顯示圖示（有指定就用指定的，沒有就用 web.png）
+            const icon = document.createElement("img");
+            icon.className = "website-icon";
+            icon.src = web.icon || "assets/photos/web.png";
+            icon.alt = web.label;
+            div.appendChild(icon);
 
             const label = document.createElement("strong");
             label.style.color = "#4a4a4a";
