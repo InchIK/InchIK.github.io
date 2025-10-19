@@ -363,14 +363,12 @@ body:has(.admin-bar:not([hidden])) {
 }
 
 .website-item a {
-  color: #0c7cd5;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 .website-item a:hover {
   text-decoration: underline;
-  color: #0f63b8;
 }
 
 /* ===== 技能標籤容器 ===== */

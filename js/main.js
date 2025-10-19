@@ -756,8 +756,7 @@
                 const skillTag = document.createElement("span");
                 skillTag.className = "experience-skill-tag";
                 skillTag.textContent = skill;
-                const hue = Math.floor(Math.random() * 360);
-                skillTag.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
+                skillTag.style.backgroundColor = "#c0c0c0";
                 skillsDiv.appendChild(skillTag);
             });
 
@@ -782,8 +781,7 @@
             const span = document.createElement("span");
             span.className = "education-tag";
             span.textContent = `${edu.school} ${edu.degree}`;
-            const hue = Math.floor(Math.random() * 360);
-            span.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
+            span.style.backgroundColor = "#c0c0c0";
             educationListEl.appendChild(span);
         });
     }
@@ -838,7 +836,25 @@
         aboutMe.websites.forEach((web) => {
             const div = document.createElement("div");
             div.className = "website-item";
-            div.innerHTML = `• ${escapeHTML(web.label)}: <a href="${escapeAttribute(web.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(web.url)}</a>`;
+
+            const label = document.createElement("strong");
+            label.style.color = "#4a4a4a";
+            label.textContent = web.label;
+
+            const colon = document.createTextNode(": ");
+
+            const link = document.createElement("a");
+            link.href = web.url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.style.color = "#808080";
+            link.textContent = web.url;
+
+            div.appendChild(document.createTextNode("• "));
+            div.appendChild(label);
+            div.appendChild(colon);
+            div.appendChild(link);
+
             websiteListEl.appendChild(div);
         });
     }
@@ -954,15 +970,35 @@
         const containerHeight = maxHeight * cardWidth + (maxHeight - 1) * gap;
         shareLinksGrid.style.height = `${containerHeight}px`;
 
+        // 計算漸層顏色的函數
+        function getGradientColor(row, maxRow) {
+            // 起始色: #4a4a4a (深灰)
+            const startR = 0x4a, startG = 0x4a, startB = 0x4a;
+            // 結束色: #c0c0c0 (淺灰)
+            const endR = 0xc0, endG = 0xc0, endB = 0xc0;
+
+            // 計算比例 (0 = 最上面, 1 = 最下面)
+            const ratio = maxRow > 0 ? row / maxRow : 0;
+
+            // 線性插值
+            const r = Math.round(startR + (endR - startR) * ratio);
+            const g = Math.round(startG + (endG - startG) * ratio);
+            const b = Math.round(startB + (endB - startB) * ratio);
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
         // 渲染所有卡片
         shareLinks.forEach((link, index) => {
             const card = document.createElement("div");
             card.className = "share-link-card";
-            card.style.backgroundColor = generateRandomColor();
 
             // 獲取這張卡片的位置
             const pos = cardPositions[index];
             if (!pos) return;
+
+            // 根據行數設定漸層顏色
+            card.style.backgroundColor = getGradientColor(pos.row, maxHeight - 1);
 
             // 設定卡片位置和尺寸
             card.style.width = `${cardWidth}px`;
