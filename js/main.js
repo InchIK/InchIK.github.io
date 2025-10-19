@@ -171,10 +171,12 @@
     const websiteListEl = document.getElementById("websiteList");
     const aboutLocationInput = document.getElementById("aboutLocationInput");
     const experienceManagerList = document.getElementById("experienceManagerList");
+    const positionManagerList = document.getElementById("positionManagerList");
     const educationManagerList = document.getElementById("educationManagerList");
     const certificateManagerList = document.getElementById("certificateManagerList");
     const websiteManagerList = document.getElementById("websiteManagerList");
     const addExperienceBtn = document.getElementById("addExperience");
+    const addPositionBtn = document.getElementById("addPosition");
     const addEducationBtn = document.getElementById("addEducation");
     const addCertificateBtn = document.getElementById("addCertificate");
     const addWebsiteBtn = document.getElementById("addWebsite");
@@ -215,6 +217,7 @@
     let aboutMe = {
         location: "",
         experiences: [],
+        positions: [],
         education: [],
         certificates: [],
         websites: []
@@ -327,6 +330,7 @@
                 aboutMe: {
                     location: "",
                     experiences: [],
+                    positions: [],
                     education: [],
                     certificates: [],
                     websites: []
@@ -352,6 +356,7 @@
             return {
                 location: "",
                 experiences: [],
+                positions: [],
                 education: [],
                 certificates: [],
                 websites: []
@@ -366,6 +371,7 @@
                 years: exp.years || "",
                 skills: Array.isArray(exp.skills) ? exp.skills : []
             })) : [],
+            positions: Array.isArray(source.positions) ? source.positions.filter(p => typeof p === "string" && p.trim()) : [],
             education: Array.isArray(source.education) ? source.education.map((edu, i) => ({
                 id: edu.id || `edu-${i + 1}`,
                 school: edu.school || "",
@@ -577,6 +583,7 @@
         const sanitizedAboutMe = {
             location: payload.aboutMe?.location || "",
             experiences: Array.isArray(payload.aboutMe?.experiences) ? payload.aboutMe.experiences : [],
+            positions: Array.isArray(payload.aboutMe?.positions) ? payload.aboutMe.positions : [],
             education: Array.isArray(payload.aboutMe?.education) ? payload.aboutMe.education : [],
             certificates: Array.isArray(payload.aboutMe?.certificates) ? payload.aboutMe.certificates : [],
             websites: Array.isArray(payload.aboutMe?.websites) ? payload.aboutMe.websites : []
@@ -722,6 +729,7 @@
     function renderAboutMe() {
         renderLocation();
         renderExperiences();
+        renderPositions();
         renderEducation();
         renderCertificates();
         renderWebsites();
@@ -765,6 +773,25 @@
                 div.appendChild(skillsDiv);
             }
             experienceListEl.appendChild(div);
+        });
+    }
+
+    function renderPositions() {
+        const positionListEl = document.getElementById("positionList");
+        if (!positionListEl) return;
+        positionListEl.innerHTML = "";
+
+        if (!aboutMe.positions || aboutMe.positions.length === 0) {
+            positionListEl.innerHTML = '<div style="color: rgba(28, 36, 49, 0.5);">暫無職務</div>';
+            return;
+        }
+
+        aboutMe.positions.forEach((position) => {
+            const span = document.createElement("span");
+            span.className = "position-tag";
+            span.textContent = position;
+            span.style.backgroundColor = "#c0c0c0";
+            positionListEl.appendChild(span);
         });
     }
 
@@ -1847,6 +1874,7 @@
         // 收集資料
         aboutMe.location = aboutLocationInput?.value.trim() || "";
         aboutMe.experiences = collectExperiences();
+        aboutMe.positions = collectPositions();
         aboutMe.education = collectEducation();
         aboutMe.certificates = collectCertificates();
         aboutMe.websites = collectWebsites();
@@ -1858,6 +1886,7 @@
 
     function renderAboutMeManager() {
         renderExperienceManager();
+        renderPositionManager();
         renderEducationManager();
         renderCertificateManager();
         renderWebsiteManager();
@@ -1902,6 +1931,41 @@
             years: item.querySelector('[data-field="years"]')?.value.trim() || "",
             skills: item.querySelector('[data-field="skills"]')?.value.split(',').map(s => s.trim()).filter(Boolean) || []
         })).filter(exp => exp.company);
+    }
+
+    // 職務管理
+    addPositionBtn?.addEventListener("click", () => {
+        addPositionItem();
+    });
+
+    function renderPositionManager() {
+        if (!positionManagerList) return;
+        positionManagerList.innerHTML = "";
+        aboutMe.positions.forEach((position) => addPositionItem(position));
+    }
+
+    function addPositionItem(positionName = "") {
+        if (!positionManagerList) return;
+        const div = document.createElement("div");
+        div.className = "manager-item";
+
+        div.innerHTML = `
+            <div class="manager-item__fields">
+                <input type="text" placeholder="職務名稱（例如：DevOps、雲端架構師）" value="${escapeHTML(positionName)}" data-field="position" />
+            </div>
+            <button type="button" class="manager-item__remove">×</button>
+        `;
+
+        div.querySelector(".manager-item__remove")?.addEventListener("click", () => div.remove());
+        positionManagerList.appendChild(div);
+    }
+
+    function collectPositions() {
+        if (!positionManagerList) return [];
+        const items = positionManagerList.querySelectorAll(".manager-item");
+        return Array.from(items)
+            .map(item => item.querySelector('[data-field="position"]')?.value.trim() || "")
+            .filter(pos => pos);
     }
 
     // 學歷管理
