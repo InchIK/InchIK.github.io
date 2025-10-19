@@ -1510,7 +1510,7 @@
         closeDialog(skillTagsModal);
     });
 
-    addSkillTagBtn?.addEventListener("click", () => {
+    addSkillTagBtn?.addEventListener("click", async () => {
         const newTag = newSkillTagInput?.value.trim();
         if (!newTag) return;
 
@@ -1520,11 +1520,15 @@
         }
 
         skillTags.push(newTag);
-        persistData();
+
+        // 先更新 UI
         renderSkillTags();
         renderSkillTagsManager();
         newSkillTagInput.value = "";
         newSkillTagInput.focus();
+
+        // 等待 Firebase 同步完成
+        await syncFirestoreData({ profile, skills, skillTags, aboutMe, shareLinks });
     });
 
     newSkillTagInput?.addEventListener("keypress", (event) => {
@@ -1534,7 +1538,7 @@
         }
     });
 
-    skillTagsList?.addEventListener("click", (event) => {
+    skillTagsList?.addEventListener("click", async (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
 
@@ -1547,9 +1551,13 @@
         if (!window.confirm(`確定要刪除標籤「${tagText}」嗎？`)) return;
 
         skillTags = skillTags.filter(tag => tag !== tagText);
-        persistData();
+
+        // 先更新 UI（顯示刪除中）
         renderSkillTags();
         renderSkillTagsManager();
+
+        // 等待 Firebase 同步完成
+        await syncFirestoreData({ profile, skills, skillTags, aboutMe, shareLinks });
     });
 
     function renderSkillTagsManager() {
