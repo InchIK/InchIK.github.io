@@ -398,6 +398,10 @@ body:has(.admin-bar:not([hidden])) {
   margin-right: 8px;
   vertical-align: middle;
   flex-shrink: 0;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2px;
+  object-fit: contain;
 }
 
 .website-item a {
