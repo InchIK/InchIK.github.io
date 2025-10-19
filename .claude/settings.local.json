@@ -1,11 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git reset --hard HEAD~1)",
-      "Bash(dir /b \"e:\\Code\\inchi\\InchIK.github.io\\assets\\photos\")",
-      "Bash(git pull --rebase)",
-      "Bash(git add .claude/settings.local.json)",
-      "Bash(git commit -m \"更新設定檔\")"
+      "Bash(git add index.html)",
+      "Bash(git commit -m \"將「任職職務」改為「適任職務」\n\n- 更新前台顯示標籤文字\n- 從「任職職務：」改為「適任職務：」\")",
+      "Bash(git commit -m \"改善自我介紹排版：改為兩端對齊\n\n- text-align: justify（兩端對齊）\n- text-justify: inter-character（中文字間對齊）\n- word-break: break-word（允許單字斷行）\n- hyphens: auto（自動斷字）\n\n改善文字排版整齊度，避免左右不齊的問題\")",
+      "Bash(git commit -m \"新增自我介紹文字內嵌效果\n\n- 使用 text-shadow 製造文字刻進背景的視覺效果\n- 上方淺色陰影（白色半透明）\n- 下方深色陰影（黑色半透明）\n- 讓文字看起來像是凹進黃色背景中\")"
     ],
     "deny": [],
     "ask": []
