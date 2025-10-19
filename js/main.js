@@ -863,6 +863,17 @@
             const div = document.createElement("div");
             div.className = "website-item";
 
+            // 如果有 icon，顯示圖片；否則顯示項目符號
+            if (web.icon) {
+                const icon = document.createElement("img");
+                icon.className = "website-icon";
+                icon.src = web.icon;
+                icon.alt = web.label;
+                div.appendChild(icon);
+            } else {
+                div.appendChild(document.createTextNode("• "));
+            }
+
             const label = document.createElement("strong");
             label.style.color = "#4a4a4a";
             label.textContent = web.label;
@@ -876,7 +887,6 @@
             link.style.color = "#808080";
             link.textContent = web.url;
 
-            div.appendChild(document.createTextNode("• "));
             div.appendChild(label);
             div.appendChild(colon);
             div.appendChild(link);
@@ -2062,6 +2072,7 @@
             <div class="manager-item__fields">
                 <input type="text" placeholder="網站名稱 (例: GitHub)" value="${escapeHTML(data?.label || '')}" data-field="label" />
                 <input type="text" placeholder="網址" value="${escapeHTML(data?.url || '')}" data-field="url" />
+                <input type="text" placeholder="圖示網址 (選填)" value="${escapeHTML(data?.icon || '')}" data-field="icon" />
             </div>
             <button type="button" class="manager-item__remove">×</button>
         `;
@@ -2076,7 +2087,8 @@
         return Array.from(items).map(item => ({
             id: item.dataset.webId || generateId("web"),
             label: item.querySelector('[data-field="label"]')?.value.trim() || "",
-            url: item.querySelector('[data-field="url"]')?.value.trim() || ""
+            url: item.querySelector('[data-field="url"]')?.value.trim() || "",
+            icon: item.querySelector('[data-field="icon"]')?.value.trim() || ""
         })).filter(web => web.label && web.url);
     }
 

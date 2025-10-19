@@ -388,6 +388,16 @@ body:has(.admin-bar:not([hidden])) {
 .website-item {
   font-size: 0.95rem;
   color: rgba(28, 36, 49, 0.75);
+  display: flex;
+  align-items: center;
+}
+
+.website-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .website-item a {
@@ -1615,6 +1625,11 @@ body:has(.admin-bar:not([hidden])) {
     word-break: break-all;
   }
 
+  .website-icon {
+    width: 20px;
+    height: 20px;
+  }
+
   /* 技能標籤手機優化 */
   .skill-tags-container {
     gap: 0.6rem;
@@ -1799,6 +1814,11 @@ body:has(.admin-bar:not([hidden])) {
     font-size: 0.85rem;
   }
 
+  .website-icon {
+    width: 18px;
+    height: 18px;
+  }
+
   /* 技能標籤小手機優化 */
   .skill-tag {
     padding: 0.35rem 0.9rem;
@@ -1945,6 +1965,11 @@ body:has(.admin-bar:not([hidden])) {
 
   .website-item {
     font-size: 0.8rem;
+  }
+
+  .website-icon {
+    width: 16px;
+    height: 16px;
   }
 
   /* 技能標籤超小螢幕優化 */
