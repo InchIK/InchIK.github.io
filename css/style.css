@@ -156,13 +156,13 @@ body:has(.admin-bar:not([hidden])) {
   height: 50px;
   min-height: var(--touch-target-min);
   border-radius: 50%;
-  background: linear-gradient(135deg, #0c7cd5, #0a5ea8);
+  background: linear-gradient(135deg, #b13a2e, #6d1f16);
   color: white;
   border: none;
   font-size: var(--font-lg);
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(12, 124, 213, 0.4);
+  box-shadow: 0 4px 16px rgba(109, 31, 22, 0.4);
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -170,9 +170,9 @@ body:has(.admin-bar:not([hidden])) {
 }
 
 .message-btn:hover {
-  background: linear-gradient(135deg, #0a5ea8, #084a8a);
+  background: linear-gradient(135deg, #9a2f25, #5a1912);
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(12, 124, 213, 0.5);
+  box-shadow: 0 6px 20px rgba(109, 31, 22, 0.5);
 }
 
 .hero__bio {
