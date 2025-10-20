@@ -1907,7 +1907,7 @@
             return `
                 <div class="project-media-card project-media-card--file">
                     ${label}
-                    <a href="${escapeAttribute(fileUrl)}" download data-media-type="file"><img src="assets/photos/file.svg" alt="file icon" class="file-icon">${escapeHTML(media.label || media.url)}</a>
+                    <a href="${escapeAttribute(fileUrl)}" target="_blank" rel="noopener noreferrer" data-media-type="file"><img src="assets/photos/file.svg" alt="file icon" class="file-icon">${escapeHTML(media.label || media.url)}</a>
                 </div>
             `;
         }
