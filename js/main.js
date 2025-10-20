@@ -1858,8 +1858,8 @@
         // 匹配 Google Drive 分享連結格式
         const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (driveMatch && driveMatch[1]) {
-            // 使用 uc?export=download 格式進行直接下載
-            return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+            // 使用 uc?export=download&confirm=t 格式，嘗試繞過病毒掃描警告
+            return `https://drive.google.com/uc?export=download&confirm=t&id=${driveMatch[1]}`;
         }
         return url;
     }
