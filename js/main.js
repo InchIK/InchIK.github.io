@@ -1842,9 +1842,54 @@
             .join("");
     }
 
+    // 轉換 Google Drive 分享連結為直接檢視連結
+    function convertGoogleDriveUrl(url) {
+        // 匹配 Google Drive 分享連結格式
+        const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (driveMatch && driveMatch[1]) {
+            return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+        }
+        return url;
+    }
+
+    // 轉換 YouTube 連結為嵌入格式
+    function convertYouTubeUrl(url) {
+        // 匹配標準 YouTube 連結: https://www.youtube.com/watch?v=VIDEO_ID
+        let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            return match[1];
+        }
+        // 匹配已經是 embed 格式的連結
+        match = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            return match[1];
+        }
+        return null;
+    }
+
     function renderProjectMedia(media) {
+        const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
+
+        // 檢查是否為 YouTube 連結
+        const youtubeId = convertYouTubeUrl(media.url);
+        if (youtubeId) {
+            return `
+                <div class="project-media-card project-media-card--video">
+                    ${label}
+                    <div class="video-wrapper">
+                        <iframe
+                            src="https://www.youtube.com/embed/${youtubeId}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                        ></iframe>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 檢查是否為檔案類型
         if (media.type === "file") {
-            const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
             return `
                 <div class="project-media-card project-media-card--file">
                     ${label}
@@ -1852,10 +1897,12 @@
                 </div>
             `;
         }
-        const label = media.label ? `<div class="project-media-label">${escapeHTML(media.label)}</div>` : "";
+
+        // 圖片類型 - 自動轉換 Google Drive 連結
+        const imageUrl = convertGoogleDriveUrl(media.url);
         return `
             <div class="project-media-card">
-                <img src="${escapeAttribute(media.url)}" alt="${escapeHTML(media.label || media.url)}" data-media-type="image" data-media-url="${escapeAttribute(media.url)}" data-media-label="${escapeHTML(media.label || '')}">
+                <img src="${escapeAttribute(imageUrl)}" alt="${escapeHTML(media.label || media.url)}" data-media-type="image" data-media-url="${escapeAttribute(imageUrl)}" data-media-label="${escapeHTML(media.label || '')}">
                 ${label}
             </div>
         `;
