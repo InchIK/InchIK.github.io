@@ -1842,13 +1842,24 @@
             .join("");
     }
 
-    // 轉換 Google Drive 分享連結為直接檢視連結
+    // 轉換 Google Drive 分享連結為直接檢視連結（用於圖片）
     function convertGoogleDriveUrl(url) {
         // 匹配 Google Drive 分享連結格式
         const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (driveMatch && driveMatch[1]) {
             // 使用 thumbnail 格式，更穩定且支援較大圖片
             return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+        }
+        return url;
+    }
+
+    // 轉換 Google Drive 分享連結為直接下載連結（用於檔案）
+    function convertGoogleDriveDownloadUrl(url) {
+        // 匹配 Google Drive 分享連結格式
+        const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (driveMatch && driveMatch[1]) {
+            // 使用 uc?export=download 格式進行直接下載
+            return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
         }
         return url;
     }
@@ -1891,10 +1902,12 @@
 
         // 檢查是否為檔案類型
         if (media.type === "file") {
+            // 自動轉換 Google Drive 檔案連結為直接下載連結
+            const fileUrl = convertGoogleDriveDownloadUrl(media.url);
             return `
                 <div class="project-media-card project-media-card--file">
                     ${label}
-                    <a href="${escapeAttribute(media.url)}" download data-media-type="file"><img src="assets/photos/file.svg" alt="file icon" class="file-icon">${escapeHTML(media.label || media.url)}</a>
+                    <a href="${escapeAttribute(fileUrl)}" download data-media-type="file"><img src="assets/photos/file.svg" alt="file icon" class="file-icon">${escapeHTML(media.label || media.url)}</a>
                 </div>
             `;
         }
