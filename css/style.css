@@ -2635,4 +2635,74 @@ body:has(.admin-bar:not([hidden])) {
     padding: 1rem !important;
     border-radius: 0 !important;
   }
+
+  /* 小螢幕 - ADMIN 標籤更小 */
+  .admin-tag {
+    font-size: clamp(0.5rem, 1vw, 0.65rem);
+  }
+
+  .admin-tag__ad,
+  .admin-tag__min {
+    padding: 0.15rem 0.3rem;
+  }
+}
+
+/* ===== 新功能響應式優化 ===== */
+
+/* 留言按鈕 - 確保在小螢幕仍可點擊 */
+@media (max-width: 600px) {
+  .message-btn {
+    width: 44px;
+    height: 44px;
+    font-size: var(--font-base);
+  }
+}
+
+/* ADMIN 標籤 - 平板優化 */
+@media (max-width: 768px) {
+  .admin-tag {
+    margin-bottom: -0.3rem;
+  }
+}
+
+/* reCAPTCHA - 小螢幕優化 */
+@media (max-width: 500px) {
+  .recaptcha-container {
+    padding: var(--spacing-xs);
+    margin: var(--spacing-sm) 0;
+  }
+
+  .modal__content--message {
+    width: 95vw !important;
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .modal__content--message {
+    width: 100vw !important;
+    padding: 1rem !important;
+    border-radius: 0 !important;
+  }
+
+  .recaptcha-container {
+    padding: 0.25rem;
+  }
+
+  /* reCAPTCHA 自動縮放 */
+  .recaptcha-container .g-recaptcha {
+    transform: scale(0.85);
+    transform-origin: 0 0;
+  }
+}
+
+/* YouTube 影片 - 確保響應式比例 */
+@media (max-width: 600px) {
+  .video-wrapper {
+    border-radius: 6px;
+  }
+
+  .project-media-card--video {
+    padding: 0.5rem;
+  }
 }
