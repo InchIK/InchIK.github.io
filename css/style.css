@@ -129,6 +129,14 @@ body:has(.admin-bar:not([hidden])) {
   text-align: center;
 }
 
+.profile__contact-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .profile__contact {
   display: inline-flex;
   align-items: center;
@@ -140,6 +148,31 @@ body:has(.admin-bar:not([hidden])) {
   font-weight: 600;
   letter-spacing: 0.08em;
   box-shadow: 0 10px 25px rgba(109, 31, 22, 0.3);
+}
+
+/* 留言按鈕 */
+.message-btn {
+  width: 50px;
+  height: 50px;
+  min-height: var(--touch-target-min);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0c7cd5, #0a5ea8);
+  color: white;
+  border: none;
+  font-size: var(--font-lg);
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(12, 124, 213, 0.4);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-btn:hover {
+  background: linear-gradient(135deg, #0a5ea8, #084a8a);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(12, 124, 213, 0.5);
 }
 
 .hero__bio {
@@ -2431,6 +2464,43 @@ body:has(.admin-bar:not([hidden])) {
   width: min(90vw, 650px) !important;
   padding: 2rem !important;
   max-width: 650px !important;
+}
+
+/* 留言 Modal */
+.modal__content--message {
+  width: min(90vw, 500px) !important;
+  padding: 2rem !important;
+  max-width: 500px !important;
+}
+
+.message-status {
+  padding: var(--spacing-sm);
+  border-radius: 8px;
+  font-size: var(--font-sm);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+  display: none;
+}
+
+.message-status.success {
+  display: block;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.message-status.error {
+  display: block;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.message-status.sending {
+  display: block;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 /* 響應式設計 - 分享連結 */

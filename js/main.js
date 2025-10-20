@@ -190,6 +190,13 @@
     const shareLinksManagerList = document.getElementById("shareLinksManagerList");
     const addShareLinkBtn = document.getElementById("addShareLink");
 
+    const openMessageModalBtn = document.getElementById("openMessageModal");
+    const messageModal = document.getElementById("messageModal");
+    const closeMessageBtn = document.getElementById("closeMessage");
+    const cancelMessageBtn = document.getElementById("cancelMessage");
+    const messageForm = document.getElementById("messageForm");
+    const messageStatusEl = document.getElementById("messageStatus");
+
     const profileNameEl = document.getElementById("profileName");
     const profileEmailEl = document.getElementById("profileEmail");
     const profileSummaryEl = document.getElementById("profileSummary");
@@ -2259,4 +2266,90 @@
             renderShareLinks();
         }, 200);
     });
+
+    // ===== 留言功能 =====
+    // 開啟留言 Modal
+    openMessageModalBtn?.addEventListener("click", () => {
+        messageModal?.showModal();
+    });
+
+    // 關閉留言 Modal
+    closeMessageBtn?.addEventListener("click", () => {
+        closeDialog(messageModal);
+        resetMessageForm();
+    });
+
+    cancelMessageBtn?.addEventListener("click", () => {
+        closeDialog(messageModal);
+        resetMessageForm();
+    });
+
+    // 重置表單
+    function resetMessageForm() {
+        messageForm?.reset();
+        if (messageStatusEl) {
+            messageStatusEl.textContent = "";
+            messageStatusEl.className = "message-status";
+        }
+    }
+
+    // 送出留言
+    messageForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nameInput = document.getElementById("messageName");
+        const emailInput = document.getElementById("messageEmail");
+        const contentInput = document.getElementById("messageContent");
+        const sendBtn = document.getElementById("sendMessage");
+
+        if (!nameInput || !emailInput || !contentInput) return;
+
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const message = contentInput.value.trim();
+
+        if (!name || !email || !message) {
+            showMessageStatus("請填寫所有欄位", "error");
+            return;
+        }
+
+        // 顯示發送中狀態
+        showMessageStatus("正在發送留言...", "sending");
+        if (sendBtn) sendBtn.disabled = true;
+
+        try {
+            // 使用 EmailJS 發送郵件
+            const response = await emailjs.send(
+                "service_1xmtsnl", // Service ID
+                "template_niim05w", // Template ID
+                {
+                    from_name: name,
+                    reply_to: email,
+                    message: message,
+                }
+            );
+
+            if (response.status === 200) {
+                showMessageStatus("留言已成功發送！感謝您的留言。", "success");
+                setTimeout(() => {
+                    closeDialog(messageModal);
+                    resetMessageForm();
+                }, 2000);
+            } else {
+                throw new Error("發送失敗");
+            }
+        } catch (error) {
+            console.error("EmailJS 發送錯誤:", error);
+            showMessageStatus("發送失敗，請稍後再試。", "error");
+        } finally {
+            if (sendBtn) sendBtn.disabled = false;
+        }
+    });
+
+    // 顯示訊息狀態
+    function showMessageStatus(message, type) {
+        if (!messageStatusEl) return;
+        messageStatusEl.textContent = message;
+        messageStatusEl.className = `message-status ${type}`;
+    }
 })();
