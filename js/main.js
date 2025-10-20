@@ -1847,7 +1847,8 @@
         // 匹配 Google Drive 分享連結格式
         const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (driveMatch && driveMatch[1]) {
-            return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+            // 使用 thumbnail 格式，更穩定且支援較大圖片
+            return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
         }
         return url;
     }
@@ -1902,7 +1903,14 @@
         const imageUrl = convertGoogleDriveUrl(media.url);
         return `
             <div class="project-media-card">
-                <img src="${escapeAttribute(imageUrl)}" alt="${escapeHTML(media.label || media.url)}" data-media-type="image" data-media-url="${escapeAttribute(imageUrl)}" data-media-label="${escapeHTML(media.label || '')}">
+                <img
+                    src="${escapeAttribute(imageUrl)}"
+                    alt="${escapeHTML(media.label || media.url)}"
+                    data-media-type="image"
+                    data-media-url="${escapeAttribute(imageUrl)}"
+                    data-media-label="${escapeHTML(media.label || '')}"
+                    onerror="this.onerror=null; if(this.src.includes('thumbnail')) { this.src=this.src.replace('thumbnail?id=', 'uc?export=view&id=').replace('&sz=w1000', ''); }"
+                >
                 ${label}
             </div>
         `;
