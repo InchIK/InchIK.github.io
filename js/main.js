@@ -2291,6 +2291,10 @@
             messageStatusEl.textContent = "";
             messageStatusEl.className = "message-status";
         }
+        // 重置 reCAPTCHA
+        if (typeof grecaptcha !== "undefined") {
+            grecaptcha.reset();
+        }
     }
 
     // 送出留言
@@ -2313,12 +2317,22 @@
             return;
         }
 
+        // 驗證 reCAPTCHA
+        let recaptchaResponse = "";
+        if (typeof grecaptcha !== "undefined") {
+            recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                showMessageStatus("請完成 reCAPTCHA 驗證", "error");
+                return;
+            }
+        }
+
         // 顯示發送中狀態
         showMessageStatus("正在發送留言...", "sending");
         if (sendBtn) sendBtn.disabled = true;
 
         try {
-            // 使用 EmailJS 發送郵件
+            // 使用 EmailJS 發送郵件（包含 reCAPTCHA token）
             const response = await emailjs.send(
                 "service_1xmtsnl", // Service ID
                 "template_niim05w", // Template ID
@@ -2326,6 +2340,7 @@
                     from_name: name,
                     reply_to: email,
                     message: message,
+                    "g-recaptcha-response": recaptchaResponse
                 }
             );
 
@@ -2341,6 +2356,10 @@
         } catch (error) {
             console.error("EmailJS 發送錯誤:", error);
             showMessageStatus("發送失敗，請稍後再試。", "error");
+            // 發送失敗時重置 reCAPTCHA
+            if (typeof grecaptcha !== "undefined") {
+                grecaptcha.reset();
+            }
         } finally {
             if (sendBtn) sendBtn.disabled = false;
         }

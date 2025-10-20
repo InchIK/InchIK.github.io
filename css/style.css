@@ -2503,6 +2503,20 @@ body:has(.admin-bar:not([hidden])) {
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+/* reCAPTCHA 容器 */
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-sm);
+  background: rgba(12, 124, 213, 0.03);
+  border-radius: 8px;
+}
+
+.recaptcha-container .g-recaptcha {
+  display: inline-block;
+}
+
 /* 響應式設計 - 分享連結 */
 @media (max-width: 1024px) {
   .share-links-section {

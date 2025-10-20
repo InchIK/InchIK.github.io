@@ -11,6 +11,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <!-- Google reCAPTCHA V2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <!-- EmailJS SDK -->
     <script
       type="text/javascript"
@@ -617,6 +619,14 @@
             placeholder="請輸入留言內容"
           ></textarea>
         </label>
+        <!-- reCAPTCHA V2 容器 -->
+        <div class="recaptcha-container">
+          <div
+            class="g-recaptcha"
+            id="messageRecaptcha"
+            data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+          ></div>
+        </div>
         <div id="messageStatus" class="message-status"></div>
         <div class="modal__actions">
           <button type="button" id="cancelMessage">取消</button>
