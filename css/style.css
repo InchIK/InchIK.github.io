@@ -735,6 +735,46 @@ body:has(.admin-bar:not([hidden])) {
   background-clip: padding-box;
 }
 
+/* 回到頂部浮動按鈕 */
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0c7cd5, #0a5ea8);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(12, 124, 213, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(100px);
+}
+
+.scroll-to-top-btn.visible {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-top-btn:hover {
+  background: linear-gradient(135deg, #0a5ea8, #084a8a);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(12, 124, 213, 0.5);
+}
+
+.scroll-to-top-btn:active {
+  transform: translateY(-2px);
+}
+
 /* 圖片預覽 Modal */
 .modal__content--image-preview {
   width: min(90vw, 1200px) !important;

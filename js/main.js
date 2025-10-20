@@ -150,6 +150,7 @@
     const detailSkillIntro = document.getElementById("detailSkillIntro");
     const projectNavigationList = document.getElementById("projectNavigationList");
     const detailProjectContainer = document.getElementById("detailProjectContainer");
+    const scrollToTopBtn = document.getElementById("scrollToTopBtn");
     const closeSkillDetailBtn = document.getElementById("closeSkillDetail");
     const imagePreviewModal = document.getElementById("imagePreviewModal");
     const imagePreviewImg = document.getElementById("imagePreviewImg");
@@ -1412,6 +1413,33 @@
 
     closeImagePreviewBtn?.addEventListener("click", () => {
         closeDialog(imagePreviewModal);
+    });
+
+    // 回到頂部按鈕功能
+    const skillDetailContent = document.querySelector(".modal__content--skill-detail");
+
+    // 監聽技能詳情 Modal 的滾動
+    skillDetailContent?.addEventListener("scroll", () => {
+        if (!scrollToTopBtn) return;
+
+        // 當滾動超過 300px 時顯示按鈕
+        if (skillDetailContent.scrollTop > 300) {
+            scrollToTopBtn.classList.add("visible");
+        } else {
+            scrollToTopBtn.classList.remove("visible");
+        }
+    });
+
+    // 點擊回到頂部按鈕
+    scrollToTopBtn?.addEventListener("click", () => {
+        if (!skillDetailContent || !projectNavigationList) return;
+
+        // 平滑滾動到專案列表（導航列表位置）
+        projectNavigationList.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest"
+        });
     });
 
     // 圖片預覽和檔案下載事件處理
