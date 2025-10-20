@@ -69,23 +69,6 @@ body:has(.admin-bar:not([hidden])) {
   gap: clamp(1.8rem, 4vw, 2.6rem);
 }
 
-.hero__login-btn {
-  align-self: flex-start;
-  background: rgba(31, 39, 50, 0.15);
-  border: none;
-  color: var(--text);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: 999px;
-  font-size: var(--font-base);
-  cursor: pointer;
-  transition: background 0.2s ease;
-  min-height: var(--touch-target-min);
-}
-
-.hero__login-btn:hover {
-  background: rgba(31, 39, 50, 0.25);
-}
-
 .hero__layout {
   display: flex;
   flex-direction: column;
@@ -127,6 +110,47 @@ body:has(.admin-bar:not([hidden])) {
   letter-spacing: 0.05em;
   color: rgba(31, 39, 50, 0.9);
   text-align: center;
+}
+
+/* ADMIN 標籤 */
+.admin-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: -0.5rem;
+}
+
+.admin-tag:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.admin-tag__ad {
+  background: white;
+  color: #b13a2e;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #b13a2e;
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+}
+
+.admin-tag__min {
+  background: linear-gradient(135deg, #b13a2e, #6d1f16);
+  color: white;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #b13a2e;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
 }
 
 .profile__contact-wrapper {
@@ -1500,10 +1524,6 @@ body:has(.admin-bar:not([hidden])) {
 
   .hero__layout {
     align-items: center;
-  }
-
-  .hero__login-btn {
-    margin-bottom: clamp(1.4rem, 3vw, 2rem);
   }
 
   .profile {
