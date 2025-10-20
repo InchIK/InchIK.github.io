@@ -1160,6 +1160,45 @@ body:has(.admin-bar:not([hidden])) {
   width: 100%;
 }
 
+/* 專案導航列表 */
+.project-navigation-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(12, 124, 213, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(12, 124, 213, 0.1);
+}
+
+.project-nav-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(12, 124, 213, 0.2);
+  border-radius: 999px;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: #0c7cd5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: var(--touch-target-min);
+  text-decoration: none;
+}
+
+.project-nav-item:hover {
+  background: #0c7cd5;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(12, 124, 213, 0.3);
+}
+
+.project-nav-item:active {
+  transform: translateY(0);
+}
+
 .detail-projects {
   display: flex;
   flex-direction: column;

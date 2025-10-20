@@ -148,6 +148,7 @@
     const skillDetailModal = document.getElementById("skillDetailModal");
     const detailSkillTitle = document.getElementById("detailSkillTitle");
     const detailSkillIntro = document.getElementById("detailSkillIntro");
+    const projectNavigationList = document.getElementById("projectNavigationList");
     const detailProjectContainer = document.getElementById("detailProjectContainer");
     const closeSkillDetailBtn = document.getElementById("closeSkillDetail");
     const imagePreviewModal = document.getElementById("imagePreviewModal");
@@ -1725,14 +1726,56 @@
     }
 
     function renderSkillDetail(skill) {
-        if (!detailSkillTitle || !detailProjectContainer || !detailSkillIntro) return;
+        if (!detailSkillTitle || !detailProjectContainer || !detailSkillIntro || !projectNavigationList) return;
         detailSkillTitle.textContent = skill.title;
         detailSkillIntro.innerHTML = `<p>${escapeHTML(skill.description || "")}</p>`;
 
         if (!skill.projects || !skill.projects.length) {
+            projectNavigationList.innerHTML = "";
+            projectNavigationList.style.display = "none";
             detailProjectContainer.innerHTML = `<div class="project-empty">No projects have been added for this skill yet.</div>`;
             return;
         }
+
+        // 渲染專案導航列表
+        projectNavigationList.style.display = "flex";
+        projectNavigationList.innerHTML = skill.projects
+            .map(project => `
+                <button
+                    type="button"
+                    class="project-nav-item"
+                    data-project-id="${project.id}"
+                    data-project-name="${escapeAttribute(project.name)}"
+                >
+                    ${escapeHTML(project.name)}
+                </button>
+            `)
+            .join("");
+
+        // 為導航按鈕添加點擊事件
+        projectNavigationList.querySelectorAll(".project-nav-item").forEach(navItem => {
+            navItem.addEventListener("click", () => {
+                const projectId = navItem.dataset.projectId;
+                const targetProject = detailProjectContainer.querySelector(`[data-project-id="${projectId}"]`);
+
+                if (targetProject) {
+                    // 平滑滾動到目標專案
+                    targetProject.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                        inline: "nearest"
+                    });
+
+                    // 添加高亮效果
+                    targetProject.style.transition = "all 0.3s ease";
+                    targetProject.style.boxShadow = "0 0 0 3px rgba(12, 124, 213, 0.3), 0 8px 24px rgba(0, 0, 0, 0.1)";
+
+                    setTimeout(() => {
+                        targetProject.style.boxShadow = "";
+                    }, 2000);
+                }
+            });
+        });
 
         detailProjectContainer.innerHTML = skill.projects
             .map((project) => {
