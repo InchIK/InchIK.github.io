@@ -139,7 +139,7 @@ body:has(.admin-bar:not([hidden])) {
   background: white;
   color: #b13a2e;
   padding: 0.2rem 0.35rem;
-  border: 1px solid #b13a2e;
+  border: 1px solid #c0c0c0;
   border-right: none;
   border-radius: 3px 0 0 3px;
 }
@@ -148,7 +148,7 @@ body:has(.admin-bar:not([hidden])) {
   background: linear-gradient(135deg, #b13a2e, #6d1f16);
   color: white;
   padding: 0.2rem 0.35rem;
-  border: 1px solid #b13a2e;
+  border: 1px solid #c0c0c0;
   border-left: none;
   border-radius: 0 3px 3px 0;
 }
@@ -646,6 +646,7 @@ body:has(.admin-bar:not([hidden])) {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
 }
 
 .card-actions {
