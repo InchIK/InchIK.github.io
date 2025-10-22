@@ -196,7 +196,11 @@
     const adminTagList = document.getElementById("adminTagList");
     const adminTagTextInput = document.getElementById("adminTagTextInput");
     const adminTagFrontBgInput = document.getElementById("adminTagFrontBgInput");
+    const adminTagFrontPreview = document.getElementById("adminTagFrontPreview");
     const adminTagBackBgInput = document.getElementById("adminTagBackBgInput");
+    const adminTagBackPreview = document.getElementById("adminTagBackPreview");
+    const adminTagFrontValue = document.getElementById("adminTagFrontValue");
+    const adminTagBackValue = document.getElementById("adminTagBackValue");
     const adminTagFrontRandomBtn = document.getElementById("adminTagFrontRandom");
     const adminTagBackRandomBtn = document.getElementById("adminTagBackRandom");
     const cancelAdminTagBtn = document.getElementById("cancelAdminTag");
@@ -759,6 +763,22 @@
         return { frontBg, backBg };
     }
 
+    function updateAdminTagColorDisplay(previewEl, valueEl, color, isRandom) {
+        if (previewEl) {
+            if (isRandom) {
+                previewEl.style.background =
+                    'repeating-linear-gradient(45deg, #f5f5f5 0 6px, #dcdcdc 6px 12px)';
+                previewEl.style.backgroundColor = '';
+            } else {
+                previewEl.style.background = '';
+                previewEl.style.backgroundColor = color;
+            }
+        }
+        if (valueEl) {
+            valueEl.textContent = isRandom ? '隨機' : color.toUpperCase();
+        }
+    }
+
     function createAdminTagElement(tag) {
         if (!tag || typeof tag !== 'object') return null;
 
@@ -837,16 +857,28 @@
         if (!adminTagForm) return;
         adminTagForm.reset();
         if (adminTagTextInput) {
-            adminTagTextInput.value = '';
+            adminTagTextInput.value = "";
         }
         if (adminTagFrontBgInput) {
             adminTagFrontBgInput.value = ADMIN_TAG_FRONT_COLORS[0];
-            adminTagFrontBgInput.dataset.random = 'true';
+            adminTagFrontBgInput.dataset.random = "true";
         }
+        updateAdminTagColorDisplay(
+            adminTagFrontPreview,
+            adminTagFrontValue,
+            ADMIN_TAG_FRONT_COLORS[0],
+            true
+        );
         if (adminTagBackBgInput) {
             adminTagBackBgInput.value = ADMIN_TAG_BACK_COLORS[0];
-            adminTagBackBgInput.dataset.random = 'true';
+            adminTagBackBgInput.dataset.random = "true";
         }
+        updateAdminTagColorDisplay(
+            adminTagBackPreview,
+            adminTagBackValue,
+            ADMIN_TAG_BACK_COLORS[0],
+            true
+        );
     }
 
     function renderSkills() {
@@ -1410,22 +1442,26 @@
 
     adminTagFrontBgInput?.addEventListener("input", () => {
         adminTagFrontBgInput.dataset.random = "false";
+        updateAdminTagColorDisplay(adminTagFrontPreview, adminTagFrontValue, adminTagFrontBgInput.value, false);
     });
 
     adminTagBackBgInput?.addEventListener("input", () => {
         adminTagBackBgInput.dataset.random = "false";
+        updateAdminTagColorDisplay(adminTagBackPreview, adminTagBackValue, adminTagBackBgInput.value, false);
     });
 
     adminTagFrontRandomBtn?.addEventListener("click", () => {
         if (!adminTagFrontBgInput) return;
         adminTagFrontBgInput.dataset.random = "true";
         adminTagFrontBgInput.value = ADMIN_TAG_FRONT_COLORS[0];
+        updateAdminTagColorDisplay(adminTagFrontPreview, adminTagFrontValue, ADMIN_TAG_FRONT_COLORS[0], true);
     });
 
     adminTagBackRandomBtn?.addEventListener("click", () => {
         if (!adminTagBackBgInput) return;
         adminTagBackBgInput.dataset.random = "true";
         adminTagBackBgInput.value = ADMIN_TAG_BACK_COLORS[0];
+        updateAdminTagColorDisplay(adminTagBackPreview, adminTagBackValue, ADMIN_TAG_BACK_COLORS[0], true);
     });
 
     adminTagForm?.addEventListener("submit", (event) => {
