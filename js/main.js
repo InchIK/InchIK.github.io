@@ -198,6 +198,7 @@
     const messageStatusEl = document.getElementById("messageStatus");
 
     const profileNameEl = document.getElementById("profileName");
+    const customAdminTagsContainer = document.getElementById("customAdminTags");
     const profileEmailEl = document.getElementById("profileEmail");
     const profileSummaryEl = document.getElementById("profileSummary");
     const profileAvatarEl = document.getElementById("profileAvatar");
@@ -231,6 +232,7 @@
         websites: []
     };
     let shareLinks = [];
+    let adminTags = [];
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
@@ -326,6 +328,7 @@
         skillTags = Array.isArray(data?.skillTags) ? data.skillTags : [];
         aboutMe = normalizeAboutMe(data?.aboutMe);
         shareLinks = normalizeShareLinks(data?.shareLinks);
+        adminTags = normalizeAdminTags(data?.adminTags);
         console.log("applyData 後的 shareLinks:", shareLinks);
     }
 
@@ -343,7 +346,8 @@
                     certificates: [],
                     websites: []
                 },
-                shareLinks: []
+                shareLinks: [],
+                adminTags: []
             };
         }
 
@@ -355,7 +359,8 @@
             skills: normalizeSkills(source.skills),
             skillTags: Array.isArray(source.skillTags) ? source.skillTags : [],
             aboutMe: normalizeAboutMe(source.aboutMe),
-            shareLinks: normalizeShareLinks(source.shareLinks)
+            shareLinks: normalizeShareLinks(source.shareLinks),
+            adminTags: normalizeAdminTags(source.adminTags)
         };
     }
 
@@ -409,6 +414,21 @@
             description: link.description || "",
             url: link.url || ""
         })).filter(link => link.name); // 只要有名稱就保留
+    }
+
+    function normalizeAdminTags(source) {
+        if (!Array.isArray(source)) return [];
+
+        return source
+            .map((tag) => {
+                if (!tag || typeof tag !== "object") return null;
+                const text = typeof tag.text === "string" ? tag.text.trim() : "";
+                const frontBg = typeof tag.frontBg === "string" ? tag.frontBg.trim() : "";
+                const backBg = typeof tag.backBg === "string" ? tag.backBg.trim() : "";
+                if (!text) return null;
+                return { text, frontBg, backBg };
+            })
+            .filter(Boolean);
     }
 
     function normalizeSkills(skillsSource) {
@@ -527,7 +547,8 @@
             skills,
             skillTags,
             aboutMe,
-            shareLinks
+            shareLinks,
+            adminTags
         };
 
         if (!options.skipSync) {
@@ -606,13 +627,15 @@
                 url: link.url || ""
             })).filter(link => link.name) // 只要有名稱就保留
             : [];
+        const sanitizedAdminTags = normalizeAdminTags(payload.adminTags);
 
         return {
             profile: sanitizedProfile,
             skills: sanitizedSkills,
             skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : [],
             aboutMe: sanitizedAboutMe,
-            shareLinks: sanitizedShareLinks
+            shareLinks: sanitizedShareLinks,
+            adminTags: sanitizedAdminTags
         };
     }
 
@@ -683,6 +706,54 @@
             profileAvatarEl.src = profile.avatar || DEFAULT_PROFILE.avatar;
             profileAvatarEl.alt = `${profile.name} 的頭像`;
         }
+    }
+
+    function renderAdminTags() {
+        if (!customAdminTagsContainer) return;
+        customAdminTagsContainer.innerHTML = "";
+
+        if (!Array.isArray(adminTags) || adminTags.length === 0) {
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        adminTags.forEach((tag) => {
+            if (!tag || typeof tag !== "object") return;
+
+            const parts = typeof tag.text === "string"
+                ? tag.text.split(",").map((part) => part.trim()).filter(Boolean)
+                : [];
+            if (parts.length !== 2) return;
+
+            const frontBg = typeof tag.frontBg === "string" && tag.frontBg.trim()
+                ? tag.frontBg.trim()
+                : "#ffffff";
+            const backBg = typeof tag.backBg === "string" && tag.backBg.trim()
+                ? tag.backBg.trim()
+                : "#b13a2e";
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "custom-admin-tag";
+
+            const frontSpan = document.createElement("span");
+            frontSpan.className = "custom-admin-tag__front";
+            frontSpan.style.backgroundColor = frontBg;
+            frontSpan.style.color = backBg;
+            frontSpan.textContent = parts[0];
+
+            const backSpan = document.createElement("span");
+            backSpan.className = "custom-admin-tag__back";
+            backSpan.style.backgroundColor = backBg;
+            backSpan.style.color = frontBg;
+            backSpan.textContent = parts[1];
+
+            wrapper.appendChild(frontSpan);
+            wrapper.appendChild(backSpan);
+            fragment.appendChild(wrapper);
+        });
+
+        customAdminTagsContainer.appendChild(fragment);
     }
 
     function renderSkills() {
@@ -1200,6 +1271,7 @@
         if (editAboutMeBtn) editAboutMeBtn.hidden = !isAdmin;
         if (editShareLinksBtn) editShareLinksBtn.hidden = !isAdmin;
         renderProfile();
+        renderAdminTags();
         renderAboutMe();
         renderSkillTags();
         renderShareLinks();
@@ -2440,3 +2512,4 @@
         messageStatusEl.className = `message-status ${type}`;
     }
 })();
+

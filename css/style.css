@@ -124,21 +124,15 @@ body:has(.admin-bar:not([hidden])) {
   font-size: clamp(0.55rem, 1.2vw, 0.7rem);
   font-weight: bold;
   letter-spacing: 0.05em;
-  transition: transform 0.2s ease, opacity 0.2s ease;
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: -0.5rem;
 }
 
-.admin-tag:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
-}
-
 .admin-tag__ad {
   background: white;
   color: #b13a2e;
-  padding: 0.2rem 0.35rem;
+  padding: 0.1rem 0.25rem;
   border: 1px solid #c0c0c0;
   border-right: none;
   border-radius: 3px 0 0 3px;
@@ -147,8 +141,44 @@ body:has(.admin-bar:not([hidden])) {
 .admin-tag__min {
   background: linear-gradient(135deg, #b13a2e, #6d1f16);
   color: white;
-  padding: 0.2rem 0.35rem;
+  padding: 0.1rem 0.25rem;
   border: 1px solid #c0c0c0;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
+}
+
+.custom-admin-tags-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-left: 0.5rem;
+}
+
+.custom-admin-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.custom-admin-tag__front,
+.custom-admin-tag__back {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.25rem;
+  border: 1px solid #c0c0c0;
+}
+
+.custom-admin-tag__front {
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+}
+
+.custom-admin-tag__back {
   border-left: none;
   border-radius: 0 3px 3px 0;
 }
@@ -2640,11 +2670,6 @@ body:has(.admin-bar:not([hidden])) {
   /* 小螢幕 - ADMIN 標籤更小 */
   .admin-tag {
     font-size: clamp(0.5rem, 1vw, 0.65rem);
-  }
-
-  .admin-tag__ad,
-  .admin-tag__min {
-    padding: 0.15rem 0.3rem;
   }
 }
 
