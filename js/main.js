@@ -189,6 +189,17 @@
     const shareLinksGrid = document.getElementById("shareLinksGrid");
     const shareLinksManagerList = document.getElementById("shareLinksManagerList");
     const addShareLinkBtn = document.getElementById("addShareLink");
+    const editAdminTagsBtn = document.getElementById("editAdminTags");
+    const adminTagModal = document.getElementById("adminTagModal");
+    const closeAdminTagModalBtn = document.getElementById("closeAdminTagModal");
+    const adminTagForm = document.getElementById("adminTagForm");
+    const adminTagList = document.getElementById("adminTagList");
+    const adminTagTextInput = document.getElementById("adminTagTextInput");
+    const adminTagFrontBgInput = document.getElementById("adminTagFrontBgInput");
+    const adminTagBackBgInput = document.getElementById("adminTagBackBgInput");
+    const adminTagFrontRandomBtn = document.getElementById("adminTagFrontRandom");
+    const adminTagBackRandomBtn = document.getElementById("adminTagBackRandom");
+    const cancelAdminTagBtn = document.getElementById("cancelAdminTag");
 
     const openMessageModalBtn = document.getElementById("openMessageModal");
     const messageModal = document.getElementById("messageModal");
@@ -231,11 +242,15 @@
         certificates: [],
         websites: []
     };
+    const ADMIN_TAG_FRONT_COLORS = ["#FFFFFF", "#E0E0E0", "#FFED97", "#DEDEBE"];
+    const ADMIN_TAG_BACK_COLORS = ["#EA0000", "#FF8000", "#E1E100", "#00BB00", "#0000E3", "#6F00D2", "#AE00AE"];
     let shareLinks = [];
     let adminTags = [];
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
+
+    resetAdminTagForm();
 
     await hydrateData();
     syncAdminUI();
@@ -719,41 +734,119 @@
         const fragment = document.createDocumentFragment();
 
         adminTags.forEach((tag) => {
-            if (!tag || typeof tag !== "object") return;
-
-            const parts = typeof tag.text === "string"
-                ? tag.text.split(",").map((part) => part.trim()).filter(Boolean)
-                : [];
-            if (parts.length !== 2) return;
-
-            const frontBg = typeof tag.frontBg === "string" && tag.frontBg.trim()
-                ? tag.frontBg.trim()
-                : "#ffffff";
-            const backBg = typeof tag.backBg === "string" && tag.backBg.trim()
-                ? tag.backBg.trim()
-                : "#b13a2e";
-
-            const wrapper = document.createElement("div");
-            wrapper.className = "custom-admin-tag";
-
-            const frontSpan = document.createElement("span");
-            frontSpan.className = "custom-admin-tag__front";
-            frontSpan.style.backgroundColor = frontBg;
-            frontSpan.style.color = backBg;
-            frontSpan.textContent = parts[0];
-
-            const backSpan = document.createElement("span");
-            backSpan.className = "custom-admin-tag__back";
-            backSpan.style.backgroundColor = backBg;
-            backSpan.style.color = frontBg;
-            backSpan.textContent = parts[1];
-
-            wrapper.appendChild(frontSpan);
-            wrapper.appendChild(backSpan);
-            fragment.appendChild(wrapper);
+            const element = createAdminTagElement(tag);
+            if (element) {
+                fragment.appendChild(element);
+            }
         });
 
         customAdminTagsContainer.appendChild(fragment);
+    }
+
+    function getRandomAdminTagColors(frontCandidate, backCandidate) {
+        const frontCandidateTrimmed = typeof frontCandidate === 'string' ? frontCandidate.trim() : '';
+        const backCandidateTrimmed = typeof backCandidate === 'string' ? backCandidate.trim() : '';
+
+        const frontBg =
+            frontCandidateTrimmed && frontCandidateTrimmed.toLowerCase() !== '#000000'
+                ? frontCandidateTrimmed
+                : ADMIN_TAG_FRONT_COLORS[Math.floor(Math.random() * ADMIN_TAG_FRONT_COLORS.length)];
+        const backBg =
+            backCandidateTrimmed && backCandidateTrimmed.toLowerCase() !== '#000000'
+                ? backCandidateTrimmed
+                : ADMIN_TAG_BACK_COLORS[Math.floor(Math.random() * ADMIN_TAG_BACK_COLORS.length)];
+
+        return { frontBg, backBg };
+    }
+
+    function createAdminTagElement(tag) {
+        if (!tag || typeof tag !== 'object') return null;
+
+        const parts =
+            typeof tag.text === 'string'
+                ? tag.text.split(',').map((part) => part.trim()).filter(Boolean)
+                : [];
+
+        if (parts.length !== 2) return null;
+
+        const { frontBg, backBg } = getRandomAdminTagColors(tag.frontBg, tag.backBg);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-admin-tag';
+
+        const frontSpan = document.createElement('span');
+        frontSpan.className = 'custom-admin-tag__front';
+        frontSpan.style.backgroundColor = frontBg;
+        frontSpan.style.color = backBg;
+        frontSpan.textContent = parts[0];
+
+        const backSpan = document.createElement('span');
+        backSpan.className = 'custom-admin-tag__back';
+        backSpan.style.backgroundColor = backBg;
+        backSpan.style.color = frontBg;
+        backSpan.textContent = parts[1];
+
+        wrapper.appendChild(frontSpan);
+        wrapper.appendChild(backSpan);
+
+        return wrapper;
+    }
+
+    function renderAdminTagList() {
+        if (!adminTagList) return;
+
+        adminTagList.innerHTML = '';
+
+        if (!Array.isArray(adminTags) || adminTags.length === 0) {
+            adminTagList.innerHTML = '<p class="admin-tags-empty">尚無自訂標籤</p>';
+            return;
+        }
+
+        adminTags.forEach((tag, index) => {
+            const item = document.createElement('div');
+            item.className = 'admin-tags-item';
+
+            const preview = createAdminTagElement(tag);
+            if (preview) {
+                item.appendChild(preview);
+            }
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'admin-tags-delete';
+            deleteBtn.dataset.index = String(index);
+            deleteBtn.textContent = '刪除';
+            item.appendChild(deleteBtn);
+
+            adminTagList.appendChild(item);
+        });
+
+        adminTagList.querySelectorAll('.admin-tags-delete').forEach((button) => {
+            button.addEventListener('click', () => {
+                const index = Number(button.dataset.index);
+                if (Number.isNaN(index)) return;
+                adminTags.splice(index, 1);
+                persistData();
+                renderAdminTags();
+                renderAdminTagList();
+            });
+        });
+    }
+
+    function resetAdminTagForm() {
+        if (!adminTagForm) return;
+        adminTagForm.reset();
+        if (adminTagTextInput) {
+            adminTagTextInput.value = '';
+        }
+        if (adminTagFrontBgInput) {
+            adminTagFrontBgInput.value = ADMIN_TAG_FRONT_COLORS[0];
+            adminTagFrontBgInput.dataset.random = 'true';
+        }
+        if (adminTagBackBgInput) {
+            adminTagBackBgInput.value = ADMIN_TAG_BACK_COLORS[0];
+            adminTagBackBgInput.dataset.random = 'true';
+        }
     }
 
     function renderSkills() {
@@ -1266,6 +1359,7 @@
             closeDialog(profileModal);
         }
         if (openLoginBtn) openLoginBtn.hidden = isAdmin;
+        if (editAdminTagsBtn) editAdminTagsBtn.hidden = !isAdmin;
         if (editProfileBtn) editProfileBtn.hidden = !isAdmin;
         if (editSkillTagsBtn) editSkillTagsBtn.hidden = !isAdmin;
         if (editAboutMeBtn) editAboutMeBtn.hidden = !isAdmin;
@@ -1295,6 +1389,83 @@
             dialog.removeAttribute("open");
         }
     }
+
+    editAdminTagsBtn?.addEventListener("click", () => {
+        if (!isAdmin) return;
+        resetAdminTagForm();
+        renderAdminTagList();
+        openDialog(adminTagModal);
+        adminTagTextInput?.focus();
+    });
+
+    closeAdminTagModalBtn?.addEventListener("click", () => {
+        resetAdminTagForm();
+        closeDialog(adminTagModal);
+    });
+
+    cancelAdminTagBtn?.addEventListener("click", () => {
+        resetAdminTagForm();
+        closeDialog(adminTagModal);
+    });
+
+    adminTagFrontBgInput?.addEventListener("input", () => {
+        adminTagFrontBgInput.dataset.random = "false";
+    });
+
+    adminTagBackBgInput?.addEventListener("input", () => {
+        adminTagBackBgInput.dataset.random = "false";
+    });
+
+    adminTagFrontRandomBtn?.addEventListener("click", () => {
+        if (!adminTagFrontBgInput) return;
+        adminTagFrontBgInput.dataset.random = "true";
+        adminTagFrontBgInput.value = ADMIN_TAG_FRONT_COLORS[0];
+    });
+
+    adminTagBackRandomBtn?.addEventListener("click", () => {
+        if (!adminTagBackBgInput) return;
+        adminTagBackBgInput.dataset.random = "true";
+        adminTagBackBgInput.value = ADMIN_TAG_BACK_COLORS[0];
+    });
+
+    adminTagForm?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (!isAdmin) return;
+
+        const rawText = adminTagTextInput?.value ?? "";
+        const parts = rawText
+            .split(",")
+            .map((part) => part.trim())
+            .filter(Boolean);
+
+        if (parts.length !== 2) {
+            alert("請輸入「前段,後段」格式的標籤文字。");
+            return;
+        }
+
+        const frontCustom =
+            adminTagFrontBgInput && adminTagFrontBgInput.dataset.random === "false"
+                ? adminTagFrontBgInput.value
+                : "";
+        const backCustom =
+            adminTagBackBgInput && adminTagBackBgInput.dataset.random === "false"
+                ? adminTagBackBgInput.value
+                : "";
+
+        const { frontBg, backBg } = getRandomAdminTagColors(frontCustom, backCustom);
+
+        adminTags.push({
+            text: `${parts[0]},${parts[1]}`,
+            frontBg,
+            backBg
+        });
+
+        persistData();
+        renderAdminTags();
+        renderAdminTagList();
+        resetAdminTagForm();
+        adminTagTextInput?.focus();
+    });
 
     openLoginBtn?.addEventListener("click", () => {
         signInWithPopup(auth, provider)

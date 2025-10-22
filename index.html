@@ -133,6 +133,9 @@
         <button type="button" id="editProfile" class="admin-btn">
           編輯自我介紹
         </button>
+        <button type="button" id="editAdminTags" class="admin-btn">
+          自訂標籤
+        </button>
         <button type="button" id="editAboutMe" class="admin-btn">
           編輯關於我
         </button>
@@ -540,6 +543,60 @@
           <button type="button" id="saveAboutMe" class="primary">儲存</button>
         </div>
       </div>
+    </dialog>
+
+    <dialog class="modal" id="adminTagModal">
+      <form method="dialog" class="modal__content modal__content--admin-tags" id="adminTagForm">
+        <div class="modal__header">
+          <h2>管理自訂標籤</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeAdminTagModal"
+            aria-label="關閉"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div id="adminTagList" class="admin-tags-list"></div>
+
+        <hr />
+
+        <label class="field" for="adminTagTextInput">
+          <span>標籤文字（前段,後段）</span>
+          <input
+            type="text"
+            id="adminTagTextInput"
+            placeholder="前段,後段"
+            autocomplete="off"
+            required
+          />
+        </label>
+
+        <div class="field">
+          <span>前段背景顏色（選填，預設隨機）</span>
+          <div class="admin-tag-color">
+            <input type="color" id="adminTagFrontBgInput" value="#FFFFFF" />
+            <button type="button" class="admin-tag-color__random" id="adminTagFrontRandom">使用隨機</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>後段背景顏色（選填，預設隨機）</span>
+          <div class="admin-tag-color">
+            <input type="color" id="adminTagBackBgInput" value="#EA0000" />
+            <button type="button" class="admin-tag-color__random" id="adminTagBackRandom">使用隨機</button>
+          </div>
+        </div>
+
+        <p class="admin-tag-hint">若未自訂顏色，系統會自動套用預設隨機配色。</p>
+
+        <div class="modal__actions">
+          <button type="button" id="cancelAdminTag">取消</button>
+          <button type="submit" class="primary">新增標籤</button>
+        </div>
+      </form>
     </dialog>
 
     <dialog class="modal" id="shareLinksModal">
