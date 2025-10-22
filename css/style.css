@@ -129,6 +129,16 @@ body:has(.admin-bar:not([hidden])) {
   margin-bottom: -0.5rem;
 }
 
+.profile__tags-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: clamp(320px, 32vw, 520px);
+  margin: 0 auto;
+}
+
 .admin-tag__ad {
   background: white;
   color: #b13a2e;
@@ -148,11 +158,7 @@ body:has(.admin-bar:not([hidden])) {
 }
 
 .custom-admin-tags-container {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  margin-left: 0.5rem;
+  display: contents;
 }
 
 .custom-admin-tag {
