@@ -1578,11 +1578,12 @@
 
     profileForm?.addEventListener("submit", (event) => {
         event.preventDefault();
+        const rawAvatarUrl = profileAvatarInput.value.trim();
         profile = {
             name: profileNameInput.value.trim() || DEFAULT_PROFILE.name,
             email: profileEmailInput.value.trim() || DEFAULT_PROFILE.email,
             summary: profileSummaryInput.value.trim() || DEFAULT_PROFILE.summary,
-            avatar: profileAvatarInput.value.trim() || DEFAULT_PROFILE.avatar
+            avatar: rawAvatarUrl ? convertGoogleDriveUrl(rawAvatarUrl) : DEFAULT_PROFILE.avatar
         };
         persistData();
         renderProfile();
@@ -2469,12 +2470,15 @@
     function collectCertificates() {
         if (!certificateManagerList) return [];
         const items = certificateManagerList.querySelectorAll(".manager-item");
-        return Array.from(items).map(item => ({
-            id: item.dataset.certId || generateId("cert"),
-            title: item.querySelector('[data-field="title"]')?.value.trim() || "",
-            imageUrl: item.querySelector('[data-field="imageUrl"]')?.value.trim() || "",
-            description: item.querySelector('[data-field="description"]')?.value.trim() || ""
-        })).filter(cert => cert.title);
+        return Array.from(items).map(item => {
+            const rawImageUrl = item.querySelector('[data-field="imageUrl"]')?.value.trim() || "";
+            return {
+                id: item.dataset.certId || generateId("cert"),
+                title: item.querySelector('[data-field="title"]')?.value.trim() || "",
+                imageUrl: rawImageUrl ? convertGoogleDriveUrl(rawImageUrl) : "",
+                description: item.querySelector('[data-field="description"]')?.value.trim() || ""
+            };
+        }).filter(cert => cert.title);
     }
 
     // 網站管理
