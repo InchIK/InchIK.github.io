@@ -654,45 +654,60 @@
             ×
           </button>
         </div>
-        <label class="field">
-          <span>稱呼</span>
-          <input
-            type="text"
-            id="messageName"
-            name="from_name"
-            required
-            placeholder="請輸入您的稱呼"
-          />
-        </label>
-        <label class="field">
-          <span>Email</span>
-          <input
-            type="email"
-            id="messageEmail"
-            name="reply_to"
-            required
-            placeholder="請輸入您的 Email"
-          />
-        </label>
-        <label class="field">
-          <span>內文</span>
-          <textarea
-            id="messageContent"
-            name="message"
-            rows="6"
-            required
-            placeholder="請輸入留言內容"
-          ></textarea>
-        </label>
-        <!-- reCAPTCHA V2 容器 -->
-        <div class="recaptcha-container">
-          <div
-            class="g-recaptcha"
-            id="messageRecaptcha"
-            data-sitekey="6LeSs_ArAAAAAG4L6-RZ7lHYdz_QFkHDbpkw9K74"
-          ></div>
+        <div class="message-body">
+          <aside class="message-purpose">
+            <h3 class="message-purpose__title">可以找我做甚麼</h3>
+            <ol class="message-purpose__list">
+              <li>告解</li>
+              <li>認親</li>
+              <li>接案</li>
+              <li>批評</li>
+              <li>鼓勵</li>
+              <li>規劃</li>
+            </ol>
+          </aside>
+          <div class="message-fields">
+            <label class="field">
+              <span>稱呼</span>
+              <input
+                type="text"
+                id="messageName"
+                name="from_name"
+                required
+                placeholder="請輸入您的稱呼"
+              />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input
+                type="email"
+                id="messageEmail"
+                name="reply_to"
+                required
+                placeholder="請輸入您的 Email"
+              />
+            </label>
+            <label class="field">
+              <span>內容</span>
+              <textarea
+                id="messageContent"
+                name="message"
+                rows="6"
+                required
+                placeholder="請輸入留言內容"
+              ></textarea>
+            </label>
+            <!-- reCAPTCHA V2 容器 -->
+            <div class="recaptcha-container">
+              <div
+                class="g-recaptcha"
+                id="messageRecaptcha"
+                data-sitekey="6LeSs_ArAAAAAG4L6-RZ7lHYdz_QFkHDbpkw9K74"
+              ></div>
+            </div>
+            <div id="messageStatus" class="message-status"></div>
+          </div>
         </div>
-        <div id="messageStatus" class="message-status"></div>
         <div class="modal__actions">
           <button type="button" id="cancelMessage">取消</button>
           <button type="submit" class="primary" id="sendMessage">
