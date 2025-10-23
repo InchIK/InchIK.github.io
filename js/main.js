@@ -771,7 +771,10 @@
 
         const fragment = document.createDocumentFragment();
 
-        adminTags.forEach((tag) => {
+        // 隨機打亂標籤順序
+        const shuffledTags = [...adminTags].sort(() => Math.random() - 0.5);
+
+        shuffledTags.forEach((tag) => {
             const element = createAdminTagElement(tag);
             if (element) {
                 fragment.appendChild(element);
