@@ -1211,12 +1211,16 @@ body:has(.admin-bar:not([hidden])) {
 
 .modal__header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
+  position: relative;
 }
 
 .modal__close {
+  position: absolute;
+  right: 0;
+  top: 0;
   width: 48px;
   height: 48px;
   padding: 0;
@@ -2675,8 +2679,8 @@ body:has(.admin-bar:not([hidden])) {
   background: #fff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   gap: 0.75rem;
 }
 
@@ -2689,7 +2693,7 @@ body:has(.admin-bar:not([hidden])) {
 
 .message-purpose__list {
   margin: 0;
-  padding-left: 1.5rem;
+  padding-left: 0;
   text-align: left;
   font-size: var(--font-sm);
   color: var(--color-text, #4b5563);
