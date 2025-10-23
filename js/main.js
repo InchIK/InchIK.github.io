@@ -189,6 +189,15 @@
     const shareLinksGrid = document.getElementById("shareLinksGrid");
     const shareLinksManagerList = document.getElementById("shareLinksManagerList");
     const addShareLinkBtn = document.getElementById("addShareLink");
+
+    const editTellMeBtn = document.getElementById("editTellMe");
+    const tellMeModal = document.getElementById("tellMeModal");
+    const closeTellMeBtn = document.getElementById("closeTellMe");
+    const saveTellMeBtn = document.getElementById("saveTellMe");
+    const tellMeTitleInput = document.getElementById("tellMeTitle");
+    const tellMeListManager = document.getElementById("tellMeListManager");
+    const addTellMeItemBtn = document.getElementById("addTellMeItem");
+
     const editAdminTagsBtn = document.getElementById("editAdminTags");
     const adminTagModal = document.getElementById("adminTagModal");
     const closeAdminTagModalBtn = document.getElementById("closeAdminTagModal");
@@ -250,6 +259,7 @@
     const ADMIN_TAG_BACK_COLORS = ["#EA0000", "#FF8000", "#E1E100", "#00BB00", "#0000E3", "#6F00D2", "#AE00AE"];
     let shareLinks = [];
     let adminTags = [];
+    let tellMe = { title: "", list: [] };
     let isAdmin = sessionStorage.getItem(SESSION_KEY) === "true";
     let activeSkillId = null;
     let editingProjectId = null;
@@ -348,6 +358,21 @@
         aboutMe = normalizeAboutMe(data?.aboutMe);
         shareLinks = normalizeShareLinks(data?.shareLinks);
         adminTags = normalizeAdminTags(data?.adminTags);
+
+        // 處理 tellMe 資料
+        if (data?.tellMe) {
+            // Firebase 可能將資料儲存為 {0: {title, list}} 格式
+            let tellMeData = data.tellMe;
+            if (tellMeData[0]) {
+                tellMeData = tellMeData[0];
+            }
+            tellMe = {
+                title: tellMeData.title || "",
+                list: Array.isArray(tellMeData.list) ? tellMeData.list : []
+            };
+            renderTellMe(tellMe);
+        }
+
         console.log("applyData 後的 shareLinks:", shareLinks);
     }
 
@@ -366,7 +391,8 @@
                     websites: []
                 },
                 shareLinks: [],
-                adminTags: []
+                adminTags: [],
+                tellMe: null
             };
         }
 
@@ -379,7 +405,8 @@
             skillTags: Array.isArray(source.skillTags) ? source.skillTags : [],
             aboutMe: normalizeAboutMe(source.aboutMe),
             shareLinks: normalizeShareLinks(source.shareLinks),
-            adminTags: normalizeAdminTags(source.adminTags)
+            adminTags: normalizeAdminTags(source.adminTags),
+            tellMe: source.tellMe || null
         };
     }
 
@@ -567,7 +594,8 @@
             skillTags,
             aboutMe,
             shareLinks,
-            adminTags
+            adminTags,
+            tellMe
         };
 
         if (!options.skipSync) {
@@ -648,13 +676,19 @@
             : [];
         const sanitizedAdminTags = normalizeAdminTags(payload.adminTags);
 
+        const sanitizedTellMe = {
+            title: payload.tellMe?.title || "",
+            list: Array.isArray(payload.tellMe?.list) ? payload.tellMe.list : []
+        };
+
         return {
             profile: sanitizedProfile,
             skills: sanitizedSkills,
             skillTags: Array.isArray(payload.skillTags) ? payload.skillTags : [],
             aboutMe: sanitizedAboutMe,
             shareLinks: sanitizedShareLinks,
-            adminTags: sanitizedAdminTags
+            adminTags: sanitizedAdminTags,
+            tellMe: sanitizedTellMe
         };
     }
 
@@ -1335,6 +1369,46 @@
 
         // 調整分享連結位置（需要在 DOM 渲染完成後執行）
         setTimeout(() => handleShareLinksPosition(), 0);
+    }
+
+    // ===== 留言區「可以找我做甚麼」渲染 =====
+    function renderTellMe(tellMe) {
+        console.log('renderTellMe 被呼叫，資料:', tellMe);
+
+        // Firebase 可能將資料儲存為 {0: {title, list}} 格式，需要取出實際資料
+        let data = tellMe;
+        if (tellMe && tellMe[0]) {
+            data = tellMe[0];
+            console.log('偵測到索引格式，使用 tellMe[0]:', data);
+        }
+
+        const titleEl = document.querySelector('.message-purpose__title');
+        const listEl = document.querySelector('.message-purpose__list');
+
+        console.log('titleEl:', titleEl);
+        console.log('listEl:', listEl);
+
+        if (!titleEl || !listEl) {
+            console.warn('找不到 DOM 元素');
+            return;
+        }
+
+        // 更新標題
+        if (data && data.title) {
+            console.log('更新標題為:', data.title);
+            titleEl.textContent = data.title;
+        }
+
+        // 更新列表
+        if (data && Array.isArray(data.list) && data.list.length > 0) {
+            console.log('更新列表，項目數:', data.list.length);
+            listEl.innerHTML = '';
+            data.list.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                listEl.appendChild(li);
+            });
+        }
     }
 
     // 生成圖標文字（英文取首尾，中文取首字）
@@ -2579,6 +2653,69 @@
             description: item.querySelector('[data-field="description"]')?.value.trim() || "",
             url: item.querySelector('[data-field="url"]')?.value.trim() || ""
         })).filter(link => link.name); // 只要有名稱就保留
+    }
+
+    // ===== TellMe 管理功能 =====
+    editTellMeBtn?.addEventListener("click", () => {
+        renderTellMeManager();
+        openDialog(tellMeModal);
+    });
+
+    closeTellMeBtn?.addEventListener("click", () => {
+        closeDialog(tellMeModal);
+    });
+
+    saveTellMeBtn?.addEventListener("click", () => {
+        tellMe = collectTellMe();
+        persistData();
+        renderTellMe(tellMe);
+        closeDialog(tellMeModal);
+    });
+
+    addTellMeItemBtn?.addEventListener("click", () => {
+        addTellMeItem();
+    });
+
+    function renderTellMeManager() {
+        if (!tellMeTitleInput || !tellMeListManager) return;
+
+        // 填入標題
+        tellMeTitleInput.value = tellMe.title || "";
+
+        // 填入列表項目
+        tellMeListManager.innerHTML = "";
+        if (tellMe.list && tellMe.list.length > 0) {
+            tellMe.list.forEach(item => addTellMeItem(item));
+        } else {
+            // 如果沒有項目，至少加入一個空白項目
+            addTellMeItem();
+        }
+    }
+
+    function addTellMeItem(value = "") {
+        if (!tellMeListManager) return;
+
+        const div = document.createElement("div");
+        div.className = "tell-me-item";
+
+        div.innerHTML = `
+            <input type="text" placeholder="輸入項目內容" value="${escapeHTML(value)}" data-field="item" />
+            <button type="button" class="tell-me-item__remove">×</button>
+        `;
+
+        div.querySelector(".tell-me-item__remove")?.addEventListener("click", () => div.remove());
+        tellMeListManager.appendChild(div);
+    }
+
+    function collectTellMe() {
+        const title = tellMeTitleInput?.value.trim() || "";
+        const items = tellMeListManager?.querySelectorAll(".tell-me-item") || [];
+
+        const list = Array.from(items)
+            .map(item => item.querySelector('[data-field="item"]')?.value.trim() || "")
+            .filter(item => item); // 過濾掉空白項目
+
+        return { title, list };
     }
 
     // ===== 響應式支援 =====

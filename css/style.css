@@ -2654,6 +2654,76 @@ body:has(.admin-bar:not([hidden])) {
   max-width: 650px !important;
 }
 
+/* TellMe 管理介面 */
+.modal__content--tell-me {
+  width: min(90vw, 600px) !important;
+  padding: 2rem !important;
+  max-width: 600px !important;
+}
+
+.tell-me-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tell-me-list-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.tell-me-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(28, 36, 49, 0.1);
+  border-radius: 8px;
+}
+
+.tell-me-item input {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid rgba(28, 36, 49, 0.15);
+  border-radius: 6px;
+  font-size: var(--font-base);
+  transition: border-color 0.2s ease;
+  min-height: var(--touch-target-min);
+}
+
+.tell-me-item input:focus {
+  outline: none;
+  border-color: #0c7cd5;
+  box-shadow: 0 0 0 3px rgba(12, 124, 213, 0.1);
+}
+
+.tell-me-item__remove {
+  border: none;
+  background: rgba(217, 83, 79, 0.1);
+  color: #d9534f;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: var(--font-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+}
+
+.tell-me-item__remove:hover {
+  background: #d9534f;
+  color: #fff;
+  transform: rotate(90deg);
+}
+
 /* 留言 Modal */
 .modal__content--message {
   width: min(95vw, 720px) !important;

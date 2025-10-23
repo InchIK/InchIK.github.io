@@ -145,6 +145,9 @@
         <button type="button" id="editShareLinks" class="admin-btn">
           編輯分享連結
         </button>
+        <button type="button" id="editTellMe" class="admin-btn">
+          編輯留言提示
+        </button>
         <button type="button" id="openPanel" class="admin-btn">新增區塊</button>
         <button type="button" id="logout" class="admin-btn admin-btn--quiet">
           登出
@@ -631,6 +634,48 @@
         </div>
         <div class="modal__actions">
           <button type="button" id="saveShareLinks" class="primary">
+            儲存
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="modal" id="tellMeModal">
+      <div class="modal__content modal__content--tell-me">
+        <div class="modal__header">
+          <h2>管理留言區提示</h2>
+          <button
+            type="button"
+            class="modal__close"
+            id="closeTellMe"
+            aria-label="關閉"
+          >
+            ×
+          </button>
+        </div>
+        <div class="tell-me-manager">
+          <div class="field">
+            <label for="tellMeTitle">標題</label>
+            <input
+              type="text"
+              id="tellMeTitle"
+              placeholder="例如：可以找我做什麼"
+            />
+          </div>
+          <div class="field">
+            <label>列表項目</label>
+            <div id="tellMeListManager" class="tell-me-list-manager"></div>
+            <button
+              type="button"
+              id="addTellMeItem"
+              class="admin-btn admin-btn--ghost"
+            >
+              新增項目
+            </button>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button type="button" id="saveTellMe" class="primary">
             儲存
           </button>
         </div>
