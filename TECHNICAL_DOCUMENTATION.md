@@ -1,8 +1,8 @@
 # 個人作品集網站 - 完整技術文件
 
-> **版本**: 2.0  
-> **最後更新**: 2025-10-19  
-> **維護者**: InchIK  
+> **版本**: 2.2
+> **最後更新**: 2025-10-24
+> **維護者**: InchIK
 > **專案類型**: 靜態網站 (GitHub Pages + Firebase)
 
 ---
@@ -805,6 +805,313 @@ element.innerHTML = userInput;  // 可能注入腳本
 - v1.0 (2025-10-18): 初版技術文件
 
 **本文件由 Claude Code 協助撰寫**
+
+---
+
+## 更新日誌 (2025-10-24)
+
+### 新增功能與優化
+
+#### 1. 留言區「可以找我做什麼」動態管理功能
+
+**功能描述**: 實作從 Firebase 讀取並動態顯示留言 Modal 中的提示區塊內容
+
+**實作細節**:
+
+**前端渲染** (`js/main.js`):
+```javascript
+function renderTellMe(tellMe) {
+    // Firebase 可能將資料儲存為 {0: {title, list}} 格式
+    let data = tellMe;
+    if (tellMe && tellMe[0]) {
+        data = tellMe[0];
+    }
+
+    // 更新標題
+    if (data && data.title) {
+        titleEl.textContent = data.title;
+    }
+
+    // 更新列表項目
+    if (data && Array.isArray(data.list) && data.list.length > 0) {
+        listEl.innerHTML = '';
+        data.list.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            listEl.appendChild(li);
+        });
+    }
+}
+```
+
+**資料結構** (Firebase `content` 文件):
+```javascript
+tellMe: {
+  title: "可以找我做什麼",
+  list: ["告解", "認錯", "接案", "批評", "鼓勵", "規勸"]
+}
+```
+
+**管理介面**:
+- 位置：管理員工具列新增「編輯留言提示」按鈕
+- Modal ID: `tellMeModal`
+- 功能：
+  - 編輯標題（單行輸入框）
+  - 新增/編輯/刪除列表項目
+  - 每個項目都有刪除按鈕（×）
+  - 點擊「新增項目」按鈕可新增空白項目
+  - 儲存後自動同步到 Firebase 並更新顯示
+
+**CSS 樣式**:
+```css
+.modal__content--tell-me {
+  width: min(90vw, 600px) !important;
+  padding: 2rem !important;
+  max-width: 600px !important;
+}
+
+.tell-me-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(28, 36, 49, 0.1);
+  border-radius: 8px;
+}
+
+.tell-me-item__remove {
+  border: none;
+  background: rgba(217, 83, 79, 0.1);
+  color: #d9534f;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+```
+
+**涉及檔案**:
+- `index.html`: 新增 `tellMeModal` (L640-680)
+- `js/main.js`:
+  - `renderTellMe()` (L1348-1385)
+  - `renderTellMeManager()` (L2672-2686)
+  - `applyData()` 處理 tellMe 資料 (L362-374)
+  - `serializeForFirestore()` 序列化 tellMe (L678-681)
+- `css/style.css`: tellMe 管理介面樣式 (L2657-2725)
+
+#### 2. 留言 Modal 標題「留言給我」置中
+
+**功能描述**: 將留言 Modal 的標題置中顯示，關閉按鈕固定在右上角
+
+**實作細節**:
+
+**HTML 結構**:
+```html
+<div class="modal__header">
+  <h2>留言給我</h2>
+  <button class="modal__close">×</button>
+</div>
+```
+
+**CSS 調整**:
+```css
+.modal__header {
+  display: flex;
+  justify-content: center;  /* 內容置中 */
+  align-items: center;
+  gap: 1rem;
+  position: relative;  /* 作為定位參考 */
+}
+
+.modal__close {
+  position: absolute;  /* 絕對定位 */
+  right: 0;
+  top: 0;
+  /* ... 其他樣式 ... */
+}
+```
+
+**視覺效果**:
+- 標題「留言給我」顯示在正中央
+- 關閉按鈕（電源圖示）固定在右上角
+- 不會因標題文字長度改變而影響位置
+
+**涉及檔案**:
+- `css/style.css`: L1212-1239
+
+#### 3. 留言區提示列表靠左對齊
+
+**功能描述**: 將「可以找我做什麼」區塊的標題和列表項目靠左對齊
+
+**CSS 調整**:
+```css
+.message-purpose {
+  align-items: flex-start;  /* 從 center 改為 flex-start */
+  text-align: left;         /* 從 center 改為 left */
+}
+
+.message-purpose__list {
+  padding-left: 0;  /* 完全靠左，無內距 */
+}
+```
+
+**視覺效果**:
+- 標題「可以找我做什麼」靠左
+- 列表項目（1. 告解、2. 認錯...）靠左顯示
+- 數字編號緊貼容器左邊界
+
+**涉及檔案**:
+- `css/style.css`: L2674-2700
+
+#### 4. 管理員工具列響應式優化
+
+**功能描述**: 優化小螢幕上的管理員工具列，確保所有按鈕都可訪問
+
+**實作策略**:
+
+**桌面版 (>768px)**:
+```css
+.admin-bar__actions {
+  flex-wrap: wrap;
+  overflow-x: auto;  /* 允許水平滾動 */
+}
+```
+
+**平板/手機 (≤768px)**:
+```css
+.admin-bar {
+  flex-direction: column;  /* 垂直排列 */
+}
+
+.admin-bar__actions {
+  flex-wrap: nowrap;       /* 不換行 */
+  overflow-x: auto;        /* 水平滾動 */
+  width: 100%;
+}
+
+.admin-btn {
+  white-space: nowrap;     /* 按鈕文字不換行 */
+  flex-shrink: 0;          /* 不壓縮按鈕 */
+}
+```
+
+**各斷點調整**:
+- **768px**: `body padding-top: 5rem`
+- **600px**: `body padding-top: 4.5rem`
+- **500px**: `body padding-top: 4rem`
+- **400px**: `body padding-top: 3.8rem`
+
+**自訂滾動條**:
+```css
+.admin-bar__actions::-webkit-scrollbar {
+  height: 4px;
+}
+
+.admin-bar__actions::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+```
+
+**視覺效果**:
+- 小螢幕上管理列改為兩行（標題 + 按鈕區）
+- 按鈕區域可左右滑動查看所有選項
+- 半透明白色滾動條，不突兀
+- 觸控友好，所有按鈕都能輕鬆點擊
+
+**涉及檔案**:
+- `css/style.css`:
+  - L389-415 (基礎樣式)
+  - L1919-1940 (≤768px)
+  - L2128-2147 (≤600px)
+  - L2298-2317 (≤500px)
+  - L2483-2502 (≤400px)
+
+#### 5. 版面間距優化
+
+**功能描述**: 縮小自我介紹文字和分享連結區塊之間的間距
+
+**CSS 調整**:
+```css
+/* 桌面版 */
+.hero__content {
+  gap: clamp(0.5rem, 1vw, 0.8rem);
+  /* 原本: clamp(1.8rem, 4vw, 2.6rem) */
+}
+
+/* 1080-1280px 斷點 */
+.hero__content {
+  gap: clamp(0.5rem, 1vw, 0.8rem);
+  /* 原本: clamp(2rem, 4vw, 3rem) */
+}
+```
+
+**變更幅度**:
+- 最小值：1.8rem → 0.5rem（減少約 72%）
+- 最大值：2.6rem → 0.8rem（減少約 69%）
+
+**視覺效果**:
+- 個人資料區塊和分享連結區塊更緊湊
+- 減少不必要的空白
+- 提升頁面資訊密度
+
+**涉及檔案**:
+- `css/style.css`: L66-72, L1688-1691
+
+#### 6. ADMIN 標籤隨機排序
+
+**功能描述**: 每次刷新網頁時，自訂 ADMIN 標籤的顯示順序隨機變化
+
+**實作細節**:
+```javascript
+function renderAdminTags() {
+    // 隨機打亂標籤順序
+    const shuffledTags = [...adminTags].sort(() => Math.random() - 0.5);
+
+    shuffledTags.forEach((tag) => {
+        const element = createAdminTagElement(tag);
+        if (element) {
+            fragment.appendChild(element);
+        }
+    });
+}
+```
+
+**工作原理**:
+1. 使用展開運算符創建陣列副本（不修改原始資料）
+2. 使用 `Math.random() - 0.5` 產生隨機排序
+3. 每次渲染都重新打亂順序
+
+**視覺效果**:
+- 每次重新整理網頁，標籤順序都不同
+- 增加頁面趣味性
+- 不影響 Firebase 儲存的原始順序
+
+**涉及檔案**:
+- `js/main.js`: L764-785
+
+### 重點改善總結
+
+1. ✅ **完整的 tellMe 管理功能** - 可在管理介面動態編輯留言提示
+2. ✅ **UI/UX 優化** - Modal 標題置中、列表靠左、間距優化
+3. ✅ **響應式優化** - 管理工具列在所有螢幕尺寸都可完整訪問
+4. ✅ **視覺趣味** - ADMIN 標籤隨機排序
+5. ✅ **版面緊湊** - 減少不必要的空白間距
+
+### 相容性測試
+
+**測試螢幕尺寸**:
+- ✅ 桌面 (>1280px)
+- ✅ 筆電 (1024-1280px)
+- ✅ 平板 (768-1024px)
+- ✅ 手機 (≤768px)
+- ✅ 小手機 (≤500px)
+- ✅ 超小螢幕 (≤400px)
+
+**測試瀏覽器**:
+- ✅ Chrome/Edge (Chromium)
+- ✅ Firefox
+- ✅ Safari (iOS/macOS)
 
 ---
 

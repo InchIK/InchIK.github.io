@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>個人履歷｜技術領域專長</title>
+    <title>InchIKung-個人頁面</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -111,7 +111,10 @@
                 <span class="admin-tag__ad">AD</span
                 ><span class="admin-tag__min">MIN</span>
               </div>
-              <div id="customAdminTags" class="custom-admin-tags-container"></div>
+              <div
+                id="customAdminTags"
+                class="custom-admin-tags-container"
+              ></div>
             </div>
           </div>
           <div class="hero__bio">
@@ -549,7 +552,11 @@
     </dialog>
 
     <dialog class="modal" id="adminTagModal">
-      <form method="dialog" class="modal__content modal__content--admin-tags" id="adminTagForm">
+      <form
+        method="dialog"
+        class="modal__content modal__content--admin-tags"
+        id="adminTagForm"
+      >
         <div class="modal__header">
           <h2>管理自訂標籤</h2>
           <button
@@ -581,9 +588,20 @@
           <span>前段背景顏色（選填，預設隨機）</span>
           <div class="admin-tag-color">
             <input type="color" id="adminTagFrontBgInput" value="#FFFFFF" />
-            <button type="button" class="admin-tag-color__random" id="adminTagFrontRandom">使用隨機</button>
-            <span class="admin-tag-color__preview" id="adminTagFrontPreview"></span>
-            <span class="admin-tag-color__value" id="adminTagFrontValue">隨機</span>
+            <button
+              type="button"
+              class="admin-tag-color__random"
+              id="adminTagFrontRandom"
+            >
+              使用隨機
+            </button>
+            <span
+              class="admin-tag-color__preview"
+              id="adminTagFrontPreview"
+            ></span>
+            <span class="admin-tag-color__value" id="adminTagFrontValue"
+              >隨機</span
+            >
           </div>
         </div>
 
@@ -591,9 +609,20 @@
           <span>後段背景顏色（選填，預設隨機）</span>
           <div class="admin-tag-color">
             <input type="color" id="adminTagBackBgInput" value="#EA0000" />
-            <button type="button" class="admin-tag-color__random" id="adminTagBackRandom">使用隨機</button>
-            <span class="admin-tag-color__preview" id="adminTagBackPreview"></span>
-            <span class="admin-tag-color__value" id="adminTagBackValue">隨機</span>
+            <button
+              type="button"
+              class="admin-tag-color__random"
+              id="adminTagBackRandom"
+            >
+              使用隨機
+            </button>
+            <span
+              class="admin-tag-color__preview"
+              id="adminTagBackPreview"
+            ></span>
+            <span class="admin-tag-color__value" id="adminTagBackValue"
+              >隨機</span
+            >
           </div>
         </div>
 
@@ -675,9 +704,7 @@
           </div>
         </div>
         <div class="modal__actions">
-          <button type="button" id="saveTellMe" class="primary">
-            儲存
-          </button>
+          <button type="button" id="saveTellMe" class="primary">儲存</button>
         </div>
       </div>
     </dialog>
