@@ -1542,7 +1542,8 @@
 
         const title = fieldTitle.value.trim();
         const description = fieldDescription.value.trim();
-        const imageUrl = fieldImageUrl.value.trim();
+        const rawImageUrl = fieldImageUrl.value.trim();
+        const imageUrl = rawImageUrl ? convertGoogleDriveUrl(rawImageUrl) : "";
 
         if (!title || !description) return;
 
@@ -2719,4 +2720,3 @@
         messageStatusEl.className = `message-status ${type}`;
     }
 })();
-
