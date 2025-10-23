@@ -389,6 +389,29 @@ body:has(.admin-bar:not([hidden])) {
 .admin-bar__actions {
   display: flex;
   gap: 0.8rem;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.admin-bar__actions::-webkit-scrollbar {
+  height: 4px;
+}
+
+.admin-bar__actions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-bar__actions::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.admin-bar__actions::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .admin-bar[hidden] {
@@ -1890,22 +1913,30 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 小螢幕管理欄調整 */
   body:has(.admin-bar:not([hidden])) {
-    padding-top: 3.2rem;
+    padding-top: 5rem;
   }
 
   .admin-bar {
     padding: 0.7rem 1rem;
     font-size: 0.88rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
   }
 
   .admin-bar__actions {
     gap: 0.6rem;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.3rem;
   }
 
   .admin-btn {
     padding: 0.4rem 0.9rem;
     font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 }
 
@@ -2091,17 +2122,28 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 手機管理欄優化 */
   body:has(.admin-bar:not([hidden])) {
-    padding-top: 3rem;
+    padding-top: 4.5rem;
   }
 
   .admin-bar {
     padding: 0.6rem 0.8rem;
     font-size: 0.82rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-bar__actions {
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.3rem;
   }
 
   .admin-btn {
     padding: 0.35rem 0.75rem;
     font-size: 0.8rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   /* 手機滾動條優化 */
@@ -2250,17 +2292,28 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 小手機管理欄優化 */
   body:has(.admin-bar:not([hidden])) {
-    padding-top: 2.8rem;
+    padding-top: 4rem;
   }
 
   .admin-bar {
     padding: 0.5rem 0.6rem;
     font-size: 0.78rem;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .admin-bar__actions {
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
   }
 
   .admin-btn {
     padding: 0.3rem 0.6rem;
     font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   /* 小手機滾動條優化 */
@@ -2424,23 +2477,28 @@ body:has(.admin-bar:not([hidden])) {
 
   /* 超小螢幕管理欄優化 */
   body:has(.admin-bar:not([hidden])) {
-    padding-top: 2.5rem;
+    padding-top: 3.8rem;
   }
 
   .admin-bar {
     padding: 0.4rem 0.5rem;
     font-size: 0.72rem;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    flex-direction: column;
   }
 
   .admin-bar__actions {
-    gap: 0.4rem;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
   }
 
   .admin-btn {
     padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
     white-space: nowrap;
+    flex-shrink: 0;
   }
 
   /* 超小螢幕滾動條優化 */
