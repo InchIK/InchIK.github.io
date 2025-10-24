@@ -2391,6 +2391,17 @@
                         <button type="button" class="detail-project__btn detail-project__btn--delete" data-detail-action="delete" data-skill-id="${skill.id}" data-project-id="${project.id}">刪除</button>
                        </div>`
           : "";
+
+        const createdTime = formatTaipeiTime(project.createdAt);
+        const updatedTime = formatTaipeiTime(project.updatedAt);
+        const timestampHtml =
+          createdTime || updatedTime
+            ? `<div class="detail-project__timestamps">
+                        ${createdTime ? `<span class="timestamp"><span class="timestamp__label">創建時間：</span><span class="timestamp__value">${createdTime}</span></span>` : ""}
+                        ${updatedTime ? `<span class="timestamp"><span class="timestamp__label">最後更新：</span><span class="timestamp__value">${updatedTime}</span></span>` : ""}
+                       </div>`
+            : "";
+
         return `
                     <article class="detail-project" data-project-id="${
                       project.id
@@ -2401,6 +2412,7 @@
                         </div>
                         ${mediaHtml}
                         <div class="markdown-body">${markdown}</div>
+                        ${timestampHtml}
                     </article>
                 `;
       })
@@ -2585,6 +2597,28 @@
       return `${prefix}-${crypto.randomUUID()}`;
     }
     return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  }
+
+  function formatTaipeiTime(isoString) {
+    if (!isoString) return "";
+
+    try {
+      const date = new Date(isoString);
+
+      // 轉換為台北時區 (UTC+8)
+      const taipeiTime = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Taipei" }));
+
+      const year = taipeiTime.getFullYear();
+      const month = String(taipeiTime.getMonth() + 1).padStart(2, "0");
+      const day = String(taipeiTime.getDate()).padStart(2, "0");
+      const hours = String(taipeiTime.getHours()).padStart(2, "0");
+      const minutes = String(taipeiTime.getMinutes()).padStart(2, "0");
+
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
+    } catch (error) {
+      console.error("時間格式轉換錯誤:", error);
+      return "";
+    }
   }
 
   function escapeHTML(value) {

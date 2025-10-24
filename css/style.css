@@ -1538,6 +1538,33 @@ body:has(.admin-bar:not([hidden])) {
   background: rgba(217, 83, 79, 0.2);
 }
 
+.detail-project__timestamps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(28, 36, 49, 0.08);
+  font-size: 0.8rem;
+  color: rgba(28, 36, 49, 0.6);
+}
+
+.timestamp {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.timestamp__label {
+  font-weight: 500;
+  color: rgba(28, 36, 49, 0.5);
+  white-space: nowrap;
+}
+
+.timestamp__value {
+  color: rgba(28, 36, 49, 0.7);
+  font-family: 'Courier New', Courier, monospace;
+}
+
 .project-media-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
